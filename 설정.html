@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>모선마감 · 설정</title>
+<style>
+:root{
+  --bg:#f4f6fa; --card:#fff; --line:#e3e8f0;
+  --text:#1e2939; --muted:#6b7789;
+  --blue:#2557a7; --blue-dark:#1d4585; --blue-soft:#eef3fb;
+  --green:#1e8449; --red:#c0392b; --amber:#8a6d3b;
+  --radius:8px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Noto Sans KR','Malgun Gothic','맑은 고딕',sans-serif;
+  font-size:15px;line-height:1.6;color:var(--text);background:var(--bg);}
+
+/* 돌아가기 띠 */
+#skr-backbar{position:sticky;top:0;z-index:99;display:flex;align-items:center;gap:10px;
+  background:linear-gradient(90deg,#11305f,#1c4b91);color:#fff;padding:8px 16px;font-size:13.5px;}
+#skr-backbar a{color:#fff;text-decoration:none;font-weight:700;padding:3px 9px;border-radius:6px;
+  display:inline-flex;align-items:center;gap:6px;}
+#skr-backbar a:hover{background:rgba(255,255,255,.18);}
+#skr-backbar .here{opacity:.75;font-weight:400;}
+
+.wrap{max-width:820px;margin:0 auto;padding:26px 16px 70px;}
+h1{font-size:24px;font-weight:700;letter-spacing:-.5px;margin-bottom:6px;}
+.lead{font-size:14px;color:var(--muted);margin-bottom:8px;}
+
+.note{background:#fdf6e6;border:1px solid #f0e2c4;border-radius:var(--radius);
+  padding:12px 15px;font-size:13.5px;color:var(--amber);line-height:1.6;margin:16px 0 28px;}
+.note b{color:#7a5a1e;}
+
+section{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+  padding:20px 22px;margin-bottom:18px;}
+section h2{font-size:16.5px;font-weight:700;margin-bottom:3px;}
+section .sub{font-size:13px;color:var(--muted);margin-bottom:16px;line-height:1.55;}
+
+.grid{display:grid;grid-template-columns:120px 1fr;gap:10px 14px;align-items:center;}
+label{font-size:13.5px;color:var(--muted);}
+input[type=text],textarea{width:100%;font-family:inherit;font-size:14px;color:var(--text);
+  border:1px solid var(--line);border-radius:6px;padding:8px 11px;background:#fdfdfe;}
+input[type=text]:focus,textarea:focus{outline:none;border-color:#9fbde4;background:#fff;}
+textarea{min-height:150px;line-height:1.65;resize:vertical;
+  font-family:'D2Coding','Consolas','Malgun Gothic',monospace;font-size:13px;}
+.hint{font-size:12px;color:#9aa5b3;margin-top:5px;}
+
+.btn{font-family:inherit;font-size:13.5px;font-weight:600;cursor:pointer;
+  border:1px solid var(--line);background:#fff;color:var(--text);
+  border-radius:6px;padding:8px 16px;}
+.btn:hover{border-color:#c2d0e4;background:#fafbfd;}
+.btn.go{background:var(--blue);border-color:var(--blue);color:#fff;}
+.btn.go:hover{background:var(--blue-dark);}
+.row{display:flex;gap:9px;flex-wrap:wrap;align-items:center;margin-top:16px;}
+
+.who-b{font-family:inherit;font-size:14.5px;font-weight:600;cursor:pointer;
+  border:1px solid var(--line);background:#fff;color:var(--text);
+  border-radius:7px;padding:9px 20px;}
+.who-b:hover{border-color:var(--blue);background:var(--blue-soft);}
+.who-b.on{background:var(--blue);border-color:var(--blue);color:#fff;}
+.stat{display:inline-flex;align-items:center;gap:7px;font-size:13.5px;
+  background:var(--blue-soft);color:var(--blue-dark);border-radius:20px;padding:4px 13px;font-weight:600;}
+.stat.zero{background:#fdeeee;color:var(--red);}
+
+#saved{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(14px);
+  background:#1e2939;color:#fff;font-size:13.5px;font-weight:600;padding:10px 20px;
+  border-radius:24px;box-shadow:0 5px 18px rgba(0,0,0,.25);
+  opacity:0;pointer-events:none;transition:opacity .18s,transform .18s;}
+#saved.on{opacity:1;transform:translateX(-50%) translateY(0);}
+
+@media(max-width:560px){ .grid{grid-template-columns:1fr;gap:5px;} label{margin-top:8px;} }
+</style>
+<script src="담당자.js"></script>
+
+<!-- 발표용에만 들어가는 것 -->
+<script src="./발표용-띠.js"></script>
+</head>
+<body>
+
+<div id="skr-backbar">
+  <a href="시작.html" title="모선마감 시작 화면으로"><span style="font-size:13px">&#127968;</span><span style="font-weight:800;letter-spacing:.4px">HOME</span><span>모선마감</span></a>
+  <span class="here">설정</span>
+</div>
+
+<div class="wrap">
+  <h1>설정</h1>
+  <p class="lead">메일 주소는 사람마다 다릅니다. 여기 넣으신 값은 <b>이 브라우저에만</b> 저장됩니다.</p>
+
+  <div class="note">
+    <b>왜 따로 넣나요?</b> 예전에는 메일 주소가 도구 안에 박혀 있었습니다.
+    그러면 화면을 동료와 나눌 때 <b>내 연락처와 거래처 주소까지 같이 나갑니다.</b>
+    이제 틀만 나누고, 주소는 각자 자기 것을 넣습니다.
+    넣은 값은 서버로 가지 않고 <b>이 컴퓨터 밖으로 나가지 않습니다.</b>
+    <br><br>
+    터미널 플래너(KIT · GWCT) 주소는 <b>누가 쓰든 같은 곳</b>이라 도구에 그대로 넣어두었습니다.
+    따로 넣지 않으셔도 됩니다.
+  </div>
+
+  <!-- ── 나는 누구 ───────────────────────────────────────────── -->
+  <section>
+    <h2>나는 누구</h2>
+    <p class="sub">고르신 분의 모선이 <b>내 모선</b>이 됩니다.
+      스케줄확인 · 장금메일 · 달력이 모두 이 기준으로 걸러집니다.</p>
+    <div class="row" id="who" style="margin-top:0"></div>
+    <p class="hint">명단에 없으신가요? 담당 서비스를 알려주시면 <code>담당자.js</code> 에 넣어드립니다.</p>
+  </section>
+
+  <!-- ── 내 서명 ─────────────────────────────────────────────── -->
+  <section>
+    <h2>내 서명</h2>
+    <p class="sub">스케줄확인에서 <b>등록요청 메일</b>을 만들 때 아래에 붙습니다.</p>
+    <div class="grid">
+      <label for="s-kor">이름 (한글)</label>
+      <input type="text" id="s-kor" placeholder="예: 홍길동">
+      <label for="s-eng">이름 (영문)</label>
+      <input type="text" id="s-eng" placeholder="예: Mr. Gil-dong, Hong">
+      <label for="s-office">사무소</label>
+      <input type="text" id="s-office" placeholder="Kwangyang Office">
+      <label for="s-company">회사</label>
+      <input type="text" id="s-company" placeholder="Sinokor Merchant Marine Co.,Ltd.">
+      <label for="s-tel">전화</label>
+      <input type="text" id="s-tel" placeholder="예: 82-61-000-0000">
+      <label for="s-fax">팩스</label>
+      <input type="text" id="s-fax" placeholder="예: 82-61-000-0000">
+      <label for="s-mail">내 메일</label>
+      <input type="text" id="s-mail" placeholder="예: demo01@example.com">
+    </div>
+    <div class="row"><button class="btn go" onclick="saveSign()">서명 저장</button></div>
+  </section>
+
+  <!-- ── MRN 송부 ────────────────────────────────────────────── -->
+  <section>
+    <h2>MRN 송부 주소</h2>
+    <p class="sub">체크리스트에서 <b>MRN 송부 메일</b>을 만들 때 쓰는 받는사람·참조입니다.
+      한 줄에 하나씩. <code>#</code> 뒤는 메모라 보내지 않습니다.</p>
+    <textarea id="mrn" spellcheck="false"></textarea>
+    <p class="hint">[받는사람] 과 [참조] 두 묶음으로 나눠 적습니다. 묶음 이름은 지우지 마세요.</p>
+    <div class="row">
+      <button class="btn go" onclick="saveMrn()">주소 저장</button>
+      <span class="stat" id="mrn-n">0개</span>
+    </div>
+  </section>
+
+  <!-- ── 선사 주소록 ─────────────────────────────────────────── -->
+  <section>
+    <h2>선사 주소록</h2>
+    <p class="sub">CBF에서 <b>마감 메일</b>을 보낼 선사 담당자 주소입니다.
+      선사 이름과 코드는 이미 들어 있고, <b>주소만 비어 있습니다.</b></p>
+    <div class="row">
+      <a class="btn go" href="2 CBF확인/CBF.html" target="_blank" rel="noopener">CBF 열어서 넣기</a>
+      <span class="stat" id="car-n">0개</span>
+    </div>
+    <p class="hint">CBF 화면 오른쪽 위 <b>설정</b> 단추를 누르면 선사별로 주소를 넣을 수 있습니다.</p>
+  </section>
+
+  <!-- ── 내보내기 / 불러오기 ─────────────────────────────────── -->
+  <section>
+    <h2>다른 PC로 옮기기</h2>
+    <p class="sub">위에 넣은 설정을 <b>파일 하나로</b> 내려받아 다른 PC에서 불러옵니다.
+      집·노트북에서도 같은 설정으로 쓰실 수 있습니다.</p>
+    <div class="row">
+      <button class="btn go" onclick="exportAll()">설정 내려받기</button>
+      <button class="btn" onclick="document.getElementById('imp').click()">파일에서 불러오기</button>
+      <input type="file" id="imp" accept=".json,application/json" style="display:none" onchange="importAll(this)">
+    </div>
+    <p class="hint">엑셀 자료는 들어있지 않습니다. 주소와 서명만 들어갑니다.</p>
+  </section>
+</div>
+
+<div id="saved"></div>
+
+<script>
+/* ─────────────────────────────────────────────────────────────────────────
+   설정은 도구들이 원래 쓰던 저장 칸에 그대로 써 넣는다.
+   그래야 도구 쪽을 뜯어고칠 필요가 없다.
+
+     skr_sign_v1        내 서명            (스케줄확인)
+     checklist-config   MRN 송부 주소      (체크리스트)  ← .to 칸만 만진다
+     cbf_carriers_v1    선사 주소록        (CBF)         ← 개수만 보여주고 편집은 CBF에서
+   ───────────────────────────────────────────────────────────────────────── */
+var SIGN_KEY='skr_sign_v1',
+    CFG_KEY='checklist-config', CARRIER_KEY='cbf_carriers_v1';
+
+function get(k){ try{ return JSON.parse(localStorage.getItem(k)||'null'); }catch(e){ return null; } }
+function set(k,v){ try{ localStorage.setItem(k,JSON.stringify(v)); return true; }catch(e){ return false; } }
+function $(id){ return document.getElementById(id); }
+
+var T;
+function toast(m){
+  var el=$('saved'); el.textContent=m; el.classList.add('on');
+  clearTimeout(T); T=setTimeout(function(){ el.classList.remove('on'); },1900);
+}
+
+/* 빈 MRN 틀 — 처음 여는 사람에게 무엇을 어디에 적는지 보여준다 */
+var MRN_BLANK = '# MRN 송부 메일의 받는사람 / 참조.  # 뒤는 메모.\n'
+  + '# 한 줄에 주소 하나씩 적으세요.\n\n'
+  + '[받는사람]\n\n\n[참조]\n';
+
+// ── 나는 누구 ────────────────────────────────────────────────────────────
+var ME_KEY='skr_me';
+function drawWho(){
+  var me=null; try{ me=localStorage.getItem(ME_KEY); }catch(e){}
+  var names=Object.keys((window.MOSUN_OWNERS)||{});
+  var box=$('who');
+  if(!names.length){ box.innerHTML='<span class="hint">담당자 명부를 읽지 못했습니다.</span>'; return; }
+  box.innerHTML=names.map(function(n){
+    return '<button type="button" class="who-b'+(n===me?' on':'')+'" data-n="'+n+'">'+n+'</button>';
+  }).join('');
+}
+$('who').addEventListener('click',function(e){
+  var b=e.target.closest('button[data-n]');
+  if(!b) return;
+  try{ localStorage.setItem(ME_KEY,b.dataset.n); }catch(err){}
+  try{ localStorage.removeItem('skr_owners'); }catch(err){}   // 기준이 바뀌었으니 걸러둔 것도 되돌린다
+  drawWho();
+  toast(b.dataset.n + ' 님으로 맞췄습니다');
+});
+
+// ── 그리기 ───────────────────────────────────────────────────────────────
+function draw(){
+  var s=get(SIGN_KEY)||{};
+  $('s-kor').value=s.kor||'';           $('s-eng').value=s.eng||'';
+  $('s-office').value=s.office||'Kwangyang Office';
+  $('s-company').value=s.company||'Sinokor Merchant Marine Co.,Ltd.';
+  $('s-tel').value=s.tel||'';           $('s-fax').value=s.fax||'';
+  $('s-mail').value=s.mail||'';
+
+  var cfg=get(CFG_KEY)||{};
+  $('mrn').value=(cfg.to && String(cfg.to).trim()) ? cfg.to : MRN_BLANK;
+
+  countAll();
+  drawWho();
+}
+
+function countMail(text){
+  var m=String(text||'').replace(/#[^\n]*/g,'')      // 메모는 빼고 센다
+        .match(/[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/g);
+  return m ? m.length : 0;
+}
+function countAll(){
+  var n=countMail($('mrn').value);
+  var e=$('mrn-n'); e.textContent=n+'개'; e.classList.toggle('zero',n===0);
+
+  var cars=get(CARRIER_KEY)||[], c=0;
+  cars.forEach(function(x){ c += ((x&&x.emails)||[]).filter(Boolean).length; });
+  var e2=$('car-n'); e2.textContent=c+'개'; e2.classList.toggle('zero',c===0);
+}
+$('mrn').addEventListener('input',countAll);
+
+// ── 저장 ─────────────────────────────────────────────────────────────────
+function saveSign(){
+  set(SIGN_KEY,{kor:$('s-kor').value.trim(), eng:$('s-eng').value.trim(),
+    office:$('s-office').value.trim(), company:$('s-company').value.trim(),
+    tel:$('s-tel').value.trim(), fax:$('s-fax').value.trim(), mail:$('s-mail').value.trim()});
+  toast('서명을 저장했습니다');
+}
+function saveMrn(){
+  var cfg=get(CFG_KEY)||{};           // 담당 서비스(svc)는 건드리지 않는다
+  cfg.to=$('mrn').value;
+  set(CFG_KEY,cfg);
+  countAll();
+  toast('MRN 송부 주소를 저장했습니다');
+}
+
+// ── 내보내기 / 불러오기 ──────────────────────────────────────────────────
+function exportAll(){
+  var pack={ what:'모선마감 설정', ver:1, at:new Date().toISOString(),
+             data:{} };
+  [SIGN_KEY,CFG_KEY,CARRIER_KEY].forEach(function(k){
+    var v=get(k); if(v!==null) pack.data[k]=v;
+  });
+  var blob=new Blob([JSON.stringify(pack,null,1)],{type:'application/json'});
+  var a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='모선마감-설정.json';
+  document.body.appendChild(a); a.click();
+  setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); },500);
+  toast('설정 파일을 내려받았습니다');
+}
+
+function importAll(input){
+  var f=input.files && input.files[0];
+  input.value='';                       // 같은 파일을 또 골라도 되게
+  if(!f) return;
+  var r=new FileReader();
+  r.onload=function(){
+    var pack;
+    try{ pack=JSON.parse(r.result); }
+    catch(e){ alert('설정 파일이 아닌 것 같습니다.\n[설정 내려받기] 로 만든 파일을 골라주세요.'); return; }
+    if(!pack || !pack.data){ alert('설정 파일이 아닌 것 같습니다.'); return; }
+    var keys=Object.keys(pack.data).filter(function(k){
+      return [SIGN_KEY,CFG_KEY,CARRIER_KEY].indexOf(k)>=0;   // 아는 것만 받는다
+    });
+    if(!keys.length){ alert('불러올 설정이 없습니다.'); return; }
+    if(!confirm('지금 설정을 이 파일 내용으로 바꿉니다.\n계속할까요?')) return;
+    keys.forEach(function(k){ set(k,pack.data[k]); });
+    draw();
+    toast('설정 ' + keys.length + '가지를 불러왔습니다');
+  };
+  r.readAsText(f);
+}
+
+draw();
+</script>
+</body>
+</html>

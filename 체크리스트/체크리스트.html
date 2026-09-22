@@ -74,7 +74,7 @@ textarea:focus{outline:none;border-color:var(--blue);background:#fff}
 #toast.on{opacity:1}
 </style>
 
-<!-- 발표용에만 들어가는 것. 실제 쓰는 쪽에는 없다. -->
+<!-- 발표용에만 들어가는 것 -->
 <script src="../발표용-띠.js"></script>
 </head>
 <body>
@@ -237,7 +237,7 @@ function guessImport(vygOut, opr){
 /* ===================================================== 설정 (브라우저에 저장) */
 const CFG_KEY = 'checklist-config';
 const SEED_SVC = '# 담당 서비스 목록.  # 뒤는 메모. 쉼표든 공백이든 구분자로 쓴다.\n#\n# 이름이 없는 줄 = 내 담당      -> 체크리스트에 들어간다\n# "이름: 서비스" 줄 = 남의 담당 -> 체크리스트에서 빼고, 누구 것인지만 알려준다\n#\n# 마감정보(모선마감정보.xls)에는 사무실 전체 모선이 들어오기 때문에 이 구분이 필요하다.\n# 대무(남의 업무 대신) 할 때는 그 사람 서비스를 이름 없는 줄로 옮기면 된다.\n\n# ── 내 담당 ──────────────────────────────────────────\nSIS2\nFEM\nPCI\nPCI2\nKI1\nNSB\nKXS1\nBNJ\nKBX\nNKX\nCKX3      # 양하만 하는 서비스\nADHS\n\n# NSC - 없어진 서비스 (2026-09 확인). 체크리스트 수식에는 아직 NSC 가 남아 있다.\n\n# ── 남의 담당 ────────────────────────────────────────\n김철수: KJS1, KJS2, KJS7, KJS10\n이영희: CKX1, NTX, KHS1, BTS, KQS, BSS1, VTS, HPS1\n';
-const SEED_TO  = '# MRN 송부 메일의 받는사람 / 참조.  # 뒤는 메모.\n# 2026-09-17 발송분에서 가져왔다. 바뀌면 이 파일만 고치면 된다.\n\n[받는사람]\demo38@example.com                    # 장민애\demo39@example.com                 # 최한슬\demo40@example.com                    \demo41@example.com         # 문유리\demo42@example.com            # Lumax Shipping / Jack\demo43@example.com               \demo44@example.com               \demo45@example.com             \demo46@example.com                # djopr\demo47@example.com              # 정성경\demo48@example.com                \demo49@example.com                  \demo50@example.com          # 이은선\demo51@example.com               \demo52@example.com                    \demo53@example.com               # Chris Ryu/TSL Korea Export Team\demo54@example.com             \demo55@example.com                  \demo56@example.com               \demo57@example.com            \demo58@example.com              \demo59@example.com               \demo60@example.com                 \n\n[참조]\demo61@example.com           # 장금상선 광양사무소\demo62@example.com                # GWCT 플래너실 (demo02@example.com)\demo63@example.com              \n';
+const SEED_TO  = '# MRN 송부 메일의 받는사람 / 참조.  # 뒤는 메모.\n# 메일 주소는 코드에 넣지 않는다. 쓰는 사람마다 다르고,\n# 화면을 남과 나눌 때 남의 연락처까지 같이 나가기 때문이다.\n# [설정] 화면에서 넣으면 이 브라우저에 저장된다.\n\n[받는사람]\n\n\n[참조]\n';
 let CFG = {svc:SEED_SVC, to:SEED_TO};
 try { const j = JSON.parse(localStorage.getItem(CFG_KEY) || 'null'); if (j) CFG = j; } catch {}
 

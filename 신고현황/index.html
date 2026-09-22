@@ -8,7 +8,6 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-<script src="../발표용-띠.js"></script>
 <style>
 :root{
   --bg:#f4f6fb; --card:#fff; --border:#e4eaf4;
@@ -107,9 +106,22 @@ details .body{background:var(--card);border:1px solid var(--border);border-top:n
        margin-bottom:12px;font-size:14px}
 .legend{font-size:13px;color:var(--muted);margin-top:8px}
 .legend b{color:var(--sub);font-weight:500}
+/* 내 보낸편지함 칸 */
+.mailbox{margin-top:14px;padding-top:14px;border-top:1px dashed var(--border)}
+.mb-head{font-size:15px;font-weight:700;margin-bottom:6px}
+.mb-head .cnt{font-size:14px;font-weight:500;color:var(--sub);margin-left:6px}
+.mb-how{font-size:14px;color:var(--sub);margin-bottom:8px;line-height:1.7}
+.mb-how b{color:var(--text)}
+.mailbox textarea{width:100%;border:1.5px solid var(--border);border-radius:8px;padding:10px 12px;
+  font-family:inherit;font-size:14px;resize:vertical;background:#fafcff;color:var(--text)}
+.mailbox textarea:focus{outline:none;border-color:var(--blue)}
+.mb-btns{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:8px}
 .log{font-size:13px;color:var(--sub);margin-top:10px;white-space:pre-wrap;
      font-family:'Nunito',monospace;max-height:150px;overflow:auto}
 </style>
+
+<!-- 발표용에만 들어가는 것 -->
+<script src="../발표용-띠.js"></script>
 </head>
 <body>
 
@@ -128,7 +140,21 @@ details .body{background:var(--card);border:1px solid var(--border);border-top:n
     <div class="drop" id="drop">
       <div class="big">여기로 끌어다 놓거나, 눌러서 고르세요</div>
       <div class="sm">여러 개 한 번에 올려도 됩니다 · 파일 이름이 달라도 내용을 보고 알아서 가립니다</div>
-      <input type="file" id="file" multiple accept=".json,.js,.xls,.xlsx" style="display:none">
+      <input type="file" id="file" multiple accept=".json,.js,.xls,.xlsx,.csv,.txt,.tsv" style="display:none">
+    </div>
+    <!-- 내 보낸편지함 — 각자 자기 메일로 마감리스트 발송 여부를 본다 -->
+    <div class="mailbox">
+      <div class="mb-head">내 보낸편지함으로 마감리스트 확인 <span class="cnt">각자 자기 메일로 · 메일은 이 컴퓨터 밖으로 나가지 않습니다</span></div>
+      <div class="mb-how">
+        Outlook 에서 <b>보낸 편지함</b> 을 열고 → 목록의 메일 하나를 클릭 → <b>Ctrl+A</b> (전체 선택) → <b>Ctrl+C</b> → 아래 칸에 <b>Ctrl+V</b> → <b>읽기</b>.<br>
+        파일로 내보낸 것(.csv · .xlsx)은 위 칸에 올려도 됩니다. 모선 목록(keys.json)이 같이 있어야 판정이 됩니다.
+      </div>
+      <textarea id="mailpaste" rows="4" placeholder="여기에 붙여넣기 (Ctrl+V)"></textarea>
+      <div class="mb-btns">
+        <button class="btn primary" onclick="pasteMail()">붙여넣은 것 읽기</button>
+        <button class="btn" onclick="document.getElementById('mailpaste').value=''">칸 비우기</button>
+        <span id="mailinfo" class="note"></span>
+      </div>
     </div>
     <div class="loaded" id="loaded"></div>
     <div class="log" id="log"></div>
@@ -214,6 +240,179 @@ function esc(s){
     .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
+/* ════════════════════════════════════════════════════════════
+   내 보낸편지함 → 마감리스트 발송 확인
+   mail.py 와 같은 규칙이다. 한쪽만 고치면 답이 달라진다. 고칠 땐 둘 다.
+   메일은 브라우저 안에서만 읽고 어디로도 보내지 않는다.
+   ════════════════════════════════════════════════════════════ */
+var MAIL_DAYS = 45;                     // 며칠치까지 볼지 (mail.py 와 같음)
+function pad2(n){ return String(n).padStart(2,'0'); }
+function fmtMD(d){ return pad2(d.getMonth()+1)+'-'+pad2(d.getDate())+' '+pad2(d.getHours())+':'+pad2(d.getMinutes()); }
+function stampNow(){ var d=new Date(); return d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate())+' '+pad2(d.getHours())+':'+pad2(d.getMinutes()); }
+function normS(s){ return String(s||'').replace(/\s+/g,'').toUpperCase(); }
+function hasLeg(v){ v=String(v||'').trim(); return !!v && ['양하만','적하만','-','수출X'].indexOf(v)<0; }
+function findMail(mails){                /* 단어가 모두 들어간 가장 최근 메일. RE:·추가송부/ 가 붙어도 걸린다 */
+  var must = Array.prototype.slice.call(arguments,1).map(normS);
+  for (var i=0;i<mails.length;i++){
+    var s = normS(mails[i].subject), ok = true;
+    for (var k=0;k<must.length;k++) if (s.indexOf(must[k])<0){ ok=false; break; }
+    if (ok) return mails[i];
+  }
+  return null;
+}
+function parseKDate(v){                  /* 2026-09-18 (금) 오후 7:07 · 2026-09-18 19:07 · 9/18/2026 7:07 PM · 엑셀 날짜 */
+  if (v instanceof Date) return isNaN(v) ? null : v;
+  if (typeof v === 'number' && v > 20000 && v < 80000) return new Date(Math.round((v-25569)*86400000));
+  var s = String(v==null?'':v).trim(); if (!s) return null;
+  var y,mo,d,h=0,mi=0,m;
+  if ((m = s.match(/(\d{4})[-./년]\s*(\d{1,2})[-./월]\s*(\d{1,2})/))) { y=+m[1]; mo=+m[2]; d=+m[3]; }
+  else if ((m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/))) { mo=+m[1]; d=+m[2]; y=+m[3]; }
+  else return null;
+  var tm = s.match(/(오전|오후|AM|PM)?\s*(\d{1,2}):(\d{2})(?::\d{2})?\s*(오전|오후|AM|PM)?/i);
+  if (tm) {
+    h=+tm[2]; mi=+tm[3];
+    var ap=(tm[1]||tm[4]||'').toUpperCase();
+    if ((ap==='오후'||ap==='PM') && h<12) h+=12;
+    if ((ap==='오전'||ap==='AM') && h===12) h=0;
+  }
+  var dt = new Date(y,mo-1,d,h,mi);
+  return isNaN(dt) ? null : dt;
+}
+function tableToMails(rows){             /* 표(행 배열) → [{subject, at}] . 머리글이 있으면 그걸로, 없으면 모양으로 가린다 */
+  rows = (rows||[]).filter(function(r){ return r && r.some(function(c){ return String(c==null?'':c).trim()!==''; }); });
+  if (!rows.length) return null;
+  var head = rows[0].map(function(c){ return String(c==null?'':c).trim(); });
+  var subjCol=-1, dateCol=-1, hasHeader=false;
+  head.forEach(function(c,i){ if (subjCol<0 && /^(제목|subject)$/i.test(c)) subjCol=i; });
+  if (subjCol>=0) {
+    hasHeader = true;
+    head.forEach(function(c,i){ if (dateCol<0 && /보낸\s*날짜|보낸\s*시각|보냄|^sent|sent\s*on|^date$|날짜|시간/i.test(c)) dateCol=i; });
+  }
+  var data = hasHeader ? rows.slice(1) : rows;
+  var sample = data.slice(0,200);
+  if (subjCol<0) {
+    var ncol = 0; sample.forEach(function(r){ if (r.length>ncol) ncol=r.length; });
+    var best=-1, bestLen=0, bestDate=-1, bestDateN=0;
+    for (var c=0;c<ncol;c++){
+      var n=0, dn=0, at=0, len=0;
+      sample.forEach(function(r){ var v=r[c]; var s=String(v==null?'':v).trim(); if(!s) return; n++;
+        if (parseKDate(v)) dn++; else { len+=s.length; if (s.indexOf('@')>=0) at++; } });
+      if (n && dn>=n*0.6) { if (dn>bestDateN){ bestDate=c; bestDateN=dn; } continue; }
+      if (n && at>=n*0.5) continue;               /* 메일주소 칸은 제목이 아니다 */
+      var avg = n ? len/n : 0;
+      if (avg>bestLen){ best=c; bestLen=avg; }
+    }
+    subjCol=best; dateCol=bestDate;
+  }
+  if (subjCol<0) return null;
+  var mails=[], dated=0;
+  data.forEach(function(r){
+    var s=String(r[subjCol]==null?'':r[subjCol]).trim(); if(!s) return;
+    var at = dateCol>=0 ? parseKDate(r[dateCol]) : null; if (at) dated++;
+    mails.push({subject:s, at:at});
+  });
+  if (!mails.length) return null;
+  var hasDates = dateCol>=0 && dated >= mails.length*0.5;
+  if (hasDates) { var cut = Date.now() - MAIL_DAYS*86400000; mails = mails.filter(function(m){ return !m.at || m.at.getTime()>=cut; }); }
+  mails.sort(function(a,b){ return (b.at?b.at.getTime():0) - (a.at?a.at.getTime():0); });
+  return {mails:mails, hasDates:hasDates, total:data.length};
+}
+function keyRows(){ return DATA.keys ? DATA.keys.rows : (DATA.board ? DATA.board.rows : null); }
+function checkMail(mails, hasDates){     /* mail.py 의 check() */
+  var rows = keyRows(); if (!rows || !rows.length) return null;
+  var week = DATA.keys && DATA.keys.week;
+  if (!week) {
+    var etbs = rows.map(function(r){ return String(r.etb||'').slice(0,10); }).filter(Boolean).sort();
+    week = etbs.length ? [etbs[0], etbs[etbs.length-1]] : [today(), today()];
+  }
+  var out = rows.map(function(v){
+    var one = {vsl:v.vsl, name:v.name, vyg_in:v.vyg_in, vyg_out:v.vyg_out, etb:v.etb};
+    [['수입리스트','수입마감리스트','in'],['수출리스트','수출마감리스트','out']].forEach(function(p){
+      var vyg = p[2]==='in' ? v.vyg_in : v.vyg_out;
+      if (!hasLeg(vyg)) { one[p[0]] = ['해당없음', vyg||'']; return; }
+      var hit = findMail(mails, v.name, vyg, p[1]);
+      one[p[0]] = hit ? ['보냄', hit.at ? fmtMD(hit.at) : '날짜 없음'] : ['아직',''];
+    });
+    return one;
+  });
+  var start = new Date(week[0]+'T00:00:00'); start.setDate(start.getDate()-4);   /* 주 시작 며칠 전에 미리 보내는 경우가 있다 */
+  var weekly = [['MRN 송부','MRN 송부의 건','금요일 오후 ~ 월요일 오전'],
+                ['기선적/기반출 LIST','기선적 기반출','화요일']].map(function(w){
+    var hit = findMail(mails, w[1]);
+    var ok = !!hit && (!hit.at || hit.at.getTime() >= start.getTime());
+    return { label:w[0], due:w[2], state: ok?'보냄':'아직',
+             at: hit && hit.at ? fmtMD(hit.at) : '',
+             subject: hit ? (ok ? (hit.at ? '' : '날짜 없는 자료 — 제목만 맞음') : ('지난주: '+hit.subject)) : '' };
+  });
+  return { checked_at: stampNow(), week: week, rows: out, weekly: weekly,
+           source: '내 보낸편지함', count: mails.length, has_dates: hasDates };
+}
+function takeMailTable(rows, label){
+  var r = tableToMails(rows);
+  if (!r) return null;
+  DATA.mailRaw = r;
+  if (keyRows()) { DATA.mail = checkMail(r.mails, r.hasDates);
+    return '내 보낸편지함 ' + r.mails.length + '통' + (r.hasDates ? '' : ' (날짜 없음 — 제목만으로 판단)'); }
+  DATA.mail = null;
+  return '내 보낸편지함 ' + r.mails.length + '통 — 모선 목록(keys.json)을 올리면 판정합니다';
+}
+function textToRows(text){
+  text = String(text||'').replace(/^\uFEFF/,'');
+  if (text.indexOf('\t') >= 0)            /* Outlook 목록에서 복사하면 탭으로 나뉜다 */
+    return text.split(/\r?\n/).map(function(l){ return l.split('\t'); });
+  if (typeof XLSX === 'undefined') throw new Error('표 읽는 부품을 못 불러왔습니다 (인터넷 확인)');
+  var wb = XLSX.read(text, {type:'string'});
+  return XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], {header:1, defval:''});
+}
+function bytesToText(buf){               /* Outlook 내보내기는 보통 CP949(ANSI). UTF-8 로 안 읽히면 그쪽으로 */
+  var b = new Uint8Array(buf);
+  try { return new TextDecoder('utf-8', {fatal:true}).decode(b); }
+  catch (e) { try { return new TextDecoder('euc-kr').decode(b); } catch (e2) { return new TextDecoder().decode(b); } }
+}
+function pasteMail(){
+  var ta = document.getElementById('mailpaste'), info = document.getElementById('mailinfo');
+  var text = ta.value;
+  if (!text.trim()) { info.textContent = '먼저 Outlook 보낸편지함에서 복사해 붙여넣어 주세요.'; return; }
+  try {
+    var what = takeMailTable(textToRows(text), '붙여넣기');
+    if (!what) { info.textContent = '제목 칸을 못 찾았습니다. Outlook 목록에서 Ctrl+A → Ctrl+C 한 것을 그대로 붙여 주세요.'; return; }
+    info.textContent = '읽음 — ' + what;
+    say('읽음  붙여넣기  →  ' + what);
+    render();
+  } catch (e) { info.textContent = '못 읽었습니다 — ' + e.message; }
+}
+
+/* ── 지난번에 올린 자료를 기억한다 (다음에 열면 그대로) ─────────── */
+var LOCAL_KEY = 'plismStatusV1';
+function saveLocal(){
+  try {
+    /* 직접 붙여넣은 내 메일 결과(mailOwn)는 따로 지킨다 — 배치파일 자료가 들어와도 덮이지 않게 */
+    var prev = {}; try { prev = JSON.parse(localStorage.getItem(LOCAL_KEY) || '{}') || {}; } catch (e0) {}
+    var own = (DATA.mail && DATA.mail.source) ? DATA.mail : (prev.mailOwn || null);
+    localStorage.setItem(LOCAL_KEY, JSON.stringify({
+      at: stampNow(), keys: DATA.keys, board: DATA.board, plism: DATA.plism, mail: DATA.mail, mailOwn: own
+    }));
+  } catch (e) {}
+}
+function restoreLocal(){
+  try {
+    var o = JSON.parse(localStorage.getItem(LOCAL_KEY) || 'null'); if (!o) return false;
+    var got = [];
+    if (!DATA.keys  && o.keys)  { DATA.keys  = o.keys;  got.push('모선 목록'); }
+    if (!DATA.board && o.board) { DATA.board = o.board; got.push('신고현황'); }
+    if (!DATA.plism && o.plism) { DATA.plism = o.plism; got.push('PLISM 원자료'); }
+    /* 직접 붙여넣은 내 메일 결과가 있으면 그게 우선이다 — 배치파일 mail.js 보다 */
+    if (o.mailOwn) { DATA.mail = o.mailOwn; got.push('마감리스트 발송 (내 메일 ' + o.mailOwn.count + '통 · ' + o.mailOwn.checked_at + ')'); }
+    else if (!DATA.mail && o.mail) { DATA.mail = o.mail; got.push('마감리스트 발송'); }
+    if (got.length) say('지난번에 올린 자료를 불러왔습니다 (' + o.at + ') — ' + got.join(' · '));
+    return got.length > 0;
+  } catch (e) { return false; }
+}
+function clearLocal(){
+  try { localStorage.removeItem(LOCAL_KEY); } catch (e) {}
+  location.reload();
+}
+
 /* ── 파일 가리기: 이름이 아니라 내용을 본다 ───────────────── */
 function takeJson(obj, fname){
   if (obj && obj.rows && obj.rows.length && ('imp_mf' in (obj.rows[0] || {}))) {
@@ -254,13 +453,21 @@ function readFiles(files){
   if (!left) return;
   Array.prototype.forEach.call(files, function(f){
     var rd = new FileReader();
-    var isX = /\.(xls|xlsx)$/i.test(f.name);
+    var isX = /\.(xls|xlsx)$/i.test(f.name);          /* 엑셀 — 호출부호 명부 또는 메일 내보내기 */
+    var isT = /\.(csv|txt|tsv)$/i.test(f.name);       /* 글자 표 — 메일 내보내기 */
     rd.onload = function(e){
       try {
         var what = null;
-        if (isX) {
+        if (isT) {
+          what = takeMailTable(textToRows(bytesToText(e.target.result)), f.name);
+        } else if (isX) {
           if (typeof XLSX === 'undefined') throw new Error('엑셀 읽는 부품을 못 불러왔습니다 (인터넷 확인)');
-          what = takeExcel(XLSX.read(e.target.result, {type:'binary'}), f.name);
+          var wb = XLSX.read(e.target.result, {type:'binary', cellDates:true});
+          var first = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], {header:1, defval:''});
+          var head = (first[0]||[]).map(function(c){ return String(c==null?'':c).trim(); });
+          what = head.some(function(c){ return /^(제목|subject)$/i.test(c); })
+               ? takeMailTable(first, f.name)         /* 제목 칸이 있으면 메일 표다 */
+               : takeExcel(wb, f.name);
         } else {
           var txt = e.target.result;
           var m = String(txt).match(/^\s*window\.\w+\s*=\s*([\s\S]*?);?\s*$/);   /* board.js / mail.js */
@@ -274,7 +481,9 @@ function readFiles(files){
       if (--left === 0) render();
     };
     rd.onerror = function(){ say('못 읽음  ' + f.name); if (--left === 0) render(); };
-    if (isX) rd.readAsBinaryString(f); else rd.readAsText(f, 'utf-8');
+    if (isX) rd.readAsBinaryString(f);
+    else if (isT) rd.readAsArrayBuffer(f);
+    else rd.readAsText(f, 'utf-8');
   });
 }
 
@@ -347,13 +556,14 @@ function buildBoard(){
 }
 
 function render(){
+  if (DATA.mailRaw && keyRows()) DATA.mail = checkMail(DATA.mailRaw.mails, DATA.mailRaw.hasDates);
   var B = buildBoard(), M = DATA.mail, out = [];
 
   /* 올린 것 표시 */
   var chips = [
     ['모선 목록',      DATA.keys || DATA.board],
     ['PLISM 신고현황', DATA.board || DATA.plism],
-    ['마감리스트 발송', DATA.mail],
+    ['마감리스트 발송' + (DATA.mail && DATA.mail.source ? ' (내 메일 ' + DATA.mail.count + '통)' : (DATA.mailRaw && !DATA.mail ? ' (판정 대기)' : '')), DATA.mail || DATA.mailRaw],
     ['호출부호 명부',  DATA.signs]
   ].map(function(c){
     return '<span class="chip' + (c[1] ? '' : ' miss') + '">' + (c[1] ? '있음' : '없음') + ' · ' + c[0] + '</span>';
@@ -380,6 +590,7 @@ function render(){
       '<tr><td class="vsl">plism.json</td><td>신고 4칸 (이 화면에서 판정)</td></tr>' +
       '<tr><td class="vsl">board.js</td><td>신고 4칸 (board.py 가 판정한 것 — 이게 있으면 우선)</td></tr>' +
       '<tr><td class="vsl">mail.json</td><td>마감리스트 발송 · 이번 주 할 일</td></tr>' +
+      '<tr><td class="vsl">보낸편지함 붙여넣기 · .csv</td><td>본인 메일로 마감리스트 발송 확인 (아래 칸에 붙여넣기)</td></tr>' +
       '<tr><td class="vsl">선박 파티큘러-콜사인정보.xls</td><td>비어 있는 호출부호 메우기</td></tr>' +
       '<tr><td class="vsl">체크리스트 스냅샷 json</td><td>keys.json 이 없을 때 모선 목록</td></tr>' +
       '</tbody></table></div>' +
@@ -487,7 +698,7 @@ function render(){
         '<td>' + esc(r.vyg_out||'') + '</td><td>' + cell('수입리스트') + '</td>' +
         '<td>' + cell('수출리스트') + '</td></tr>';
     });
-    out.push(m + '</tbody></table></div><p class="legend">보낸편지함 제목으로 가려냅니다. ' +
+    out.push(m + '</tbody></table></div><p class="legend">' + (M.source ? '<b>' + esc(M.source) + '</b> ' + M.count + '통 · ' + (M.has_dates ? '최근 ' + MAIL_DAYS + '일' : '날짜 없는 자료라 제목만으로 판단') + ' · ' : '') + '보낸편지함 제목으로 가려냅니다. ' +
       '<b>해당없음</b> 은 양하만·타서비스라 보낼 일이 없는 것입니다.</p></div></details>');
   }
 
@@ -509,11 +720,13 @@ function render(){
   out.push('<div style="margin-top:16px;display:flex;gap:8px;flex-wrap:wrap">' +
     '<button class="btn" onclick="document.querySelectorAll(\'details\').forEach(function(d){d.open=true})">모두 펼치기</button>' +
     '<button class="btn" onclick="document.querySelectorAll(\'details\').forEach(function(d){d.open=false})">모두 접기</button>' +
-    '<button class="btn danger" onclick="location.reload()">올린 것 비우기</button></div>');
+    '<button class="btn danger" onclick="clearLocal()">올린 것 비우기</button></div>');
 
   document.getElementById('app').innerHTML = out.join('');
+  saveLocal();
 }
 
+restoreLocal();
 render();
 </script>
 

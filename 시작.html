@@ -204,6 +204,17 @@ h1{font-size:26px;font-weight:700;letter-spacing:-.5px}
   border-radius:8px;padding:9px 13px;margin:-16px 0 24px;line-height:1.55;}
 .webnote b{color:#7a5a1e;}
 
+/* [추가 20260922] 누구세요 — 처음 열 때 한 번만 묻는다 */
+#whois{background:var(--card);border:1px solid var(--line);border-left:3px solid var(--blue);
+  border-radius:var(--radius);padding:18px 20px;margin:-16px 0 26px;}
+#whois .q{font-size:16px;font-weight:700;margin-bottom:4px;}
+#whois .s{font-size:13px;color:var(--muted);margin-bottom:14px;line-height:1.55;}
+#whois .who{display:flex;gap:8px;flex-wrap:wrap;}
+#whois button{font-family:inherit;font-size:14.5px;font-weight:600;cursor:pointer;
+  border:1px solid var(--line);background:#fff;color:var(--text);
+  border-radius:7px;padding:9px 20px;}
+#whois button:hover{border-color:var(--blue);background:var(--blue-soft);color:var(--blue-dark);}
+
 /* 꼬리말 */
 footer{margin-top:38px;padding-top:16px;border-top:1px solid var(--line);
   display:flex;gap:18px;flex-wrap:wrap;font-size:13px}
@@ -216,8 +227,9 @@ footer a:hover{color:var(--blue);text-decoration:underline}
   .tools{grid-template-columns:repeat(2,1fr)}
 }
 </style>
+<script src="담당자.js"></script>
 
-<!-- 발표용에만 들어가는 것. 실제 쓰는 쪽에는 없다. -->
+<!-- 발표용에만 들어가는 것 -->
 <script src="./발표용-띠.js"></script>
 </head>
 <body>
@@ -320,7 +332,7 @@ footer a:hover{color:var(--blue);text-decoration:underline}
     </a>
     <a class="tool" href="신고현황/index.html" data-win="skr_plism">
       <div class="name">신고현황</div>
-      <div class="desc">PLISM 신고 4칸 확인<br>PLISM 에서 자동으로 받아온다</div>
+      <div class="desc">PLISM 신고 4칸 확인<br>자료는 실행.bat 으로 받는다</div>
     </a>
     <a class="tool" href="적하목록정정/적하목록_정정신청서_자동생성기.html" data-win="skr_fix">
       <div class="name">적하목록정정</div>
@@ -333,6 +345,7 @@ footer a:hover{color:var(--blue);text-decoration:underline}
   </div>
 
   <footer>
+    <a href="설정.html">설정 — 내 메일 주소</a>
     <a href="자료/">자료 폴더</a>
     <a href="_계획/">정리 계획 폴더</a>
   </footer>
@@ -511,6 +524,60 @@ if(location.protocol !== 'file:'){
   var w = document.querySelector('.howto');
   if(w) w.parentNode.insertBefore(n, w.nextSibling);
 }
+
+/* ── [추가 20260922] 누구세요 ─────────────────────────────────────────
+   전에는 아무나 열어도 '홍길동' 기준이었다. 다른 분이 쓰면 남의 배가
+   내 배로 보인다. 그래서 **처음 한 번만** 이름을 묻는다.
+   메일은 여기서 묻지 않는다 — 각자 [설정] 에서 자기 것만 넣으면 된다.   */
+(function(){
+  var KEY='skr_me';
+  var me=null;
+  try{ me=localStorage.getItem(KEY); }catch(e){ return; }   // 저장을 막아뒀으면 묻지 않는다
+  if(me) return;                                            // 이미 정했으면 안 묻는다
+
+  var names=Object.keys((window.MOSUN_OWNERS)||{});
+  if(!names.length) return;                                 // 명부를 못 읽으면 조용히 넘어간다
+
+  var box=document.createElement('div');
+  box.id='whois';
+  box.innerHTML='<div class="q">어느 분이세요?</div>'
+    + '<div class="s">한 번만 고르시면 됩니다. 그 뒤로는 <b>고르신 분의 모선</b>이 '
+    + '<b>내 모선</b>으로 보입니다. 나중에 화면에서 바꾸실 수 있습니다.</div>'
+    + '<div class="who">' + names.map(function(n){
+        return '<button type="button" data-n="'+n+'">'+n+'</button>';
+      }).join('') + '</div>';
+
+  var w=document.querySelector('.howto');
+  if(w) w.parentNode.insertBefore(box, w.nextSibling);
+  else document.querySelector('.wrap').insertBefore(box, document.querySelector('.sec'));
+
+  box.addEventListener('click', function(e){
+    var b=e.target.closest('button[data-n]');
+    if(!b) return;
+    try{ localStorage.setItem(KEY, b.dataset.n); }catch(err){}
+    box.remove();
+    location.reload();               // 안내 문구까지 다시 그린다
+  });
+})();
+
+/* ── [추가 20260922] 메일 주소를 아직 안 넣었으면 알려준다 ─────────────
+   주소는 이제 코드가 아니라 각자 설정에 있다. 처음 쓰는 사람은 이걸 모르면
+   등록요청 메일을 만들었는데 받는 사람이 비어 있는 일을 겪는다.            */
+(function(){
+  var need=[];
+  function get(k){ try{ return JSON.parse(localStorage.getItem(k)||'null'); }catch(e){ return null; } }
+  var s=get('skr_sign_v1'); if(!s||!s.mail) need.push('내 서명');
+  if(!need.length) return;
+
+  var d=document.createElement('div');
+  d.style.cssText='background:#fdf6e6;border:1px solid #f0e2c4;border-radius:8px;'
+    +'padding:12px 15px;margin:-16px 0 24px;font-size:13.5px;color:#8a6d3b;line-height:1.6;';
+  d.innerHTML='<b>처음 쓰시나요?</b> 메일 주소가 아직 비어 있습니다 &mdash; <b>'
+    + need.join('</b>, <b>') + '</b>. '
+    + '<a href="설정.html" style="color:#2557a7;font-weight:600;">설정에서 넣기</a>';
+  var w=document.querySelector('.howto');
+  if(w) w.parentNode.insertBefore(d, w.nextSibling);
+})();
 
 function paintDots(){
   Array.prototype.forEach.call(document.querySelectorAll('.dot'), function(d){

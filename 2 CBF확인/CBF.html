@@ -184,7 +184,7 @@
   .toast.show { opacity: 1; }
 </style>
 
-<!-- 발표용에만 들어가는 것. 실제 쓰는 쪽에는 없다. -->
+<!-- 발표용에만 들어가는 것 -->
 <script src="../발표용-띠.js"></script>
 </head>
 <body>
@@ -294,24 +294,24 @@ const LINER = { SKR: '장금', HAS: '흥아' };
 // DB(공동운항선사 담당자DB) 기준으로 초기값 구성 — 설정창(⚙)에서 수정 가능, localStorage 저장.
 const CARRIER_DEFAULT = [
   { code: 'SKR', name: '장금상선',       aliases: ['장금'],            emails: [] },
-  { code: 'CKL', name: '천경해운',       aliases: ['천경'],            emails: ['demo04@example.com'] },
-  { code: 'HAS', name: '흥아라인',       aliases: ['흥아'],            emails: ['demo05@example.com', 'demo06@example.com'] },
-  { code: 'TYL', name: '태영상선',       aliases: ['태영', 'TYS'],     emails: ['demo07@example.com', 'demo08@example.com', 'demo09@example.com'] },
-  { code: 'HSL', name: '한성라인',       aliases: ['한성'],            emails: ['demo10@example.com', 'demo11@example.com'] },
-  { code: 'PCS', name: '범주해운',       aliases: ['범주'],            emails: ['demo12@example.com', 'demo13@example.com', 'demo14@example.com', 'demo15@example.com'] },
-  { code: 'EMC', name: '에버그린',       aliases: ['EVERGREEN'],       emails: ['demo04@example.com'] },
-  { code: 'JJS', name: '동우해운(DOOWOO)', aliases: ['동우', 'DOOWOO', '두우'], emails: ['demo16@example.com', 'demo17@example.com'] },
-  { code: 'KMT', name: '고려해운',       aliases: ['고려'],            emails: ['demo04@example.com'] },
-  { code: 'HMM', name: '현대상선',       aliases: ['현대'],            emails: ['demo18@example.com', 'demo19@example.com'] },
-  { code: 'DYS', name: '동영해운',       aliases: ['동영'],            emails: ['demo20@example.com'] },
+  { code: 'CKL', name: '천경해운',       aliases: ['천경'],            emails: [] },
+  { code: 'HAS', name: '흥아라인',       aliases: ['흥아'],            emails: [] },
+  { code: 'TYL', name: '태영상선',       aliases: ['태영', 'TYS'],     emails: [] },
+  { code: 'HSL', name: '한성라인',       aliases: ['한성'],            emails: [] },
+  { code: 'PCS', name: '범주해운',       aliases: ['범주'],            emails: [] },
+  { code: 'EMC', name: '에버그린',       aliases: ['EVERGREEN'],       emails: [] },
+  { code: 'JJS', name: '동우해운(DOOWOO)', aliases: ['동우', 'DOOWOO', '두우'], emails: [] },
+  { code: 'KMT', name: '고려해운',       aliases: ['고려'],            emails: [] },
+  { code: 'HMM', name: '현대상선',       aliases: ['현대'],            emails: [] },
+  { code: 'DYS', name: '동영해운',       aliases: ['동영'],            emails: [] },
   { code: 'ASL', name: 'ASL',            aliases: [],                  emails: [] },
-  { code: 'NAM', name: '남성해운',       aliases: ['남성'],            emails: ['demo20@example.com'] },
-  { code: 'DJS', name: '동진상선',       aliases: ['동진'],            emails: ['demo21@example.com', 'demo22@example.com'] },
-  { code: 'ONE', name: 'ONE',            aliases: [],                  emails: ['demo23@example.com', 'demo24@example.com', 'demo25@example.com'] },
-  { code: 'CUL', name: '벤라인',         aliases: ['BENLINE', 'BEN LINE'], emails: ['demo26@example.com', 'demo27@example.com'] },
-  { code: 'PNA', name: '팬스코',         aliases: ['PAN', 'PANSCO'],   emails: ['demo28@example.com', 'demo29@example.com'] },
-  { code: 'TSL', name: 'TS LINE',        aliases: ['TSLINE', 'TSLINES'], emails: ['demo30@example.com', 'demo31@example.com'] },
-  { code: 'RCL', name: 'RCL',            aliases: [],                  emails: ['demo32@example.com', 'demo33@example.com', 'demo34@example.com'] },
+  { code: 'NAM', name: '남성해운',       aliases: ['남성'],            emails: [] },
+  { code: 'DJS', name: '동진상선',       aliases: ['동진'],            emails: [] },
+  { code: 'ONE', name: 'ONE',            aliases: [],                  emails: [] },
+  { code: 'CUL', name: '벤라인',         aliases: ['BENLINE', 'BEN LINE'], emails: [] },
+  { code: 'PNA', name: '팬스코',         aliases: ['PAN', 'PANSCO'],   emails: [] },
+  { code: 'TSL', name: 'TS LINE',        aliases: ['TSLINE', 'TSLINES'], emails: [] },
+  { code: 'RCL', name: 'RCL',            aliases: [],                  emails: [] },
 ];
 const CARRIER_KEY = 'cbf_carriers_v1';
 let CARRIER_MAP = loadCarriers();
@@ -365,7 +365,7 @@ function renderSetRows(list) {
     <tr data-i="${i}">
       <td><input class="code" value="${esc(c.code)}" maxlength="4" placeholder="SKR"></td>
       <td><input class="name" value="${esc(c.name)}" placeholder="장금상선"></td>
-      <td><input class="mails" value="${esc((c.emails || []).join(', '))}" placeholder="demo35@example.com, ..."></td>
+      <td><input class="mails" value="${esc((c.emails || []).join(', '))}" placeholder="demo04@example.com, ..."></td>
       <td><button class="del" onclick="this.closest('tr').remove()" title="삭제">🗑</button></td>
     </tr>`).join('');
 }

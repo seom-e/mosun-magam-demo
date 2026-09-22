@@ -334,7 +334,7 @@ details.hist .card-b{padding:9px 11px}
 .diffline b{min-width:88px;flex-shrink:0}
 </style>
 
-<!-- 발표용에만 들어가는 것. 실제 쓰는 쪽에는 없다. -->
+<!-- 발표용에만 들어가는 것 -->
 <script src="../발표용-띠.js"></script>
 </head>
 <body tabindex="0">
@@ -602,6 +602,7 @@ var EXTRA=[];         // {tok, pages}
 var FIXES=[];         // {read, to, how, pages}  보정으로 확정한 것들
 var DUPS=[];          // {tok, pages, near}   이미 확인된 번호와 비슷해 확정하지 않은 것
 var MANIFEST=[];      // 적하목록으로 판단된 쪽
+var REEFER=[];        // 냉동 컨테이너 목록으로 판단된 쪽
 var ocrDone=false;
 var PASTE_USED=false;   // 이번에 번호를 붙여넣어 맞춰봤는지 (검사증을 대조한 행위)
 var XLS_NAME='';      // 마지막으로 읽은 마감 엑셀 파일명
@@ -1179,7 +1180,7 @@ async function runOcr(){
 
   $('btnOcr').disabled=true;
   var found={};   // 번호 -> [쪽]
-  MANIFEST=[]; UNREADABLE=[]; EXTRA=[];
+  MANIFEST=[]; REEFER=[]; UNREADABLE=[]; EXTRA=[];
 
   var worker=null, badFiles=[];
   try{
@@ -1241,8 +1242,14 @@ async function runOcr(){
 
         // 적하목록(DANGEROUS CARGO LIST)에는 컨테이너번호가 다 적혀 있지만 검사증이 아니다.
         // 이 쪽의 번호를 확인으로 세면 "목록에 있으니 검사증도 있다"고 착각한다.
+        //
+        // 냉동 컨테이너 목록(REEFER CONTAINER LIST)도 같다. 검사증 뭉치에 같이 묶여 오는데
+        // 위험물이 아니라서 마감 엑셀 DG 열에는 없다. 세면 "엑셀에 없는 컨테이너" 경고가
+        // 잘못 뜬다. (2026-09-22 실제로 22RE 5대가 이렇게 잡혔다)
         if(/DANGEROUS\s*CARGO\s*LIST/.test(text)){
           MANIFEST.push(pn);
+        } else if(/REEFER\s*CONTAINER\s*LIST/.test(text)){
+          REEFER.push(pn);
         } else {
           findCntrs(text).forEach(function(c){
             if(!found[c]) found[c]=[];
@@ -2059,7 +2066,7 @@ function closePdf(i){
   Object.keys(CONFIRMED).forEach(function(c){
     if(CONFIRMED[c]==='ocr'||CONFIRMED[c]==='fix'){ delete CONFIRMED[c]; delete PAGES[c]; wiped++; }
   });
-  UNREADABLE=[]; EXTRA=[]; MANIFEST=[]; FIXES=[]; DUPS=[]; ocrDone=false; PASTE_USED=false;
+  UNREADABLE=[]; EXTRA=[]; MANIFEST=[]; REEFER=[]; FIXES=[]; DUPS=[]; ocrDone=false; PASTE_USED=false;
   FILES=FILES.filter(function(x){ return x.name!==p.name; });
   saveState(); renderAll();
   $('pdfWrap').setAttribute('data-url','');
@@ -2075,7 +2082,7 @@ function clearPdfs(){
   Object.keys(CONFIRMED).forEach(function(c){
     if(CONFIRMED[c]==='ocr'||CONFIRMED[c]==='fix'){ delete CONFIRMED[c]; delete PAGES[c]; }
   });
-  UNREADABLE=[]; EXTRA=[]; MANIFEST=[]; FIXES=[]; DUPS=[]; ocrDone=false; PASTE_USED=false;
+  UNREADABLE=[]; EXTRA=[]; MANIFEST=[]; REEFER=[]; FIXES=[]; DUPS=[]; ocrDone=false; PASTE_USED=false;
   FILES=FILES.filter(function(x){ return !names[x.name]; });
   saveState(); renderAll();
 }
@@ -2249,7 +2256,7 @@ function resetWork(){
   PDFS.forEach(function(p){ try{ URL.revokeObjectURL(p.url); }catch(e){} });
   DG=[]; TANKS=[]; FLEXIS=[]; BAD_XLS=[]; PDFS=[]; pdfIdx=-1;
   FILES=[]; MAILS=[]; APPROVALS={};
-  CONFIRMED={}; PAGES={}; UNREADABLE=[]; EXTRA=[]; DUPS=[]; FIXES=[]; MANIFEST=[];
+  CONFIRMED={}; PAGES={}; UNREADABLE=[]; EXTRA=[]; DUPS=[]; FIXES=[]; MANIFEST=[]; REEFER=[];
   TODO_DONE={}; XLS_NAME=''; CUR_ID='';
   ocrDone=false; PASTE_USED=false;
   $('pasteBox').value=''; $('matchMsg').textContent='';

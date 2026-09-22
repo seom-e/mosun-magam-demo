@@ -350,7 +350,8 @@ td{font-size:14px !important;}
 .tabcnt{font-size:12.5px;}
 
 /* 담당자 카드 */
-.olabel{font-size:13px;} .omes{font-size:14px;}
+.olabel{font-size:13px;} .omes.ask{border-color:#e67e22;background:#fff7ed;color:#b06a00;font-weight:700;}
+.omes{font-size:14px;}
 .ocard i{font-size:14px;} .ocard b{font-size:17px;}
 .onote{font-size:12.5px;}
 
@@ -489,8 +490,9 @@ label.ocard.on b{color:#1d4585;}
      .json 이 아니라 .js 인 이유: 파일을 더블클릭해 여는 방식(file://)에서는
      브라우저가 같은 폴더의 .json 을 못 읽게 막는다. .js 는 막지 않는다. -->
 <script src="장금메일.js" onerror="void 0"></script>
+<script src="../담당자.js"></script>
 
-<!-- 발표용에만 들어가는 것. 실제 쓰는 쪽에는 없다. -->
+<!-- 발표용에만 들어가는 것 -->
 <script src="../발표용-예시자료.js"></script>
 <script src="../발표용-띠.js"></script>
 </head>
@@ -1304,7 +1306,10 @@ let MAIL=null;
 //  그러면 **김철수 님이 이 화면을 쓰면 자기 배가 남의 배로 보인다.**
 //  이제 사람마다 서비스를 적어두고, 아래 `나는 누구` 를 고르면 그 사람 기준이 된다.
 //  원본은 `모선마감\체크리스트\내서비스.txt` — 담당이 바뀌면 그 파일과 여기를 같이 고친다.
-const OWNER_SVC={
+/* [수정 20260922] 명부는 바깥 파일(`../담당자.js`) 하나로 모았다.
+   사람이 늘 때 고칠 곳이 한 군데여야 한다.
+   그 파일을 못 읽으면 아래 것으로 버틴다 — 이 화면은 혼자서도 돌아야 한다. */
+const OWNER_SVC = (typeof window!=='undefined' && window.MOSUN_OWNERS) ? window.MOSUN_OWNERS : {
   '홍길동':['SIS2','FEM','PCI','PCI2','KI1','NSB','KXS1','BNJ','KBX','NKX','CKX3','ADHS'],
   '김철수':['KJS1','KJS2','KJS7','KJS10'],
   '이영희':['CKX1','NTX','KHS1','BTS','KQS','BSS1','VTS','HPS1']
@@ -1316,10 +1321,14 @@ const SVC2OWNER=(function(){
 })();
 
 // 나는 누구인가 — 이걸 바꾸면 '내 모선'의 뜻이 바뀐다
+/* [수정 20260922] 처음 여는 사람에게 **남의 화면을 보여주지 않는다.**
+   전에는 아무나 열어도 '홍길동' 가 되어서, 다른 분이 쓰면 남의 배가 내 배로 보였다.
+   정해지기 전에는 비워두고, 화면에서 이름을 고르라고 물어본다. */
 let ME=(function(){
-  try{ return localStorage.getItem('skr_me')||'홍길동'; }catch(e){ return '홍길동'; }
+  try{ return localStorage.getItem('skr_me')||''; }catch(e){ return ''; }
 })();
 function setMe(name){
+  if(!name) return;                                // '— 어느 분이세요? —' 를 고른 것은 무시
   ME=name;
   try{ localStorage.setItem('skr_me', ME); }catch(e){}
   OWNERS=['내 모선'];                              // 기준이 바뀌었으니 내 것으로 되돌린다
@@ -1437,7 +1446,9 @@ function ownerCardsHTML(counts, picked, fn, note){
   const sel=on.length?on.reduce((s,n)=>s+(counts[n]||0),0):tot;
 
   let h='<div class="ocards">';
-  h+='<span class="olabel">나</span><select class="omes" onchange="setMe(this.value)">'
+  // [수정 20260922] 아직 안 골랐으면 '고르세요' 를 첫 칸에 둔다
+  h+='<span class="olabel">나</span><select class="omes'+(ME?'':' ask')+'" onchange="setMe(this.value)">'
+    +(ME?'':'<option value="" selected>— 어느 분이세요? —</option>')
     +Object.keys(OWNER_SVC).map(p=>'<option'+(p===ME?' selected':'')+'>'+esc(p)+'</option>').join('')
     +'</select>';
   // [수정 20260922] 차례: 나 → 내 모선 → 다른 사람 → 전체
@@ -1819,7 +1830,11 @@ function toggleMailDone(i){
 }
 const SPECIAL_SVC=new Set(['SIS2','BNJ','NSB','KI1']); // 입항 2영업일전 마감 서비스
 
-const MAIL_TO={KIT:'demo01@example.com',GWCT:'demo02@example.com',BOTH:'demo01@example.com;demo02@example.com'};
+/* [수정 20260922] 터미널 플래너 주소는 **누가 쓰든 같은 곳**이라 고정한다.
+   사람마다 다른 것(서명)만 설정으로 뺐다. 여기까지 설정으로 만들면
+   쓰는 사람마다 똑같은 주소를 다시 넣어야 해서 번거롭기만 하다. */
+const MAIL_TO={KIT:'demo02@example.com',GWCT:'demo03@example.com',
+               BOTH:'demo02@example.com;demo03@example.com'};
 function getMailTo(terminals){
   const arr=[...new Set([...terminals].map(t=>String(t).toUpperCase().trim()))];
   const hasKIT=arr.includes('KIT'), hasGWCT=arr.includes('GWCT');
@@ -2712,20 +2727,29 @@ function updateSelUI(){
 // ═══════════════════════════════════════════════
 //  메일 생성 — [모선등록요청] 형식
 // ═══════════════════════════════════════════════
-const SIG=[
-  '',
-  '감사합니다.',
-  '광양(사)/홍길동 배상 . ',
-  '"Thank You & Best Regards"',
-  '===========================================================',
-  ' Ms. Seon-mi, Lee',
-  ' Kwangyang Office',
-  ' Sinokor Merchant Marine Co.,Ltd.',
-  '    Tel : 82-61-794-1423',
-  '    Fax : 82-61-794-1420',
-  '    E-mail : demo03@example.com',
-  '==========================================================='
-].join('\n');
+/* [수정 20260922] 서명을 코드에서 뺐다. 이름·전화·메일은 사람마다 다르다.
+   코드에 박아두면 이 화면을 남과 나눌 때 내 연락처까지 같이 나간다.
+   [설정] 에서 한 번 넣어두면 계속 쓰인다. */
+const SIGN_KEY='skr_sign_v1';
+const SIG_LINE='===========================================================';
+function loadSign(){
+  const d={kor:'',eng:'',office:'Kwangyang Office',
+           company:'Sinokor Merchant Marine Co.,Ltd.',tel:'',fax:'',mail:''};
+  try{ const o=JSON.parse(localStorage.getItem(SIGN_KEY)||'null');
+       if(o) return Object.assign(d,o); }catch(e){}
+  return d;
+}
+function sigText(){
+  const s=loadSign();
+  return ['', '감사합니다.',
+    '광양(사)/'+(s.kor||'(이름을 설정에서 넣어주세요)')+' 배상 . ',
+    '"Thank You & Best Regards"', SIG_LINE,
+    ' '+(s.eng||'(English name)'),
+    ' '+s.office, ' '+s.company,
+    '    Tel : '+(s.tel||'-'),
+    '    Fax : '+(s.fax||'-'),
+    '    E-mail : '+(s.mail||'-'), SIG_LINE].join('\n');
+}
 
 // ── 일반 텍스트 본문 (fallback용)
 function buildMailBody(vesselRows){
@@ -2741,7 +2765,7 @@ function buildMailBody(vesselRows){
       '  모선항차  : '+tv,
       '  운항선사  : '+(row.liner||'')].join('\n');
   }).join('');
-  return header+blocks+'\n\n'+SIG;
+  return header+blocks+'\n\n'+sigText();
 }
 
 // ── HTML 서식 본문 (클립보드 복사용)
@@ -2763,13 +2787,14 @@ function buildMailBodyHTML(vesselRows){
       +tr('운항선사', row.liner||'')
       +'</table>';
   }).join('');
+  const _s=loadSign();
   const sig='<br><br>감사합니다.<br>'
-    +'광양(사)/홍길동 배상 . <br>&quot;Thank You &amp; Best Regards&quot;<br>'
-    +'===========================================================<br>'
-    +' Ms. Seon-mi, Lee<br> Kwangyang Office<br> Sinokor Merchant Marine Co.,Ltd.<br>'
-    +'&nbsp;&nbsp;&nbsp;Tel : 82-61-794-1423&nbsp;&nbsp;&nbsp;Fax : 82-61-794-1420<br>'
-    +'&nbsp;&nbsp;&nbsp;E-mail : demo03@example.com<br>'
-    +'===========================================================';
+    +'광양(사)/'+esc(_s.kor||'(이름)')+' 배상 . <br>&quot;Thank You &amp; Best Regards&quot;<br>'
+    +SIG_LINE+'<br>'
+    +' '+esc(_s.eng||'(English name)')+'<br> '+esc(_s.office)+'<br> '+esc(_s.company)+'<br>'
+    +'&nbsp;&nbsp;&nbsp;Tel : '+esc(_s.tel||'-')+'&nbsp;&nbsp;&nbsp;Fax : '+esc(_s.fax||'-')+'<br>'
+    +'&nbsp;&nbsp;&nbsp;E-mail : '+esc(_s.mail||'-')+'<br>'
+    +SIG_LINE;
   return '<div style="font-family:\'맑은 고딕\',Malgun Gothic,sans-serif;font-size:10.5pt;line-height:1.8">'
     +'<div>1.&ensp;업무의 노고가 많으십니다.</div>'
     +'<div>2.&ensp;표제의 건과 관련하여 스케줄 등록을 요청드립니다.</div>'

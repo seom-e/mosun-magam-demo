@@ -55,7 +55,7 @@ font-family:'Nunito','Noto Sans KR',monospace}
 .foot{font-size:13px;color:var(--muted);margin-top:16px;text-align:center}
 </style>
 
-<!-- 발표용에만 들어가는 것. 실제 쓰는 쪽에는 없다. -->
+<!-- 발표용에만 들어가는 것 -->
 <script src="../발표용-띠.js"></script>
 </head>
 <body>
@@ -90,17 +90,17 @@ font-family:'Nunito','Noto Sans KR',monospace}
     <div class="ihead">
       <span class="kind k-run">누르는 것</span>
       <span class="iname">PLISM 로그인.bat</span>
-      <span class="imeta">408 B · 2026-09-22</span>
+      <span class="imeta">588 B · 2026-09-22</span>
     </div>
     <div class="iwhat">PLISM 로그인 창을 띄웁니다. 직접 로그인하면 이 폴더에 저장되고 창이 닫힙니다.</div>
     <div class="iwhen">처음 한 번 · 로그인이 풀렸을 때</div>
-    <details><summary>안을 열어보기 <span class="arw"></span></summary><pre id="f1">﻿@echo off
+    <details><summary>안을 열어보기 <span class="arw"></span></summary><pre id="f1">@echo off
 chcp 65001 &gt;nul
 cd /d &quot;%~dp0&quot;
 title PLISM 로그인
 
 echo.
-echo   PLISM 로그인 창을 띄웁니다.
+echo   PLISM 로그인 창을 띄웁니다. 잠시만 기다려 주세요.
 echo.
 echo   크롬 창이 뜨면 직접 로그인해 주세요.
 echo   로그인이 확인되면 창이 저절로 닫힙니다. (최대 10분 기다립니다)
@@ -109,10 +109,13 @@ echo   한 번 해 두면 다음부터는 실행.bat 이 알아서 돌아갑니�
 echo.
 
 node pull.js --login
+if errorlevel 1 (
+  echo.
+  echo   문제가 생겼습니다. 위 내용을 그대로 복사해 두시면 고칠 수 있습니다.
+)
 
 echo.
-pause
-</pre></details>
+pause</pre></details>
   </div>
   <div class="item">
     <div class="ihead">
@@ -173,7 +176,7 @@ Write-Host (&quot;시간을 바꾸려면 이 파일의 11:00am / 4:00pm 을 고�
     <div class="ihead">
       <span class="kind k-run">누르는 것</span>
       <span class="iname">실행.bat</span>
-      <span class="imeta">851 B · 2026-09-22</span>
+      <span class="imeta">854 B · 2026-09-22</span>
     </div>
     <div class="iwhat">처음부터 끝까지 다 돌립니다. 체크리스트에서 열쇠를 모으고 → PLISM 에 조회하고 → 판정하고 → 보낸 메일을 확인하고 → 화면을 엽니다.</div>
     <div class="iwhen">매일. 알림이 뜨면 이것</div>
@@ -205,6 +208,10 @@ echo  [4/4] 보낸 메일로 마감리스트 발송 확인
 &quot;%PY%&quot; mail.py
 
 echo.
+echo  화면으로 보기 - index.html 을 엽니다.
+start &quot;&quot; &quot;%~dp0index.html&quot;
+
+echo.
 pause
 exit /b 0
 
@@ -212,12 +219,8 @@ exit /b 0
 echo.
 echo  문제가 생겨서 멈췄습니다. 위 내용을 그대로 복사해 두시면 고칠 수 있습니다.
 echo.
-echo.
-echo  화면으로 보기 - index.html 을 엽니다.
-start &quot;&quot; &quot;%~dp0index.html&quot;
 pause
-exit /b 1
-</pre></details>
+exit /b 1</pre></details>
   </div>
   <div class="item">
     <div class="ihead">
@@ -252,7 +255,7 @@ pause
     <div class="ihead">
       <span class="kind k-view">화면</span>
       <span class="iname">index.html</span>
-      <span class="imeta">26.6 KB · 2026-09-22</span>
+      <span class="imeta">28.2 KB · 2026-09-22</span>
     </div>
     <div class="iwhat">신고현황 표와 마감리스트 발송 현황을 봅니다. data 폴더의 파일을 끌어다 놓아도 바로 표가 나옵니다.</div>
     <div class="iwhen">결과를 볼 때</div>
@@ -620,7 +623,9 @@ function render(){
   /* 머리말 */
   var meta = [];
   if (B &amp;&amp; B.pulled_at) meta.push('PLISM 조회 &lt;b&gt;' + esc(B.pulled_at) + '&lt;/b&gt;');
-  if (B &amp;&amp; B.klnet)     meta.push('계정 &lt;b&gt;' + esc(B.klnet) + '&lt;/b&gt;');
+  if (B &amp;&amp; (B.who || B.klnet))
+    meta.push('조회한 사람 &lt;b&gt;' + esc(B.who ? B.who + '님' : '?') + '&lt;/b&gt;' +
+              (B.klnet ? ' [' + esc(B.klnet) + ']' : ''));
   if (M &amp;&amp; M.checked_at) meta.push('메일 확인 &lt;b&gt;' + esc(M.checked_at) + '&lt;/b&gt;');
   if (M &amp;&amp; M.week) meta.push('&lt;b&gt;' + esc(M.week[0]) + ' ~ ' + esc(M.week[1]) + '&lt;/b&gt;');
   document.getElementById('meta').innerHTML = meta.length ? meta.join(' · ') : '올린 자료 없음';
@@ -771,9 +776,2346 @@ function render(){
 
 render();
 &lt;/script&gt;
+
+&lt;script&gt;
+/* [추가 20260922] 팝업으로 열렸을 때의 HOME 단추 ────────────────────────
+   이 쪽이 시작 화면(대시보드)에서 따로 뜬 창이면, HOME 은 '되돌아가기' 가 아니라
+   '이 창을 닫고 대시보드로' 가 맞다. 팝업 안에서 시작.html 을 또 열면
+   대시보드가 두 개가 되어 어느 쪽이 진짜인지 헷갈린다.
+   직접 열어본 경우(팝업이 아닌 경우)에는 지금까지처럼 그냥 이동한다.            */
+(function(){
+  if(!window.opener || window.opener.closed) return;
+  var a = document.querySelector('#skr-backbar a')
+       || document.getElementById('mosun-home')
+       || document.querySelector('a.home');
+  if(!a) return;
+  a.title = '모선마감 화면으로 갑니다 (이 창은 닫힙니다)';
+  a.addEventListener('click', function(e){
+    e.preventDefault();
+    try{ window.opener.focus(); }catch(err){}
+    window.close();
+  });
+})();
+&lt;/script&gt;
 &lt;/body&gt;
 &lt;/html&gt;
 </pre></details>
+  </div>
+  <div class="item">
+    <div class="ihead">
+      <span class="kind k-view">화면</span>
+      <span class="iname">0 이 폴더 안내.html</span>
+      <span class="imeta">373.5 KB · 2026-09-22</span>
+    </div>
+    <div class="iwhat">지금 보고 계신 이 화면입니다.</div>
+    <div class="iwhen">뭐가 뭔지 모를 때</div>
+    <details><summary>안을 열어보기 <span class="arw"></span></summary><pre id="f6">&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;ko&quot;&gt;
+&lt;head&gt;
+&lt;meta charset=&quot;UTF-8&quot;&gt;
+&lt;meta name=&quot;viewport&quot; content=&quot;width=device-width,initial-scale=1&quot;&gt;
+&lt;title&gt;신고현황 폴더 안내&lt;/title&gt;
+&lt;link href=&quot;https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&amp;family=Nunito:wght@600;700&amp;display=swap&quot; rel=&quot;stylesheet&quot;&gt;
+&lt;style&gt;
+:root{--bg:#f4f6fb;--card:#fff;--border:#e4eaf4;--blue:#2563eb;--blue-lt:#eff6ff;
+--navy:#0f2d5e;--green:#16a34a;--green-lt:#f0fdf4;--green-bd:#86efac;
+--red:#dc2626;--text:#0f172a;--sub:#64748b;--muted:#94a3b8;}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Noto Sans KR','Apple SD Gothic Neo',sans-serif;background:var(--bg);
+color:var(--text);font-size:15px;line-height:1.6;padding:0 0 40px}
+.wrap{max-width:980px;margin:0 auto;padding:0 16px}
+.hdr{background:linear-gradient(135deg,var(--navy),#1d4ed8);color:#fff;padding:20px 0;margin-bottom:16px}
+.hdr h1{font-size:20px;font-weight:700}
+.hdr p{font-size:14px;color:#c7d9f5;margin-top:4px}
+.big{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:16px;margin-bottom:12px}
+.big h2{font-size:16px;font-weight:700;margin-bottom:8px}
+.big p{font-size:15px;color:var(--sub)}
+.flow{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;align-items:center}
+.flow .s{background:var(--blue-lt);border:1px solid #bfdbfe;color:var(--blue);
+border-radius:8px;padding:8px 12px;font-size:14px;font-weight:500}
+.flow .a{color:var(--muted);font-size:14px}
+.grp{margin-bottom:16px}
+.grp &gt; h2{font-size:17px;font-weight:700;margin:20px 0 4px}
+.grp &gt; .gd{font-size:14px;color:var(--sub);margin-bottom:10px}
+.item{background:var(--card);border:1px solid var(--border);border-radius:8px;
+padding:16px;margin-bottom:12px}
+.ihead{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.iname{font-size:16px;font-weight:700;font-family:'Nunito','Noto Sans KR',monospace}
+.imeta{margin-left:auto;font-size:13px;color:var(--muted)}
+.kind{font-size:12px;font-weight:500;padding:2px 9px;border-radius:99px;white-space:nowrap}
+.k-run{background:var(--green-lt);color:var(--green);border:1px solid var(--green-bd)}
+.k-view{background:var(--blue-lt);color:var(--blue);border:1px solid #bfdbfe}
+.k-code{background:#f8fafc;color:var(--sub);border:1px solid var(--border)}
+.k-doc{background:#fffbea;color:#a16207;border:1px solid #f0d98c}
+.iwhat{font-size:15px;margin-top:8px}
+.iwhen{font-size:14px;color:var(--sub);margin-top:4px}
+details{margin-top:10px}
+summary{cursor:pointer;list-style:none;font-size:14px;color:var(--blue);
+border:1px solid var(--border);border-radius:8px;padding:7px 14px;display:inline-flex;gap:6px}
+summary::-webkit-details-marker{display:none}
+details[open] summary .arw::after{content:'닫기'}
+details:not([open]) summary .arw::after{content:'▾'}
+pre{background:#0f172a;color:#e2e8f0;border-radius:8px;padding:14px;margin-top:10px;
+overflow:auto;max-height:460px;font-size:13px;line-height:1.55;
+font-family:'Nunito',Consolas,monospace;white-space:pre-wrap;word-break:break-all}
+.small{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:16px}
+.small table{width:100%;border-collapse:collapse;font-size:14px}
+.small td{padding:8px;border-bottom:1px solid #f1f5f9;vertical-align:top}
+.small td:first-child{font-weight:700;white-space:nowrap;width:1%;
+font-family:'Nunito','Noto Sans KR',monospace}
+.foot{font-size:13px;color:var(--muted);margin-top:16px;text-align:center}
+&lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;div class=&quot;hdr&quot;&gt;&lt;div class=&quot;wrap&quot;&gt;
+  &lt;h1&gt;신고현황 폴더 안내&lt;/h1&gt;
+  &lt;p&gt;이 폴더에 있는 것 전부를 하나씩 설명합니다 · 각 항목의 &quot;안을 열어보기&quot; 를 누르면 실제 내용이 보입니다&lt;/p&gt;
+&lt;/div&gt;&lt;/div&gt;
+&lt;div class=&quot;wrap&quot;&gt;
+
+&lt;div class=&quot;big&quot;&gt;
+  &lt;h2&gt;이 폴더가 하는 일&lt;/h2&gt;
+  &lt;p&gt;체크리스트에 있는 모선을 기준으로, &lt;b&gt;PLISM 에 네 가지 신고가 됐는지&lt;/b&gt; 확인합니다
+     (수입신고 · 수출신고 · 수입위험물 · 수출위험물).
+     그리고 &lt;b&gt;마감리스트를 보냈는지&lt;/b&gt; 보낸편지함에서 같이 봅니다.&lt;/p&gt;
+  &lt;div class=&quot;flow&quot;&gt;
+    &lt;span class=&quot;s&quot;&gt;체크리스트&lt;/span&gt;&lt;span class=&quot;a&quot;&gt;→&lt;/span&gt;
+    &lt;span class=&quot;s&quot;&gt;keys.py&lt;/span&gt;&lt;span class=&quot;a&quot;&gt;→&lt;/span&gt;
+    &lt;span class=&quot;s&quot;&gt;pull.js&lt;br&gt;&lt;small&gt;PLISM 조회&lt;/small&gt;&lt;/span&gt;&lt;span class=&quot;a&quot;&gt;→&lt;/span&gt;
+    &lt;span class=&quot;s&quot;&gt;board.py&lt;br&gt;&lt;small&gt;판정&lt;/small&gt;&lt;/span&gt;&lt;span class=&quot;a&quot;&gt;→&lt;/span&gt;
+    &lt;span class=&quot;s&quot;&gt;index.html&lt;br&gt;&lt;small&gt;화면&lt;/small&gt;&lt;/span&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;div class=&quot;big&quot;&gt;
+  &lt;h2&gt;모르겠으면 이것만&lt;/h2&gt;
+  &lt;p&gt;&lt;b&gt;처음이라면&lt;/b&gt; — &lt;b&gt;PLISM 로그인.bat&lt;/b&gt; 을 눌러 로그인해 두세요. 한 번만 하면 됩니다.&lt;br&gt;
+     &lt;b&gt;평소에는&lt;/b&gt; — &lt;b&gt;실행.bat&lt;/b&gt; 하나만 누르면 됩니다. 끝나면 화면이 저절로 열립니다.&lt;br&gt;
+     나머지 파일은 실행.bat 이 알아서 부르는 것들이라 직접 누를 일이 없습니다.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;grp&quot;&gt;&lt;h2&gt;1 · 처음 한 번만&lt;/h2&gt;&lt;div class=&quot;gd&quot;&gt;설치하듯 한 번 해 두는 것들입니다. 해 두면 다시 안 해도 됩니다.&lt;/div&gt;
+  &lt;div class=&quot;item&quot;&gt;
+    &lt;div class=&quot;ihead&quot;&gt;
+      &lt;span class=&quot;kind k-run&quot;&gt;누르는 것&lt;/span&gt;
+      &lt;span class=&quot;iname&quot;&gt;PLISM 로그인.bat&lt;/span&gt;
+      &lt;span class=&quot;imeta&quot;&gt;588 B · 2026-09-22&lt;/span&gt;
+    &lt;/div&gt;
+    &lt;div class=&quot;iwhat&quot;&gt;PLISM 로그인 창을 띄웁니다. 직접 로그인하면 이 폴더에 저장되고 창이 닫힙니다.&lt;/div&gt;
+    &lt;div class=&quot;iwhen&quot;&gt;처음 한 번 · 로그인이 풀렸을 때&lt;/div&gt;
+    &lt;details&gt;&lt;summary&gt;안을 열어보기 &lt;span class=&quot;arw&quot;&gt;&lt;/span&gt;&lt;/summary&gt;&lt;pre id=&quot;f1&quot;&gt;@echo off
+chcp 65001 &amp;gt;nul
+cd /d &amp;quot;%~dp0&amp;quot;
+title PLISM 로그인
+
+echo.
+echo   PLISM 로그인 창을 띄웁니다. 잠시만 기다려 주세요.
+echo.
+echo   크롬 창이 뜨면 직접 로그인해 주세요.
+echo   로그인이 확인되면 창이 저절로 닫힙니다. (최대 10분 기다립니다)
+echo.
+echo   한 번 해 두면 다음부터는 실행.bat 이 알아서 돌아갑니다.
+echo.
+
+node pull.js --login
+if errorlevel 1 (
+  echo.
+  echo   문제가 생겼습니다. 위 내용을 그대로 복사해 두시면 고칠 수 있습니다.
+)
+
+echo.
+pause&lt;/pre&gt;&lt;/details&gt;
+  &lt;/div&gt;
+  &lt;div class=&quot;item&quot;&gt;
+    &lt;div class=&quot;ihead&quot;&gt;
+      &lt;span class=&quot;kind k-code&quot;&gt;한 번 실행&lt;/span&gt;
+      &lt;span class=&quot;iname&quot;&gt;작업등록.ps1&lt;/span&gt;
+      &lt;span class=&quot;imeta&quot;&gt;2.2 KB · 2026-09-16&lt;/span&gt;
+    &lt;/div&gt;
+    &lt;div class=&quot;iwhat&quot;&gt;매일 11시·16시에 &amp;quot;확인하세요&amp;quot; 알림이 뜨도록 윈도우에 등록합니다.&lt;/div&gt;
+    &lt;div class=&quot;iwhen&quot;&gt;처음 한 번 (우클릭 → PowerShell에서 실행)&lt;/div&gt;
+    &lt;details&gt;&lt;summary&gt;안을 열어보기 &lt;span class=&quot;arw&quot;&gt;&lt;/span&gt;&lt;/summary&gt;&lt;pre id=&quot;f2&quot;&gt;# 신고현황 확인 알림 등록 — 매일 11:00 · 16:00
+# 사용법: 이 파일 우클릭 &amp;gt; &amp;quot;PowerShell에서 실행&amp;quot;  (관리자 권한 필요 없음)
+
+$ErrorActionPreference = &amp;quot;Stop&amp;quot;
+$TaskName = &amp;quot;신고현황_확인알림&amp;quot;
+$Base     = Split-Path -Parent $MyInvocation.MyCommand.Path
+$Script   = Join-Path $Base &amp;quot;알림.ps1&amp;quot;
+
+if (-not (Test-Path $Script)) { throw &amp;quot;알림.ps1 이 없습니다: $Script&amp;quot; }
+
+$action = New-ScheduledTaskAction -Execute &amp;quot;powershell.exe&amp;quot; `
+    -Argument &amp;quot;-NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File `&amp;quot;$Script`&amp;quot;&amp;quot; `
+    -WorkingDirectory $Base
+
+# 매일 11시와 16시 — 알림만 뜨고, 조회는 [지금 확인] 을 눌렀을 때 돈다
+$t1 = New-ScheduledTaskTrigger -Daily -At 11:00am
+$t2 = New-ScheduledTaskTrigger -Daily -At 4:00pm
+
+$settings = New-ScheduledTaskSettingsSet `
+    -AllowStartIfOnBatteries `
+    -DontStopIfGoingOnBatteries `
+    -MultipleInstances IgnoreNew `
+    -ExecutionTimeLimit (New-TimeSpan -Hours 1)
+# 자리를 비운 사이 지나간 알림은 굳이 나중에 띄우지 않는다 (11시 알림이 3시에 뜨면 헷갈린다)
+$settings.StartWhenAvailable = $false
+
+$principal = New-ScheduledTaskPrincipal -UserId &amp;quot;$env:USERDOMAIN\$env:USERNAME&amp;quot; `
+    -LogonType Interactive -RunLevel Limited
+
+if (Get-ScheduledTask -TaskName $TaskName -ErrorAction SilentlyContinue) {
+    Unregister-ScheduledTask -TaskName $TaskName -Confirm:$false
+    Write-Host &amp;quot;기존 알림을 지우고 다시 등록합니다.&amp;quot; -ForegroundColor Yellow
+}
+
+Register-ScheduledTask -TaskName $TaskName -Action $action -Trigger @($t1, $t2) `
+    -Settings $settings -Principal $principal `
+    -Description &amp;quot;매일 11시·16시 신고현황(적하목록·위험물) 확인 알림&amp;quot; | Out-Null
+
+Write-Host &amp;quot;&amp;quot;
+Write-Host &amp;quot;등록 완료: $TaskName  (매일 11:00 / 16:00)&amp;quot; -ForegroundColor Green
+Get-ScheduledTask -TaskName $TaskName | Get-ScheduledTaskInfo |
+    Select-Object TaskName, NextRunTime, LastRunTime | Format-List
+Write-Host (&amp;quot;지금 한 번 띄워보려면:  Start-ScheduledTask -TaskName '{0}'&amp;quot; -f $TaskName)
+Write-Host (&amp;quot;알림을 끄려면:          Unregister-ScheduledTask -TaskName '{0}' -Confirm:$$false&amp;quot; -f $TaskName)
+Write-Host (&amp;quot;시간을 바꾸려면 이 파일의 11:00am / 4:00pm 을 고치고 다시 실행하세요.&amp;quot;)
+&lt;/pre&gt;&lt;/details&gt;
+  &lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;grp&quot;&gt;&lt;h2&gt;2 · 매일 누르는 것&lt;/h2&gt;&lt;div class=&quot;gd&quot;&gt;평소에 쓰는 건 사실상 이 둘뿐입니다.&lt;/div&gt;
+  &lt;div class=&quot;item&quot;&gt;
+    &lt;div class=&quot;ihead&quot;&gt;
+      &lt;span class=&quot;kind k-run&quot;&gt;누르는 것&lt;/span&gt;
+      &lt;span class=&quot;iname&quot;&gt;실행.bat&lt;/span&gt;
+      &lt;span class=&quot;imeta&quot;&gt;851 B · 2026-09-22&lt;/span&gt;
+    &lt;/div&gt;
+    &lt;div class=&quot;iwhat&quot;&gt;처음부터 끝까지 다 돌립니다. 체크리스트에서 열쇠를 모으고 → PLISM 에 조회하고 → 판정하고 → 보낸 메일을 확인하고 → 화면을 엽니다.&lt;/div&gt;
+    &lt;div class=&quot;iwhen&quot;&gt;매일. 알림이 뜨면 이것&lt;/div&gt;
+    &lt;details&gt;&lt;summary&gt;안을 열어보기 &lt;span class=&quot;arw&quot;&gt;&lt;/span&gt;&lt;/summary&gt;&lt;pre id=&quot;f3&quot;&gt;@echo off
+chcp 65001 &amp;gt;nul
+cd /d &amp;quot;%~dp0&amp;quot;
+title 신고현황 확인
+
+set &amp;quot;PY=C:\Users\SMLEE\AppData\Local\Python\bin\python.exe&amp;quot;
+if not exist &amp;quot;%PY%&amp;quot; set &amp;quot;PY=python&amp;quot;
+
+echo.
+echo  [1/4] 체크리스트에서 조회 열쇠를 모으는 중...
+&amp;quot;%PY%&amp;quot; keys.py
+if errorlevel 1 goto :err
+
+echo.
+echo  [2/4] PLISM 조회 중... (창이 뜨면 로그인해 주세요)
+node pull.js
+if errorlevel 1 goto :err
+
+echo.
+echo  [3/4] 신고현황 정리
+&amp;quot;%PY%&amp;quot; board.py
+if errorlevel 1 goto :err
+
+echo.
+echo  [4/4] 보낸 메일로 마감리스트 발송 확인
+&amp;quot;%PY%&amp;quot; mail.py
+
+echo.
+pause
+exit /b 0
+
+:err
+echo.
+echo  문제가 생겨서 멈췄습니다. 위 내용을 그대로 복사해 두시면 고칠 수 있습니다.
+echo.
+echo.
+echo  화면으로 보기 - index.html 을 엽니다.
+start &amp;quot;&amp;quot; &amp;quot;%~dp0index.html&amp;quot;
+pause
+exit /b 1
+&lt;/pre&gt;&lt;/details&gt;
+  &lt;/div&gt;
+  &lt;div class=&quot;item&quot;&gt;
+    &lt;div class=&quot;ihead&quot;&gt;
+      &lt;span class=&quot;kind k-run&quot;&gt;누르는 것&lt;/span&gt;
+      &lt;span class=&quot;iname&quot;&gt;메일확인만.bat&lt;/span&gt;
+      &lt;span class=&quot;imeta&quot;&gt;518 B · 2026-09-22&lt;/span&gt;
+    &lt;/div&gt;
+    &lt;div class=&quot;iwhat&quot;&gt;PLISM 은 건너뛰고 보낸편지함만 봅니다. 로그인이 필요 없어 빠릅니다.&lt;/div&gt;
+    &lt;div class=&quot;iwhen&quot;&gt;마감리스트 보냈는지만 볼 때&lt;/div&gt;
+    &lt;details&gt;&lt;summary&gt;안을 열어보기 &lt;span class=&quot;arw&quot;&gt;&lt;/span&gt;&lt;/summary&gt;&lt;pre id=&quot;f4&quot;&gt;@echo off
+chcp 65001 &amp;gt;nul
+cd /d &amp;quot;%~dp0&amp;quot;
+title 보낸 메일로 확인
+
+set &amp;quot;PY=C:\Users\SMLEE\AppData\Local\Python\bin\python.exe&amp;quot;
+if not exist &amp;quot;%PY%&amp;quot; set &amp;quot;PY=python&amp;quot;
+
+echo.
+echo  체크리스트의 모선에 대해, 마감리스트를 보냈는지 보낸편지함에서 확인합니다.
+echo  (PLISM 조회는 하지 않습니다. 로그인할 필요 없습니다.)
+echo.
+&amp;quot;%PY%&amp;quot; keys.py
+&amp;quot;%PY%&amp;quot; mail.py
+echo.
+echo.
+echo  화면으로 보기 - index.html 을 엽니다.
+start &amp;quot;&amp;quot; &amp;quot;%~dp0index.html&amp;quot;
+pause
+&lt;/pre&gt;&lt;/details&gt;
+  &lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;grp&quot;&gt;&lt;h2&gt;3 · 결과를 보는 화면&lt;/h2&gt;&lt;div class=&quot;gd&quot;&gt;실행.bat 을 돌리면 저절로 열립니다. 따로 눌러서 열어도 됩니다.&lt;/div&gt;
+  &lt;div class=&quot;item&quot;&gt;
+    &lt;div class=&quot;ihead&quot;&gt;
+      &lt;span class=&quot;kind k-view&quot;&gt;화면&lt;/span&gt;
+      &lt;span class=&quot;iname&quot;&gt;index.html&lt;/span&gt;
+      &lt;span class=&quot;imeta&quot;&gt;28.2 KB · 2026-09-22&lt;/span&gt;
+    &lt;/div&gt;
+    &lt;div class=&quot;iwhat&quot;&gt;신고현황 표와 마감리스트 발송 현황을 봅니다. data 폴더의 파일을 끌어다 놓아도 바로 표가 나옵니다.&lt;/div&gt;
+    &lt;div class=&quot;iwhen&quot;&gt;결과를 볼 때&lt;/div&gt;
+    &lt;details&gt;&lt;summary&gt;안을 열어보기 &lt;span class=&quot;arw&quot;&gt;&lt;/span&gt;&lt;/summary&gt;&lt;pre id=&quot;f5&quot;&gt;&amp;lt;!DOCTYPE html&amp;gt;
+&amp;lt;html lang=&amp;quot;ko&amp;quot;&amp;gt;
+&amp;lt;head&amp;gt;
+&amp;lt;meta charset=&amp;quot;UTF-8&amp;quot;&amp;gt;
+&amp;lt;meta name=&amp;quot;viewport&amp;quot; content=&amp;quot;width=device-width,initial-scale=1&amp;quot;&amp;gt;
+&amp;lt;title&amp;gt;신고현황&amp;lt;/title&amp;gt;
+&amp;lt;link rel=&amp;quot;preconnect&amp;quot; href=&amp;quot;https://fonts.googleapis.com&amp;quot;&amp;gt;
+&amp;lt;link rel=&amp;quot;preconnect&amp;quot; href=&amp;quot;https://fonts.gstatic.com&amp;quot; crossorigin&amp;gt;
+&amp;lt;link href=&amp;quot;https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&amp;amp;family=Nunito:wght@600;700;800&amp;amp;display=swap&amp;quot; rel=&amp;quot;stylesheet&amp;quot;&amp;gt;
+&amp;lt;script src=&amp;quot;https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js&amp;quot;&amp;gt;&amp;lt;/script&amp;gt;
+&amp;lt;style&amp;gt;
+:root{
+  --bg:#f4f6fb; --card:#fff; --border:#e4eaf4;
+  --blue:#2563eb; --blue-lt:#eff6ff; --blue-mid:#bfdbfe;
+  --navy:#0f2d5e; --green:#16a34a; --green-lt:#f0fdf4; --green-bd:#86efac;
+  --red:#dc2626; --red-lt:#fff1f1;
+  --text:#0f172a; --sub:#64748b; --muted:#94a3b8;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Noto Sans KR','Apple SD Gothic Neo',sans-serif;background:var(--bg);
+     color:var(--text);font-size:15px;line-height:1.6;padding:0 0 40px}
+.wrap{max-width:1180px;margin:0 auto;padding:0 16px}
+
+.hdr{background:linear-gradient(135deg,var(--navy),#1d4ed8);color:#fff;padding:18px 0;margin-bottom:16px}
+.hdr .wrap{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.hdr h1{font-size:20px;font-weight:700}
+.hdr .meta{font-size:14px;color:#c7d9f5;margin-left:auto;text-align:right}
+.hdr .meta b{color:#fff;font-weight:500}
+
+.btn{display:inline-flex;align-items:center;gap:6px;padding:7px 15px;border-radius:8px;
+     border:1px solid var(--border);background:var(--card);color:var(--blue);
+     font-size:14px;font-weight:500;font-family:inherit;cursor:pointer;transition:all .12s}
+.btn:hover{background:var(--blue-lt)}
+.btn.primary{background:var(--navy);color:#fff;border-color:var(--navy)}
+.btn.primary:hover{background:#12386f}
+.btn.danger{background:var(--card);color:var(--red);border-color:#f3c7c7}
+.btn.danger:hover{background:var(--red-lt)}
+
+.card{background:var(--card);border:1px solid var(--border);border-radius:8px;
+      padding:16px;margin-bottom:12px}
+.card &amp;gt; h2{font-size:16px;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.card &amp;gt; h2 .cnt{font-size:14px;font-weight:500;color:var(--sub)}
+.note{font-size:14px;color:var(--sub)}
+
+/* ── 올리는 칸 ── */
+.drop{border:1.5px dashed #c7d7f0;border-radius:8px;padding:16px;background:#f8faff;
+      cursor:pointer;transition:all .15s;text-align:center}
+.drop:hover,.drop.over{background:var(--blue-lt);border-color:var(--blue)}
+.drop .big{font-size:15px;font-weight:500}
+.drop .sm{font-size:14px;color:var(--sub);margin-top:4px}
+.loaded{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:99px;
+      font-size:13px;background:var(--green-lt);color:var(--green);border:1px solid var(--green-bd)}
+.chip.miss{background:#f8fafc;color:var(--sub);border-color:var(--border)}
+
+.sum{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+.sum .box{flex:1 1 150px;background:var(--card);border:1px solid var(--border);
+          border-radius:8px;padding:16px}
+.sum .k{font-size:14px;color:var(--sub)}
+.sum .v{font-size:24px;font-weight:800;font-family:'Nunito',sans-serif;margin-top:2px}
+.sum .box.warn{border-color:#f3c7c7;background:var(--red-lt)}
+.sum .box.warn .v{color:var(--red)}
+.sum .box.good{border-color:var(--green-bd);background:var(--green-lt)}
+.sum .box.good .v{color:var(--green)}
+
+.alert{border-left:4px solid var(--red);background:var(--red-lt);border-radius:8px;
+       padding:12px 16px;margin-bottom:8px}
+.alert.wait{border-left-color:var(--sub);background:#f8fafc}
+.alert .ttl{font-weight:700;font-size:15px}
+.alert .sub{font-size:14px;color:var(--sub);margin-top:2px}
+.alert .det{font-size:14px;margin-top:4px}
+
+table{width:100%;border-collapse:collapse;font-size:14px}
+th{background:#f7f9fd;color:var(--sub);font-weight:500;text-align:left;
+   padding:10px 8px;border-bottom:2px solid var(--border);white-space:nowrap}
+td{padding:9px 8px;border-bottom:1px solid #f1f5f9;height:38px;vertical-align:middle}
+tbody tr:hover{background:#f7fbff}
+td.vsl{font-weight:700}
+td.num{text-align:right;font-family:'Nunito',monospace}
+.tb-wrap{overflow-x:auto}
+
+.st{display:inline-block;padding:2px 9px;border-radius:99px;font-size:13px;
+    font-weight:500;white-space:nowrap}
+.st.ok  {background:var(--green-lt);color:var(--green);border:1px solid var(--green-bd)}
+.st.work{background:var(--blue-lt); color:var(--blue); border:1px solid var(--blue-mid)}
+.st.err {background:var(--red-lt);  color:var(--red);  border:1px solid #f3c7c7}
+.st.none{background:#f8fafc;        color:var(--sub);  border:1px solid var(--border)}
+.st.na  {background:transparent;    color:var(--muted);border:1px solid transparent}
+.why{font-size:13px;color:var(--muted);display:block;margin-top:1px}
+
+details{margin-bottom:12px}
+details &amp;gt; summary{background:var(--card);border:1px solid var(--border);border-radius:8px;
+  padding:14px 16px;font-size:16px;font-weight:700;cursor:pointer;list-style:none;
+  display:flex;align-items:center;gap:8px}
+details[open] &amp;gt; summary{border-radius:8px 8px 0 0;border-bottom:none}
+details &amp;gt; summary::-webkit-details-marker{display:none}
+details &amp;gt; summary .cnt{font-size:14px;font-weight:500;color:var(--sub)}
+details &amp;gt; summary .arw{margin-left:auto;color:var(--muted);font-size:13px;font-weight:500}
+details[open] &amp;gt; summary .arw::after{content:'접기'}
+details:not([open]) &amp;gt; summary .arw::after{content:'펼치기'}
+details .body{background:var(--card);border:1px solid var(--border);border-top:none;
+  border-radius:0 0 8px 8px;padding:0 16px 8px}
+
+.empty{padding:24px 16px;text-align:center;color:var(--sub);font-size:14px}
+.stale{background:#fffbea;border:1px solid #f0d98c;border-radius:8px;padding:12px 16px;
+       margin-bottom:12px;font-size:14px}
+.legend{font-size:13px;color:var(--muted);margin-top:8px}
+.legend b{color:var(--sub);font-weight:500}
+.log{font-size:13px;color:var(--sub);margin-top:10px;white-space:pre-wrap;
+     font-family:'Nunito',monospace;max-height:150px;overflow:auto}
+&amp;lt;/style&amp;gt;
+&amp;lt;/head&amp;gt;
+&amp;lt;body&amp;gt;
+
+&amp;lt;div class=&amp;quot;hdr&amp;quot;&amp;gt;
+  &amp;lt;div class=&amp;quot;wrap&amp;quot;&amp;gt;
+    &amp;lt;h1&amp;gt;신고현황&amp;lt;/h1&amp;gt;
+    &amp;lt;div class=&amp;quot;meta&amp;quot; id=&amp;quot;meta&amp;quot;&amp;gt;&amp;lt;/div&amp;gt;
+  &amp;lt;/div&amp;gt;
+&amp;lt;/div&amp;gt;
+
+&amp;lt;div class=&amp;quot;wrap&amp;quot;&amp;gt;
+
+  &amp;lt;!-- ══ 자료 올리기 ══ --&amp;gt;
+  &amp;lt;div class=&amp;quot;card&amp;quot;&amp;gt;
+    &amp;lt;h2&amp;gt;자료 올리기 &amp;lt;span class=&amp;quot;cnt&amp;quot;&amp;gt;올린 것은 이 컴퓨터 밖으로 나가지 않습니다&amp;lt;/span&amp;gt;&amp;lt;/h2&amp;gt;
+    &amp;lt;div class=&amp;quot;drop&amp;quot; id=&amp;quot;drop&amp;quot;&amp;gt;
+      &amp;lt;div class=&amp;quot;big&amp;quot;&amp;gt;여기로 끌어다 놓거나, 눌러서 고르세요&amp;lt;/div&amp;gt;
+      &amp;lt;div class=&amp;quot;sm&amp;quot;&amp;gt;여러 개 한 번에 올려도 됩니다 · 파일 이름이 달라도 내용을 보고 알아서 가립니다&amp;lt;/div&amp;gt;
+      &amp;lt;input type=&amp;quot;file&amp;quot; id=&amp;quot;file&amp;quot; multiple accept=&amp;quot;.json,.js,.xls,.xlsx&amp;quot; style=&amp;quot;display:none&amp;quot;&amp;gt;
+    &amp;lt;/div&amp;gt;
+    &amp;lt;div class=&amp;quot;loaded&amp;quot; id=&amp;quot;loaded&amp;quot;&amp;gt;&amp;lt;/div&amp;gt;
+    &amp;lt;div class=&amp;quot;log&amp;quot; id=&amp;quot;log&amp;quot;&amp;gt;&amp;lt;/div&amp;gt;
+  &amp;lt;/div&amp;gt;
+
+  &amp;lt;div id=&amp;quot;app&amp;quot;&amp;gt;&amp;lt;/div&amp;gt;
+&amp;lt;/div&amp;gt;
+
+&amp;lt;!-- 배치파일로 돌렸으면 이 두 개가 자동으로 들어온다. 없으면 위에서 올리면 된다. --&amp;gt;
+&amp;lt;script src=&amp;quot;data/board.js&amp;quot; onerror=&amp;quot;void 0&amp;quot;&amp;gt;&amp;lt;/script&amp;gt;
+&amp;lt;script src=&amp;quot;data/mail.js&amp;quot;  onerror=&amp;quot;void 0&amp;quot;&amp;gt;&amp;lt;/script&amp;gt;
+&amp;lt;script&amp;gt;
+'use strict';
+
+/* ════════════════════════════════════════════════════════════
+   판정 규칙 — board.py 와 같은 규칙이다.
+   한쪽만 고치면 화면과 검은 창의 답이 달라진다. 고칠 땐 둘 다 고친다.
+   (board.js 가 있으면 그쪽 판정을 그대로 쓰고 여기는 쓰지 않는다)
+   ════════════════════════════════════════════════════════════ */
+var OK='승인', WORK='진행중', ERR='오류', NONE='미신고', MINE='타서비스';
+
+function isMrn(cell){
+  var s = String(cell || '').trim().toUpperCase();
+  return (s.length &amp;gt;= 10 &amp;amp;&amp;amp; /^\d\d/.test(s) &amp;amp;&amp;amp; (s.slice(-1) === 'I' || s.slice(-1) === 'E')) ? s : null;
+}
+function findRow(cell, name, vygs, rows){
+  var mrn = isMrn(cell), i;
+  if (mrn) for (i = 0; i &amp;lt; rows.length; i++) if (rows[i].mrn === mrn) return [rows[i], ''];
+  var up = function(x){ return String(x || '').trim().toUpperCase(); };
+  var hit = rows.filter(function(r){
+    return up(r.vsl) === up(name) &amp;amp;&amp;amp; vygs.some(function(v){ return v &amp;amp;&amp;amp; up(r.vyg) === up(v); });
+  });
+  if (hit.length === 1) return [hit[0], mrn ? 'MRN 다름' : '체크리스트에 MRN 미기재'];
+  return [null, ''];
+}
+function judgeMf(cell, row, how){
+  if (!row) {
+    var memo = String(cell || '').trim();
+    if (memo &amp;amp;&amp;amp; !isMrn(memo)) return {s:MINE, d:memo};
+    return {s:NONE, d:'PLISM 에 없음'};
+  }
+  var tail = how ? ' (' + how + ')' : '';
+  if (row.err) return {s:ERR, d:'오류 B/L ' + row.err + '건' + tail};
+  var st = String(row.st || '').trim();
+  if (st === '승인') return {s:OK, d:'승인' + tail};
+  if (st) return {s:WORK, d:st + tail};
+  return {s:WORK, d:'상태 없음' + tail};
+}
+function judgeDg(rows){
+  if (!rows.length) return {s:NONE, d:'신고 없음'};
+  var latest = {};
+  rows.forEach(function(r){
+    (r.res || []).forEach(function(res){
+      var doc = res.doc, at = String(res.at || '');
+      if (doc &amp;amp;&amp;amp; (!(doc in latest) || at &amp;gt; String(latest[doc].at || ''))) latest[doc] = res;
+    });
+  });
+  var docs = Object.keys(latest);
+  if (!docs.length) return {s:WORK, d:'전송됨 · 응답 대기'};
+  var bad = docs.filter(function(d){ return (latest[d].stat || '') !== '(정상처리)'; })
+                .map(function(d){ return (d + ' ' + (latest[d].code || '')).trim(); });
+  if (bad.length) return {s:ERR, d:bad.join(' / ')};
+  if (rows.some(function(r){ return r.wEq === 'N' || r.cEq === 'N'; }))
+    return {s:WORK, d:'정상처리 (중량·컨 수량 불일치)'};
+  return {s:OK, d:'정상처리 ' + docs.length + '종'};
+}
+
+/* ════════════════════════════════════════════════════════════
+   올린 자료 보관함
+   ════════════════════════════════════════════════════════════ */
+var DATA = {
+  board: window.BOARD || null,   // board.py 가 이미 판정해 둔 것
+  keys:  null,                   // keys.json — 모선 목록
+  plism: null,                   // plism.json — PLISM 조회 원자료
+  mail:  window.MAIL || null,    // mail.json — 마감리스트 발송
+  signs: null                    // 엑셀에서 읽은 호출부호 명부
+};
+var logLines = [];
+function say(s){ logLines.push(s); document.getElementById('log').textContent = logLines.join('\n'); }
+
+function esc(s){
+  return String(s == null ? '' : s)
+    .replace(/&amp;amp;/g,'&amp;amp;amp;').replace(/&amp;lt;/g,'&amp;amp;lt;').replace(/&amp;gt;/g,'&amp;amp;gt;').replace(/&amp;quot;/g,'&amp;amp;quot;');
+}
+
+/* ── 파일 가리기: 이름이 아니라 내용을 본다 ───────────────── */
+function takeJson(obj, fname){
+  if (obj &amp;amp;&amp;amp; obj.rows &amp;amp;&amp;amp; obj.rows.length &amp;amp;&amp;amp; ('imp_mf' in (obj.rows[0] || {}))) {
+    DATA.board = obj; return 'board (판정 끝난 신고현황)';
+  }
+  if (obj &amp;amp;&amp;amp; obj.imp &amp;amp;&amp;amp; obj.exp &amp;amp;&amp;amp; obj.dg) { DATA.plism = obj; return 'plism (PLISM 조회 원자료)'; }
+  if (obj &amp;amp;&amp;amp; obj.rows &amp;amp;&amp;amp; obj.rows.length &amp;amp;&amp;amp; ('수입리스트' in (obj.rows[0] || {}))) {
+    DATA.mail = obj; return 'mail (마감리스트 발송)';
+  }
+  if (obj &amp;amp;&amp;amp; obj.rows &amp;amp;&amp;amp; obj.rows.length &amp;amp;&amp;amp; ('vyg_in' in (obj.rows[0] || {}))) {
+    DATA.keys = obj; return 'keys (모선 목록 ' + obj.rows.length + '척)';
+  }
+  if (obj &amp;amp;&amp;amp; obj.rows &amp;amp;&amp;amp; !Array.isArray(obj.rows)) {          // 체크리스트 스냅샷
+    var arr = Object.keys(obj.rows).map(function(k){ var v = obj.rows[k]; v.key = k; return v; });
+    DATA.keys = {rows: arr, week: obj.week, snapshot: fname};
+    return '체크리스트 스냅샷 (' + arr.length + '척)';
+  }
+  return null;
+}
+function takeExcel(wb, fname){
+  /* 선박 파티큘러(선박|VesselName|Service|CallSign) 또는 체크리스트 AY:AZ 표 */
+  var map = DATA.signs || {}, n = 0;
+  wb.SheetNames.forEach(function(sn){
+    var rows = XLSX.utils.sheet_to_json(wb.Sheets[sn], {header:1, defval:''});
+    rows.forEach(function(r){
+      var code = String(r[0] || '').trim(), sign = String(r[3] || '').trim();
+      if (code &amp;amp;&amp;amp; /^[A-Z0-9]{4,10}$/i.test(sign) &amp;amp;&amp;amp; !map[code.toUpperCase()]) { map[code.toUpperCase()] = sign; n++; }
+      var c2 = String(r[50] || '').trim(), s2 = String(r[51] || '').trim();   /* AY / AZ */
+      if (c2 &amp;amp;&amp;amp; /^[A-Z0-9]{4,10}$/i.test(s2) &amp;amp;&amp;amp; !map[c2.toUpperCase()]) { map[c2.toUpperCase()] = s2; n++; }
+    });
+  });
+  DATA.signs = map;
+  return n ? '호출부호 명부 ' + n + '척' : null;
+}
+
+function readFiles(files){
+  var left = files.length;
+  if (!left) return;
+  Array.prototype.forEach.call(files, function(f){
+    var rd = new FileReader();
+    var isX = /\.(xls|xlsx)$/i.test(f.name);
+    rd.onload = function(e){
+      try {
+        var what = null;
+        if (isX) {
+          if (typeof XLSX === 'undefined') throw new Error('엑셀 읽는 부품을 못 불러왔습니다 (인터넷 확인)');
+          what = takeExcel(XLSX.read(e.target.result, {type:'binary'}), f.name);
+        } else {
+          var txt = e.target.result;
+          var m = String(txt).match(/^\s*window\.\w+\s*=\s*([\s\S]*?);?\s*$/);   /* board.js / mail.js */
+          what = takeJson(JSON.parse(m ? m[1] : txt), f.name);
+        }
+        say(what ? ('읽음  ' + f.name + '  →  ' + what)
+                 : ('모르는 형식  ' + f.name + ' — 건너뜁니다'));
+      } catch (err) {
+        say('못 읽음  ' + f.name + ' — ' + err.message);
+      }
+      if (--left === 0) render();
+    };
+    rd.onerror = function(){ say('못 읽음  ' + f.name); if (--left === 0) render(); };
+    if (isX) rd.readAsBinaryString(f); else rd.readAsText(f, 'utf-8');
+  });
+}
+
+/* ── 올리는 칸 동작 ─────────────────────────────────────── */
+var drop = document.getElementById('drop'), fileInput = document.getElementById('file');
+drop.onclick = function(){ fileInput.click(); };
+fileInput.onchange = function(){ readFiles(this.files); this.value = ''; };
+['dragenter','dragover'].forEach(function(ev){
+  drop.addEventListener(ev, function(e){ e.preventDefault(); drop.classList.add('over'); });
+});
+['dragleave','drop'].forEach(function(ev){
+  drop.addEventListener(ev, function(e){ e.preventDefault(); drop.classList.remove('over'); });
+});
+drop.addEventListener('drop', function(e){ readFiles(e.dataTransfer.files); });
+
+/* ════════════════════════════════════════════════════════════
+   화면 그리기
+   ════════════════════════════════════════════════════════════ */
+function etbText(iso){
+  if (!iso) return '—';
+  return String(iso).replace('T',' ').slice(5,16);       /* 09-21 04:30 */
+}
+function today(){
+  var d = new Date();
+  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+}
+var STYLE = {};
+STYLE[OK]={cls:'ok'}; STYLE[WORK]={cls:'work'}; STYLE[ERR]={cls:'err'};
+STYLE[NONE]={cls:'none'}; STYLE[MINE]={cls:'na'};
+STYLE['보냄']={cls:'ok'}; STYLE['아직']={cls:'none'}; STYLE['해당없음']={cls:'na'};
+function stTag(state, why, showWhy){
+  var st = STYLE[state] || {cls:'none'};
+  var h = '&amp;lt;span class=&amp;quot;st ' + st.cls + '&amp;quot;&amp;gt;' + esc(state || '—') + '&amp;lt;/span&amp;gt;';
+  if (showWhy &amp;amp;&amp;amp; why) h += '&amp;lt;span class=&amp;quot;why&amp;quot;&amp;gt;' + esc(why) + '&amp;lt;/span&amp;gt;';
+  return h;
+}
+
+/* keys + plism 을 합쳐 board 와 같은 모양으로 만든다 (board.js 가 없을 때만) */
+function buildBoard(){
+  if (DATA.board) return DATA.board;
+  if (!DATA.keys) return null;
+  var p = DATA.plism;
+  var rows = DATA.keys.rows.map(function(v){
+    var sign = (v.sign || v.call || '') || (DATA.signs &amp;amp;&amp;amp; DATA.signs[String(v.vsl||'').toUpperCase()]) || '';
+    var base = {name:v.name, vsl:v.vsl, svc_in:v.svc_in, svc_out:v.svc_out, opr:v.opr,
+                sign:sign, seq:(v.seq||''), vyg_in:v.vyg_in, vyg_out:v.vyg_out,
+                etb:v.etb, etd:v.etd};
+    if (!p) {                                   /* PLISM 자료가 없으면 판정하지 않는다 */
+      base.imp_mf = base.exp_mf = base.imp_dg = base.exp_dg = {s:'', d:''};
+      return base;
+    }
+    var seq = String(v.seq || '').trim();
+    function dgRows(flag){
+      return (p.dg || []).filter(function(r){
+        return r.cs === sign &amp;amp;&amp;amp; r.inflag === flag &amp;amp;&amp;amp;
+               (!seq || String(r.ser).replace(/^0+/,'') === seq.replace(/^0+/,''));
+      });
+    }
+    var a = findRow(v.imp_cell, v.name, [v.vyg_in, v.vyg_out], p.imp || []);
+    var b = findRow(v.exp_cell, v.name, [v.vyg_out, v.vyg_in], p.exp || []);
+    base.imp_mf = judgeMf(v.imp_cell, a[0], a[1]);
+    base.exp_mf = judgeMf(v.exp_cell, b[0], b[1]);
+    base.imp_dg = judgeDg(dgRows(1));
+    base.exp_dg = judgeDg(dgRows(2));
+    return base;
+  });
+  rows.sort(function(x,y){ return String(x.etb||'9999').localeCompare(String(y.etb||'9999')); });
+  return {rows:rows, made_at:'', pulled_at:(p &amp;amp;&amp;amp; p.pulled_at) || '', klnet:(p &amp;amp;&amp;amp; p.klnet) || '',
+          judged_here:!!p};
+}
+
+function render(){
+  var B = buildBoard(), M = DATA.mail, out = [];
+
+  /* 올린 것 표시 */
+  var chips = [
+    ['모선 목록',      DATA.keys || DATA.board],
+    ['PLISM 신고현황', DATA.board || DATA.plism],
+    ['마감리스트 발송', DATA.mail],
+    ['호출부호 명부',  DATA.signs]
+  ].map(function(c){
+    return '&amp;lt;span class=&amp;quot;chip' + (c[1] ? '' : ' miss') + '&amp;quot;&amp;gt;' + (c[1] ? '있음' : '없음') + ' · ' + c[0] + '&amp;lt;/span&amp;gt;';
+  }).join('');
+  document.getElementById('loaded').innerHTML = chips;
+
+  /* 머리말 */
+  var meta = [];
+  if (B &amp;amp;&amp;amp; B.pulled_at) meta.push('PLISM 조회 &amp;lt;b&amp;gt;' + esc(B.pulled_at) + '&amp;lt;/b&amp;gt;');
+  if (B &amp;amp;&amp;amp; (B.who || B.klnet))
+    meta.push('조회한 사람 &amp;lt;b&amp;gt;' + esc(B.who ? B.who + '님' : '?') + '&amp;lt;/b&amp;gt;' +
+              (B.klnet ? ' [' + esc(B.klnet) + ']' : ''));
+  if (M &amp;amp;&amp;amp; M.checked_at) meta.push('메일 확인 &amp;lt;b&amp;gt;' + esc(M.checked_at) + '&amp;lt;/b&amp;gt;');
+  if (M &amp;amp;&amp;amp; M.week) meta.push('&amp;lt;b&amp;gt;' + esc(M.week[0]) + ' ~ ' + esc(M.week[1]) + '&amp;lt;/b&amp;gt;');
+  document.getElementById('meta').innerHTML = meta.length ? meta.join(' · ') : '올린 자료 없음';
+
+  /* 아무것도 없을 때 */
+  if (!B &amp;amp;&amp;amp; !M) {
+    out.push('&amp;lt;div class=&amp;quot;card&amp;quot;&amp;gt;&amp;lt;h2&amp;gt;아직 올린 자료가 없습니다&amp;lt;/h2&amp;gt;' +
+      '&amp;lt;p class=&amp;quot;note&amp;quot;&amp;gt;위 칸에 &amp;lt;b&amp;gt;data&amp;lt;/b&amp;gt; 폴더의 파일을 끌어다 놓으면 바로 표가 나옵니다. ' +
+      '받는 것은 이렇습니다.&amp;lt;/p&amp;gt;' +
+      '&amp;lt;div class=&amp;quot;tb-wrap&amp;quot;&amp;gt;&amp;lt;table&amp;gt;&amp;lt;thead&amp;gt;&amp;lt;tr&amp;gt;&amp;lt;th&amp;gt;파일&amp;lt;/th&amp;gt;&amp;lt;th&amp;gt;채워지는 것&amp;lt;/th&amp;gt;&amp;lt;/tr&amp;gt;&amp;lt;/thead&amp;gt;&amp;lt;tbody&amp;gt;' +
+      '&amp;lt;tr&amp;gt;&amp;lt;td class=&amp;quot;vsl&amp;quot;&amp;gt;keys.json&amp;lt;/td&amp;gt;&amp;lt;td&amp;gt;모선 · 항차 · 호출부호 · 해수청&amp;lt;/td&amp;gt;&amp;lt;/tr&amp;gt;' +
+      '&amp;lt;tr&amp;gt;&amp;lt;td class=&amp;quot;vsl&amp;quot;&amp;gt;plism.json&amp;lt;/td&amp;gt;&amp;lt;td&amp;gt;신고 4칸 (이 화면에서 판정)&amp;lt;/td&amp;gt;&amp;lt;/tr&amp;gt;' +
+      '&amp;lt;tr&amp;gt;&amp;lt;td class=&amp;quot;vsl&amp;quot;&amp;gt;board.js&amp;lt;/td&amp;gt;&amp;lt;td&amp;gt;신고 4칸 (board.py 가 판정한 것 — 이게 있으면 우선)&amp;lt;/td&amp;gt;&amp;lt;/tr&amp;gt;' +
+      '&amp;lt;tr&amp;gt;&amp;lt;td class=&amp;quot;vsl&amp;quot;&amp;gt;mail.json&amp;lt;/td&amp;gt;&amp;lt;td&amp;gt;마감리스트 발송 · 이번 주 할 일&amp;lt;/td&amp;gt;&amp;lt;/tr&amp;gt;' +
+      '&amp;lt;tr&amp;gt;&amp;lt;td class=&amp;quot;vsl&amp;quot;&amp;gt;선박 파티큘러-콜사인정보.xls&amp;lt;/td&amp;gt;&amp;lt;td&amp;gt;비어 있는 호출부호 메우기&amp;lt;/td&amp;gt;&amp;lt;/tr&amp;gt;' +
+      '&amp;lt;tr&amp;gt;&amp;lt;td class=&amp;quot;vsl&amp;quot;&amp;gt;체크리스트 스냅샷 json&amp;lt;/td&amp;gt;&amp;lt;td&amp;gt;keys.json 이 없을 때 모선 목록&amp;lt;/td&amp;gt;&amp;lt;/tr&amp;gt;' +
+      '&amp;lt;/tbody&amp;gt;&amp;lt;/table&amp;gt;&amp;lt;/div&amp;gt;' +
+      '&amp;lt;p class=&amp;quot;note&amp;quot; style=&amp;quot;margin-top:12px&amp;quot;&amp;gt;실행.bat 을 돌리면 이 자료들이 ' +
+      '&amp;lt;b&amp;gt;신고현황\\data\\&amp;lt;/b&amp;gt; 에 생깁니다.&amp;lt;/p&amp;gt;&amp;lt;/div&amp;gt;');
+    document.getElementById('app').innerHTML = out.join('');
+    return;
+  }
+
+  /* 오래된 자료 경고 */
+  var stale = [];
+  if (B &amp;amp;&amp;amp; B.made_at &amp;amp;&amp;amp; String(B.made_at).slice(0,10) !== today())
+    stale.push('신고현황은 &amp;lt;b&amp;gt;' + esc(B.made_at) + '&amp;lt;/b&amp;gt; 에 만든 것');
+  if (M &amp;amp;&amp;amp; M.checked_at &amp;amp;&amp;amp; String(M.checked_at).slice(0,10) !== today())
+    stale.push('마감리스트 확인은 &amp;lt;b&amp;gt;' + esc(M.checked_at) + '&amp;lt;/b&amp;gt; 에 한 것');
+  if (stale.length)
+    out.push('&amp;lt;div class=&amp;quot;stale&amp;quot;&amp;gt;' + stale.join(' · ') + ' — &amp;lt;b&amp;gt;오늘 자료가 아닙니다.&amp;lt;/b&amp;gt;&amp;lt;/div&amp;gt;');
+
+  var hasJudge = B &amp;amp;&amp;amp; B.rows.length &amp;amp;&amp;amp; B.rows[0].imp_mf.s !== '';
+
+  /* 요약 */
+  var problems = [];
+  if (hasJudge) B.rows.forEach(function(r){
+    var bad = [['수입신고',r.imp_mf],['수출신고',r.exp_mf],['수입위험물',r.imp_dg],['수출위험물',r.exp_dg]]
+      .filter(function(p){ return p[1].s === ERR || p[1].s === NONE; });
+    if (bad.length) problems.push({row:r, bad:bad, hasErr:bad.some(function(p){ return p[1].s === ERR; })});
+  });
+  var notSent = [];
+  if (M) M.rows.forEach(function(r){
+    ['수입리스트','수출리스트'].forEach(function(k){
+      if (r[k] &amp;amp;&amp;amp; r[k][0] === '아직') notSent.push(r.name);
+    });
+  });
+  var s = '&amp;lt;div class=&amp;quot;sum&amp;quot;&amp;gt;';
+  if (B) s += '&amp;lt;div class=&amp;quot;box&amp;quot;&amp;gt;&amp;lt;div class=&amp;quot;k&amp;quot;&amp;gt;모선&amp;lt;/div&amp;gt;&amp;lt;div class=&amp;quot;v&amp;quot;&amp;gt;' + B.rows.length + '&amp;lt;/div&amp;gt;&amp;lt;/div&amp;gt;';
+  if (hasJudge) s += '&amp;lt;div class=&amp;quot;box ' + (problems.length?'warn':'good') + '&amp;quot;&amp;gt;&amp;lt;div class=&amp;quot;k&amp;quot;&amp;gt;미신고 · 오류&amp;lt;/div&amp;gt;&amp;lt;div class=&amp;quot;v&amp;quot;&amp;gt;' + problems.length + '&amp;lt;/div&amp;gt;&amp;lt;/div&amp;gt;';
+  if (M) {
+    s += '&amp;lt;div class=&amp;quot;box ' + (notSent.length?'warn':'good') + '&amp;quot;&amp;gt;&amp;lt;div class=&amp;quot;k&amp;quot;&amp;gt;아직 안 보낸 리스트&amp;lt;/div&amp;gt;&amp;lt;div class=&amp;quot;v&amp;quot;&amp;gt;' + notSent.length + '&amp;lt;/div&amp;gt;&amp;lt;/div&amp;gt;';
+    var left = M.weekly ? M.weekly.filter(function(w){ return w.state !== '보냄'; }).length : 0;
+    s += '&amp;lt;div class=&amp;quot;box ' + (left?'warn':'good') + '&amp;quot;&amp;gt;&amp;lt;div class=&amp;quot;k&amp;quot;&amp;gt;이번 주 남은 일&amp;lt;/div&amp;gt;&amp;lt;div class=&amp;quot;v&amp;quot;&amp;gt;' + left + '&amp;lt;/div&amp;gt;&amp;lt;/div&amp;gt;';
+  }
+  out.push(s + '&amp;lt;/div&amp;gt;');
+
+  /* 무엇이 모자란지 먼저 알린다 */
+  var need = [];
+  if (!B)             need.push('&amp;lt;b&amp;gt;모선 목록&amp;lt;/b&amp;gt;이 없습니다 — &amp;lt;b&amp;gt;keys.json&amp;lt;/b&amp;gt; 을 올리세요.');
+  else if (!hasJudge) need.push('&amp;lt;b&amp;gt;PLISM 신고현황&amp;lt;/b&amp;gt;이 없습니다 — &amp;lt;b&amp;gt;plism.json&amp;lt;/b&amp;gt; 또는 &amp;lt;b&amp;gt;board.js&amp;lt;/b&amp;gt; 를 올리면 4칸이 채워집니다.');
+  if (!M)             need.push('&amp;lt;b&amp;gt;마감리스트 발송&amp;lt;/b&amp;gt; 확인이 없습니다 — &amp;lt;b&amp;gt;mail.json&amp;lt;/b&amp;gt; 을 올리세요.');
+  if (need.length)
+    out.push('&amp;lt;div class=&amp;quot;card&amp;quot;&amp;gt;&amp;lt;p class=&amp;quot;note&amp;quot;&amp;gt;' + need.join('&amp;lt;br&amp;gt;') + '&amp;lt;/p&amp;gt;&amp;lt;/div&amp;gt;');
+
+  /* 먼저 볼 것 */
+  if (hasJudge) {
+    var a = '&amp;lt;div class=&amp;quot;card&amp;quot;&amp;gt;&amp;lt;h2&amp;gt;먼저 볼 것 &amp;lt;span class=&amp;quot;cnt&amp;quot;&amp;gt;미신고 · 오류&amp;lt;/span&amp;gt;&amp;lt;/h2&amp;gt;';
+    if (!problems.length) a += '&amp;lt;div class=&amp;quot;empty&amp;quot;&amp;gt;미신고도 오류도 없습니다.&amp;lt;/div&amp;gt;';
+    else {
+      a += '&amp;lt;p class=&amp;quot;note&amp;quot; style=&amp;quot;margin-bottom:10px&amp;quot;&amp;gt;마감 전이라 아직 안 한 것도 그대로 나옵니다. 판단은 직접 하세요.&amp;lt;/p&amp;gt;';
+      problems.forEach(function(p){
+        var r = p.row;
+        a += '&amp;lt;div class=&amp;quot;alert' + (p.hasErr?'':' wait') + '&amp;quot;&amp;gt;' +
+          '&amp;lt;div class=&amp;quot;ttl&amp;quot;&amp;gt;' + esc(r.name) + ' &amp;lt;span style=&amp;quot;font-weight:500;color:var(--sub)&amp;quot;&amp;gt;' + esc(r.vyg_out||r.vyg_in||'') + '&amp;lt;/span&amp;gt;&amp;lt;/div&amp;gt;' +
+          '&amp;lt;div class=&amp;quot;sub&amp;quot;&amp;gt;입항 ' + esc(etbText(r.etb)) +
+            (r.sign?' · 호출부호 ' + esc(r.sign):'') + (r.seq?' · 해수청 ' + esc(r.seq):'') + '&amp;lt;/div&amp;gt;' +
+          '&amp;lt;div class=&amp;quot;det&amp;quot;&amp;gt;' + p.bad.map(function(x){
+            return esc(x[0]) + ' ' + stTag(x[1].s,'',false) +
+              (x[1].s === ERR &amp;amp;&amp;amp; x[1].d ? ' &amp;lt;span class=&amp;quot;why&amp;quot; style=&amp;quot;display:inline&amp;quot;&amp;gt;' + esc(x[1].d) + '&amp;lt;/span&amp;gt;' : '');
+          }).join(' &amp;amp;nbsp; ') + '&amp;lt;/div&amp;gt;&amp;lt;/div&amp;gt;';
+      });
+    }
+    out.push(a + '&amp;lt;/div&amp;gt;');
+  }
+
+  /* 신고현황 표 */
+  if (B) {
+    var t = '&amp;lt;details open&amp;gt;&amp;lt;summary&amp;gt;신고현황 &amp;lt;span class=&amp;quot;cnt&amp;quot;&amp;gt;' + B.rows.length + '척' +
+      (hasJudge ? (B.judged_here ? ' · 이 화면에서 판정' : '') : ' · PLISM 자료 없음') +
+      '&amp;lt;/span&amp;gt;&amp;lt;span class=&amp;quot;arw&amp;quot;&amp;gt;&amp;lt;/span&amp;gt;&amp;lt;/summary&amp;gt;&amp;lt;div class=&amp;quot;body&amp;quot;&amp;gt;&amp;lt;div class=&amp;quot;tb-wrap&amp;quot;&amp;gt;&amp;lt;table&amp;gt;' +
+      '&amp;lt;thead&amp;gt;&amp;lt;tr&amp;gt;&amp;lt;th&amp;gt;모선&amp;lt;/th&amp;gt;&amp;lt;th&amp;gt;항차&amp;lt;/th&amp;gt;&amp;lt;th&amp;gt;호출부호&amp;lt;/th&amp;gt;&amp;lt;th&amp;gt;해수청&amp;lt;/th&amp;gt;&amp;lt;th&amp;gt;입항&amp;lt;/th&amp;gt;' +
+      '&amp;lt;th&amp;gt;수입신고&amp;lt;/th&amp;gt;&amp;lt;th&amp;gt;수출신고&amp;lt;/th&amp;gt;&amp;lt;th&amp;gt;수입위험물&amp;lt;/th&amp;gt;&amp;lt;th&amp;gt;수출위험물&amp;lt;/th&amp;gt;&amp;lt;/tr&amp;gt;&amp;lt;/thead&amp;gt;&amp;lt;tbody&amp;gt;';
+    B.rows.forEach(function(r){
+      function c(j){ return j &amp;amp;&amp;amp; j.s ? stTag(j.s, j.d, true) : '&amp;lt;span class=&amp;quot;st na&amp;quot;&amp;gt;—&amp;lt;/span&amp;gt;'; }
+      t += '&amp;lt;tr&amp;gt;&amp;lt;td class=&amp;quot;vsl&amp;quot;&amp;gt;' + esc(r.name) + '&amp;lt;/td&amp;gt;' +
+        '&amp;lt;td&amp;gt;' + esc(r.vyg_out || r.vyg_in || '') + '&amp;lt;/td&amp;gt;' +
+        '&amp;lt;td class=&amp;quot;num&amp;quot;&amp;gt;' + esc(r.sign || '—') + '&amp;lt;/td&amp;gt;' +
+        '&amp;lt;td class=&amp;quot;num&amp;quot;&amp;gt;' + esc(r.seq || '—') + '&amp;lt;/td&amp;gt;' +
+        '&amp;lt;td class=&amp;quot;num&amp;quot;&amp;gt;' + esc(etbText(r.etb)) + '&amp;lt;/td&amp;gt;' +
+        '&amp;lt;td&amp;gt;' + c(r.imp_mf) + '&amp;lt;/td&amp;gt;&amp;lt;td&amp;gt;' + c(r.exp_mf) + '&amp;lt;/td&amp;gt;' +
+        '&amp;lt;td&amp;gt;' + c(r.imp_dg) + '&amp;lt;/td&amp;gt;&amp;lt;td&amp;gt;' + c(r.exp_dg) + '&amp;lt;/td&amp;gt;&amp;lt;/tr&amp;gt;';
+    });
+    t += '&amp;lt;/tbody&amp;gt;&amp;lt;/table&amp;gt;&amp;lt;/div&amp;gt;&amp;lt;p class=&amp;quot;legend&amp;quot;&amp;gt;&amp;lt;b&amp;gt;승인&amp;lt;/b&amp;gt; 끝남 · &amp;lt;b&amp;gt;진행중&amp;lt;/b&amp;gt; 선별마감·접수 단계 · ' +
+      '&amp;lt;b&amp;gt;오류&amp;lt;/b&amp;gt; 오류통보 옴 · &amp;lt;b&amp;gt;미신고&amp;lt;/b&amp;gt; PLISM 에 없음 · &amp;lt;b&amp;gt;타서비스&amp;lt;/b&amp;gt; 내 소관 아님' +
+      (hasJudge ? '' : ' · &amp;lt;b&amp;gt;—&amp;lt;/b&amp;gt; PLISM 자료를 아직 안 올림') + '&amp;lt;/p&amp;gt;&amp;lt;/div&amp;gt;&amp;lt;/details&amp;gt;';
+    out.push(t);
+  }
+
+  /* 마감리스트 발송 */
+  if (M) {
+    var m = '&amp;lt;details open&amp;gt;&amp;lt;summary&amp;gt;마감리스트 발송 &amp;lt;span class=&amp;quot;cnt&amp;quot;&amp;gt;' +
+      (notSent.length ? '아직 ' + notSent.length + '건' : '모두 보냄') + '&amp;lt;/span&amp;gt;&amp;lt;span class=&amp;quot;arw&amp;quot;&amp;gt;&amp;lt;/span&amp;gt;&amp;lt;/summary&amp;gt;' +
+      '&amp;lt;div class=&amp;quot;body&amp;quot;&amp;gt;&amp;lt;div class=&amp;quot;tb-wrap&amp;quot;&amp;gt;&amp;lt;table&amp;gt;&amp;lt;thead&amp;gt;&amp;lt;tr&amp;gt;&amp;lt;th&amp;gt;모선&amp;lt;/th&amp;gt;&amp;lt;th&amp;gt;수입항차&amp;lt;/th&amp;gt;' +
+      '&amp;lt;th&amp;gt;수출항차&amp;lt;/th&amp;gt;&amp;lt;th&amp;gt;수입리스트&amp;lt;/th&amp;gt;&amp;lt;th&amp;gt;수출리스트&amp;lt;/th&amp;gt;&amp;lt;/tr&amp;gt;&amp;lt;/thead&amp;gt;&amp;lt;tbody&amp;gt;';
+    M.rows.forEach(function(r){
+      function cell(k){ var v = r[k] || ['','']; return stTag(v[0], v[0]==='보냄'?v[1]:'', true); }
+      m += '&amp;lt;tr&amp;gt;&amp;lt;td class=&amp;quot;vsl&amp;quot;&amp;gt;' + esc(r.name) + '&amp;lt;/td&amp;gt;&amp;lt;td&amp;gt;' + esc(r.vyg_in||'') + '&amp;lt;/td&amp;gt;' +
+        '&amp;lt;td&amp;gt;' + esc(r.vyg_out||'') + '&amp;lt;/td&amp;gt;&amp;lt;td&amp;gt;' + cell('수입리스트') + '&amp;lt;/td&amp;gt;' +
+        '&amp;lt;td&amp;gt;' + cell('수출리스트') + '&amp;lt;/td&amp;gt;&amp;lt;/tr&amp;gt;';
+    });
+    out.push(m + '&amp;lt;/tbody&amp;gt;&amp;lt;/table&amp;gt;&amp;lt;/div&amp;gt;&amp;lt;p class=&amp;quot;legend&amp;quot;&amp;gt;보낸편지함 제목으로 가려냅니다. ' +
+      '&amp;lt;b&amp;gt;해당없음&amp;lt;/b&amp;gt; 은 양하만·타서비스라 보낼 일이 없는 것입니다.&amp;lt;/p&amp;gt;&amp;lt;/div&amp;gt;&amp;lt;/details&amp;gt;');
+  }
+
+  /* 이번 주 할 일 */
+  if (M &amp;amp;&amp;amp; M.weekly &amp;amp;&amp;amp; M.weekly.length) {
+    var w = '&amp;lt;div class=&amp;quot;card&amp;quot;&amp;gt;&amp;lt;h2&amp;gt;이번 주 할 일&amp;lt;/h2&amp;gt;&amp;lt;div class=&amp;quot;tb-wrap&amp;quot;&amp;gt;&amp;lt;table&amp;gt;&amp;lt;tbody&amp;gt;';
+    M.weekly.forEach(function(x){
+      w += '&amp;lt;tr&amp;gt;&amp;lt;td style=&amp;quot;width:1%;white-space:nowrap&amp;quot;&amp;gt;' + stTag(x.state,'',false) + '&amp;lt;/td&amp;gt;' +
+        '&amp;lt;td class=&amp;quot;vsl&amp;quot;&amp;gt;' + esc(x.label) + '&amp;lt;/td&amp;gt;&amp;lt;td class=&amp;quot;note&amp;quot;&amp;gt;' + esc(x.due) + '&amp;lt;/td&amp;gt;' +
+        '&amp;lt;td class=&amp;quot;num&amp;quot;&amp;gt;' + esc(x.at||'') + '&amp;lt;/td&amp;gt;&amp;lt;/tr&amp;gt;';
+      if (x.state !== '보냄' &amp;amp;&amp;amp; x.subject)
+        w += '&amp;lt;tr&amp;gt;&amp;lt;td&amp;gt;&amp;lt;/td&amp;gt;&amp;lt;td colspan=&amp;quot;3&amp;quot; class=&amp;quot;why&amp;quot;&amp;gt;' + esc(x.subject) + '&amp;lt;/td&amp;gt;&amp;lt;/tr&amp;gt;';
+    });
+    out.push(w + '&amp;lt;/tbody&amp;gt;&amp;lt;/table&amp;gt;&amp;lt;/div&amp;gt;&amp;lt;/div&amp;gt;');
+  }
+
+
+
+  out.push('&amp;lt;div style=&amp;quot;margin-top:16px;display:flex;gap:8px;flex-wrap:wrap&amp;quot;&amp;gt;' +
+    '&amp;lt;button class=&amp;quot;btn&amp;quot; onclick=&amp;quot;document.querySelectorAll(\'details\').forEach(function(d){d.open=true})&amp;quot;&amp;gt;모두 펼치기&amp;lt;/button&amp;gt;' +
+    '&amp;lt;button class=&amp;quot;btn&amp;quot; onclick=&amp;quot;document.querySelectorAll(\'details\').forEach(function(d){d.open=false})&amp;quot;&amp;gt;모두 접기&amp;lt;/button&amp;gt;' +
+    '&amp;lt;button class=&amp;quot;btn danger&amp;quot; onclick=&amp;quot;location.reload()&amp;quot;&amp;gt;올린 것 비우기&amp;lt;/button&amp;gt;&amp;lt;/div&amp;gt;');
+
+  document.getElementById('app').innerHTML = out.join('');
+}
+
+render();
+&amp;lt;/script&amp;gt;
+
+&amp;lt;script&amp;gt;
+/* [추가 20260922] 팝업으로 열렸을 때의 HOME 단추 ────────────────────────
+   이 쪽이 시작 화면(대시보드)에서 따로 뜬 창이면, HOME 은 '되돌아가기' 가 아니라
+   '이 창을 닫고 대시보드로' 가 맞다. 팝업 안에서 시작.html 을 또 열면
+   대시보드가 두 개가 되어 어느 쪽이 진짜인지 헷갈린다.
+   직접 열어본 경우(팝업이 아닌 경우)에는 지금까지처럼 그냥 이동한다.            */
+(function(){
+  if(!window.opener || window.opener.closed) return;
+  var a = document.querySelector('#skr-backbar a')
+       || document.getElementById('mosun-home')
+       || document.querySelector('a.home');
+  if(!a) return;
+  a.title = '모선마감 화면으로 갑니다 (이 창은 닫힙니다)';
+  a.addEventListener('click', function(e){
+    e.preventDefault();
+    try{ window.opener.focus(); }catch(err){}
+    window.close();
+  });
+})();
+&amp;lt;/script&amp;gt;
+&amp;lt;/body&amp;gt;
+&amp;lt;/html&amp;gt;
+&lt;/pre&gt;&lt;/details&gt;
+  &lt;/div&gt;
+  &lt;div class=&quot;item&quot;&gt;
+    &lt;div class=&quot;ihead&quot;&gt;
+      &lt;span class=&quot;kind k-view&quot;&gt;화면&lt;/span&gt;
+      &lt;span class=&quot;iname&quot;&gt;0 이 폴더 안내.html&lt;/span&gt;
+      &lt;span class=&quot;imeta&quot;&gt;123.4 KB · 2026-09-22&lt;/span&gt;
+    &lt;/div&gt;
+    &lt;div class=&quot;iwhat&quot;&gt;지금 보고 계신 이 화면입니다.&lt;/div&gt;
+    &lt;div class=&quot;iwhen&quot;&gt;뭐가 뭔지 모를 때&lt;/div&gt;
+    &lt;details&gt;&lt;summary&gt;안을 열어보기 &lt;span class=&quot;arw&quot;&gt;&lt;/span&gt;&lt;/summary&gt;&lt;pre id=&quot;f6&quot;&gt;&amp;lt;!DOCTYPE html&amp;gt;
+&amp;lt;html lang=&amp;quot;ko&amp;quot;&amp;gt;
+&amp;lt;head&amp;gt;
+&amp;lt;meta charset=&amp;quot;UTF-8&amp;quot;&amp;gt;
+&amp;lt;meta name=&amp;quot;viewport&amp;quot; content=&amp;quot;width=device-width,initial-scale=1&amp;quot;&amp;gt;
+&amp;lt;title&amp;gt;신고현황 폴더 안내&amp;lt;/title&amp;gt;
+&amp;lt;link href=&amp;quot;https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&amp;amp;family=Nunito:wght@600;700&amp;amp;display=swap&amp;quot; rel=&amp;quot;stylesheet&amp;quot;&amp;gt;
+&amp;lt;style&amp;gt;
+:root{--bg:#f4f6fb;--card:#fff;--border:#e4eaf4;--blue:#2563eb;--blue-lt:#eff6ff;
+--navy:#0f2d5e;--green:#16a34a;--green-lt:#f0fdf4;--green-bd:#86efac;
+--red:#dc2626;--text:#0f172a;--sub:#64748b;--muted:#94a3b8;}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Noto Sans KR','Apple SD Gothic Neo',sans-serif;background:var(--bg);
+color:var(--text);font-size:15px;line-height:1.6;padding:0 0 40px}
+.wrap{max-width:980px;margin:0 auto;padding:0 16px}
+.hdr{background:linear-gradient(135deg,var(--navy),#1d4ed8);color:#fff;padding:20px 0;margin-bottom:16px}
+.hdr h1{font-size:20px;font-weight:700}
+.hdr p{font-size:14px;color:#c7d9f5;margin-top:4px}
+.big{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:16px;margin-bottom:12px}
+.big h2{font-size:16px;font-weight:700;margin-bottom:8px}
+.big p{font-size:15px;color:var(--sub)}
+.flow{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;align-items:center}
+.flow .s{background:var(--blue-lt);border:1px solid #bfdbfe;color:var(--blue);
+border-radius:8px;padding:8px 12px;font-size:14px;font-weight:500}
+.flow .a{color:var(--muted);font-size:14px}
+.grp{margin-bottom:16px}
+.grp &amp;gt; h2{font-size:17px;font-weight:700;margin:20px 0 4px}
+.grp &amp;gt; .gd{font-size:14px;color:var(--sub);margin-bottom:10px}
+.item{background:var(--card);border:1px solid var(--border);border-radius:8px;
+padding:16px;margin-bottom:12px}
+.ihead{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.iname{font-size:16px;font-weight:700;font-family:'Nunito','Noto Sans KR',monospace}
+.imeta{margin-left:auto;font-size:13px;color:var(--muted)}
+.kind{font-size:12px;font-weight:500;padding:2px 9px;border-radius:99px;white-space:nowrap}
+.k-run{background:var(--green-lt);color:var(--green);border:1px solid var(--green-bd)}
+.k-view{background:var(--blue-lt);color:var(--blue);border:1px solid #bfdbfe}
+.k-code{background:#f8fafc;color:var(--sub);border:1px solid var(--border)}
+.k-doc{background:#fffbea;color:#a16207;border:1px solid #f0d98c}
+.iwhat{font-size:15px;margin-top:8px}
+.iwhen{font-size:14px;color:var(--sub);margin-top:4px}
+details{margin-top:10px}
+summary{cursor:pointer;list-style:none;font-size:14px;color:var(--blue);
+border:1px solid var(--border);border-radius:8px;padding:7px 14px;display:inline-flex;gap:6px}
+summary::-webkit-details-marker{display:none}
+details[open] summary .arw::after{content:'닫기'}
+details:not([open]) summary .arw::after{content:'▾'}
+pre{background:#0f172a;color:#e2e8f0;border-radius:8px;padding:14px;margin-top:10px;
+overflow:auto;max-height:460px;font-size:13px;line-height:1.55;
+font-family:'Nunito',Consolas,monospace;white-space:pre-wrap;word-break:break-all}
+.small{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:16px}
+.small table{width:100%;border-collapse:collapse;font-size:14px}
+.small td{padding:8px;border-bottom:1px solid #f1f5f9;vertical-align:top}
+.small td:first-child{font-weight:700;white-space:nowrap;width:1%;
+font-family:'Nunito','Noto Sans KR',monospace}
+.foot{font-size:13px;color:var(--muted);margin-top:16px;text-align:center}
+&amp;lt;/style&amp;gt;
+&amp;lt;/head&amp;gt;
+&amp;lt;body&amp;gt;
+&amp;lt;div class=&amp;quot;hdr&amp;quot;&amp;gt;&amp;lt;div class=&amp;quot;wrap&amp;quot;&amp;gt;
+  &amp;lt;h1&amp;gt;신고현황 폴더 안내&amp;lt;/h1&amp;gt;
+  &amp;lt;p&amp;gt;이 폴더에 있는 것 전부를 하나씩 설명합니다 · 각 항목의 &amp;quot;안을 열어보기&amp;quot; 를 누르면 실제 내용이 보입니다&amp;lt;/p&amp;gt;
+&amp;lt;/div&amp;gt;&amp;lt;/div&amp;gt;
+&amp;lt;div class=&amp;quot;wrap&amp;quot;&amp;gt;
+
+&amp;lt;div class=&amp;quot;big&amp;quot;&amp;gt;
+  &amp;lt;h2&amp;gt;이 폴더가 하는 일&amp;lt;/h2&amp;gt;
+  &amp;lt;p&amp;gt;체크리스트에 있는 모선을 기준으로, &amp;lt;b&amp;gt;PLISM 에 네 가지 신고가 됐는지&amp;lt;/b&amp;gt; 확인합니다
+     (수입신고 · 수출신고 · 수입위험물 · 수출위험물).
+     그리고 &amp;lt;b&amp;gt;마감리스트를 보냈는지&amp;lt;/b&amp;gt; 보낸편지함에서 같이 봅니다.&amp;lt;/p&amp;gt;
+  &amp;lt;div class=&amp;quot;flow&amp;quot;&amp;gt;
+    &amp;lt;span class=&amp;quot;s&amp;quot;&amp;gt;체크리스트&amp;lt;/span&amp;gt;&amp;lt;span class=&amp;quot;a&amp;quot;&amp;gt;→&amp;lt;/span&amp;gt;
+    &amp;lt;span class=&amp;quot;s&amp;quot;&amp;gt;keys.py&amp;lt;/span&amp;gt;&amp;lt;span class=&amp;quot;a&amp;quot;&amp;gt;→&amp;lt;/span&amp;gt;
+    &amp;lt;span class=&amp;quot;s&amp;quot;&amp;gt;pull.js&amp;lt;br&amp;gt;&amp;lt;small&amp;gt;PLISM 조회&amp;lt;/small&amp;gt;&amp;lt;/span&amp;gt;&amp;lt;span class=&amp;quot;a&amp;quot;&amp;gt;→&amp;lt;/span&amp;gt;
+    &amp;lt;span class=&amp;quot;s&amp;quot;&amp;gt;board.py&amp;lt;br&amp;gt;&amp;lt;small&amp;gt;판정&amp;lt;/small&amp;gt;&amp;lt;/span&amp;gt;&amp;lt;span class=&amp;quot;a&amp;quot;&amp;gt;→&amp;lt;/span&amp;gt;
+    &amp;lt;span class=&amp;quot;s&amp;quot;&amp;gt;index.html&amp;lt;br&amp;gt;&amp;lt;small&amp;gt;화면&amp;lt;/small&amp;gt;&amp;lt;/span&amp;gt;
+  &amp;lt;/div&amp;gt;
+&amp;lt;/div&amp;gt;
+
+&amp;lt;div class=&amp;quot;big&amp;quot;&amp;gt;
+  &amp;lt;h2&amp;gt;모르겠으면 이것만&amp;lt;/h2&amp;gt;
+  &amp;lt;p&amp;gt;&amp;lt;b&amp;gt;처음이라면&amp;lt;/b&amp;gt; — &amp;lt;b&amp;gt;PLISM 로그인.bat&amp;lt;/b&amp;gt; 을 눌러 로그인해 두세요. 한 번만 하면 됩니다.&amp;lt;br&amp;gt;
+     &amp;lt;b&amp;gt;평소에는&amp;lt;/b&amp;gt; — &amp;lt;b&amp;gt;실행.bat&amp;lt;/b&amp;gt; 하나만 누르면 됩니다. 끝나면 화면이 저절로 열립니다.&amp;lt;br&amp;gt;
+     나머지 파일은 실행.bat 이 알아서 부르는 것들이라 직접 누를 일이 없습니다.&amp;lt;/p&amp;gt;
+&amp;lt;/div&amp;gt;
+&amp;lt;div class=&amp;quot;grp&amp;quot;&amp;gt;&amp;lt;h2&amp;gt;1 · 처음 한 번만&amp;lt;/h2&amp;gt;&amp;lt;div class=&amp;quot;gd&amp;quot;&amp;gt;설치하듯 한 번 해 두는 것들입니다. 해 두면 다시 안 해도 됩니다.&amp;lt;/div&amp;gt;
+  &amp;lt;div class=&amp;quot;item&amp;quot;&amp;gt;
+    &amp;lt;div class=&amp;quot;ihead&amp;quot;&amp;gt;
+      &amp;lt;span class=&amp;quot;kind k-run&amp;quot;&amp;gt;누르는 것&amp;lt;/span&amp;gt;
+      &amp;lt;span class=&amp;quot;iname&amp;quot;&amp;gt;PLISM 로그인.bat&amp;lt;/span&amp;gt;
+      &amp;lt;span class=&amp;quot;imeta&amp;quot;&amp;gt;408 B · 2026-09-22&amp;lt;/span&amp;gt;
+    &amp;lt;/div&amp;gt;
+    &amp;lt;div class=&amp;quot;iwhat&amp;quot;&amp;gt;PLISM 로그인 창을 띄웁니다. 직접 로그인하면 이 폴더에 저장되고 창이 닫힙니다.&amp;lt;/div&amp;gt;
+    &amp;lt;div class=&amp;quot;iwhen&amp;quot;&amp;gt;처음 한 번 · 로그인이 풀렸을 때&amp;lt;/div&amp;gt;
+    &amp;lt;details&amp;gt;&amp;lt;summary&amp;gt;안을 열어보기 &amp;lt;span class=&amp;quot;arw&amp;quot;&amp;gt;&amp;lt;/span&amp;gt;&amp;lt;/summary&amp;gt;&amp;lt;pre id=&amp;quot;f1&amp;quot;&amp;gt;﻿@echo off
+chcp 65001 &amp;amp;gt;nul
+cd /d &amp;amp;quot;%~dp0&amp;amp;quot;
+title PLISM 로그인
+
+echo.
+echo   PLISM 로그인 창을 띄웁니다.
+echo.
+echo   크롬 창이 뜨면 직접 로그인해 주세요.
+echo   로그인이 확인되면 창이 저절로 닫힙니다. (최대 10분 기다립니다)
+echo.
+echo   한 번 해 두면 다음부터는 실행.bat 이 알아서 돌아갑니다.
+echo.
+
+node pull.js --login
+
+echo.
+pause
+&amp;lt;/pre&amp;gt;&amp;lt;/details&amp;gt;
+  &amp;lt;/div&amp;gt;
+  &amp;lt;div class=&amp;quot;item&amp;quot;&amp;gt;
+    &amp;lt;div class=&amp;quot;ihead&amp;quot;&amp;gt;
+      &amp;lt;span class=&amp;quot;kind k-code&amp;quot;&amp;gt;한 번 실행&amp;lt;/span&amp;gt;
+      &amp;lt;span class=&amp;quot;iname&amp;quot;&amp;gt;작업등록.ps1&amp;lt;/span&amp;gt;
+      &amp;lt;span class=&amp;quot;imeta&amp;quot;&amp;gt;2.2 KB · 2026-09-16&amp;lt;/span&amp;gt;
+    &amp;lt;/div&amp;gt;
+    &amp;lt;div class=&amp;quot;iwhat&amp;quot;&amp;gt;매일 11시·16시에 &amp;amp;quot;확인하세요&amp;amp;quot; 알림이 뜨도록 윈도우에 등록합니다.&amp;lt;/div&amp;gt;
+    &amp;lt;div class=&amp;quot;iwhen&amp;quot;&amp;gt;처음 한 번 (우클릭 → PowerShell에서 실행)&amp;lt;/div&amp;gt;
+    &amp;lt;details&amp;gt;&amp;lt;summary&amp;gt;안을 열어보기 &amp;lt;span class=&amp;quot;arw&amp;quot;&amp;gt;&amp;lt;/span&amp;gt;&amp;lt;/summary&amp;gt;&amp;lt;pre id=&amp;quot;f2&amp;quot;&amp;gt;# 신고현황 확인 알림 등록 — 매일 11:00 · 16:00
+# 사용법: 이 파일 우클릭 &amp;amp;gt; &amp;amp;quot;PowerShell에서 실행&amp;amp;quot;  (관리자 권한 필요 없음)
+
+$ErrorActionPreference = &amp;amp;quot;Stop&amp;amp;quot;
+$TaskName = &amp;amp;quot;신고현황_확인알림&amp;amp;quot;
+$Base     = Split-Path -Parent $MyInvocation.MyCommand.Path
+$Script   = Join-Path $Base &amp;amp;quot;알림.ps1&amp;amp;quot;
+
+if (-not (Test-Path $Script)) { throw &amp;amp;quot;알림.ps1 이 없습니다: $Script&amp;amp;quot; }
+
+$action = New-ScheduledTaskAction -Execute &amp;amp;quot;powershell.exe&amp;amp;quot; `
+    -Argument &amp;amp;quot;-NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File `&amp;amp;quot;$Script`&amp;amp;quot;&amp;amp;quot; `
+    -WorkingDirectory $Base
+
+# 매일 11시와 16시 — 알림만 뜨고, 조회는 [지금 확인] 을 눌렀을 때 돈다
+$t1 = New-ScheduledTaskTrigger -Daily -At 11:00am
+$t2 = New-ScheduledTaskTrigger -Daily -At 4:00pm
+
+$settings = New-ScheduledTaskSettingsSet `
+    -AllowStartIfOnBatteries `
+    -DontStopIfGoingOnBatteries `
+    -MultipleInstances IgnoreNew `
+    -ExecutionTimeLimit (New-TimeSpan -Hours 1)
+# 자리를 비운 사이 지나간 알림은 굳이 나중에 띄우지 않는다 (11시 알림이 3시에 뜨면 헷갈린다)
+$settings.StartWhenAvailable = $false
+
+$principal = New-ScheduledTaskPrincipal -UserId &amp;amp;quot;$env:USERDOMAIN\$env:USERNAME&amp;amp;quot; `
+    -LogonType Interactive -RunLevel Limited
+
+if (Get-ScheduledTask -TaskName $TaskName -ErrorAction SilentlyContinue) {
+    Unregister-ScheduledTask -TaskName $TaskName -Confirm:$false
+    Write-Host &amp;amp;quot;기존 알림을 지우고 다시 등록합니다.&amp;amp;quot; -ForegroundColor Yellow
+}
+
+Register-ScheduledTask -TaskName $TaskName -Action $action -Trigger @($t1, $t2) `
+    -Settings $settings -Principal $principal `
+    -Description &amp;amp;quot;매일 11시·16시 신고현황(적하목록·위험물) 확인 알림&amp;amp;quot; | Out-Null
+
+Write-Host &amp;amp;quot;&amp;amp;quot;
+Write-Host &amp;amp;quot;등록 완료: $TaskName  (매일 11:00 / 16:00)&amp;amp;quot; -ForegroundColor Green
+Get-ScheduledTask -TaskName $TaskName | Get-ScheduledTaskInfo |
+    Select-Object TaskName, NextRunTime, LastRunTime | Format-List
+Write-Host (&amp;amp;quot;지금 한 번 띄워보려면:  Start-ScheduledTask -TaskName '{0}'&amp;amp;quot; -f $TaskName)
+Write-Host (&amp;amp;quot;알림을 끄려면:          Unregister-ScheduledTask -TaskName '{0}' -Confirm:$$false&amp;amp;quot; -f $TaskName)
+Write-Host (&amp;amp;quot;시간을 바꾸려면 이 파일의 11:00am / 4:00pm 을 고치고 다시 실행하세요.&amp;amp;quot;)
+&amp;lt;/pre&amp;gt;&amp;lt;/details&amp;gt;
+  &amp;lt;/div&amp;gt;&amp;lt;/div&amp;gt;&amp;lt;div class=&amp;quot;grp&amp;quot;&amp;gt;&amp;lt;h2&amp;gt;2 · 매일 누르는 것&amp;lt;/h2&amp;gt;&amp;lt;div class=&amp;quot;gd&amp;quot;&amp;gt;평소에 쓰는 건 사실상 이 둘뿐입니다.&amp;lt;/div&amp;gt;
+  &amp;lt;div class=&amp;quot;item&amp;quot;&amp;gt;
+    &amp;lt;div class=&amp;quot;ihead&amp;quot;&amp;gt;
+      &amp;lt;span class=&amp;quot;kind k-run&amp;quot;&amp;gt;누르는 것&amp;lt;/span&amp;gt;
+      &amp;lt;span class=&amp;quot;iname&amp;quot;&amp;gt;실행.bat&amp;lt;/span&amp;gt;
+      &amp;lt;span class=&amp;quot;imeta&amp;quot;&amp;gt;851 B · 2026-09-22&amp;lt;/span&amp;gt;
+    &amp;lt;/div&amp;gt;
+    &amp;lt;div class=&amp;quot;iwhat&amp;quot;&amp;gt;처음부터 끝까지 다 돌립니다. 체크리스트에서 열쇠를 모으고 → PLISM 에 조회하고 → 판정하고 → 보낸 메일을 확인하고 → 화면을 엽니다.&amp;lt;/div&amp;gt;
+    &amp;lt;div class=&amp;quot;iwhen&amp;quot;&amp;gt;매일. 알림이 뜨면 이것&amp;lt;/div&amp;gt;
+    &amp;lt;details&amp;gt;&amp;lt;summary&amp;gt;안을 열어보기 &amp;lt;span class=&amp;quot;arw&amp;quot;&amp;gt;&amp;lt;/span&amp;gt;&amp;lt;/summary&amp;gt;&amp;lt;pre id=&amp;quot;f3&amp;quot;&amp;gt;@echo off
+chcp 65001 &amp;amp;gt;nul
+cd /d &amp;amp;quot;%~dp0&amp;amp;quot;
+title 신고현황 확인
+
+set &amp;amp;quot;PY=C:\Users\SMLEE\AppData\Local\Python\bin\python.exe&amp;amp;quot;
+if not exist &amp;amp;quot;%PY%&amp;amp;quot; set &amp;amp;quot;PY=python&amp;amp;quot;
+
+echo.
+echo  [1/4] 체크리스트에서 조회 열쇠를 모으는 중...
+&amp;amp;quot;%PY%&amp;amp;quot; keys.py
+if errorlevel 1 goto :err
+
+echo.
+echo  [2/4] PLISM 조회 중... (창이 뜨면 로그인해 주세요)
+node pull.js
+if errorlevel 1 goto :err
+
+echo.
+echo  [3/4] 신고현황 정리
+&amp;amp;quot;%PY%&amp;amp;quot; board.py
+if errorlevel 1 goto :err
+
+echo.
+echo  [4/4] 보낸 메일로 마감리스트 발송 확인
+&amp;amp;quot;%PY%&amp;amp;quot; mail.py
+
+echo.
+pause
+exit /b 0
+
+:err
+echo.
+echo  문제가 생겨서 멈췄습니다. 위 내용을 그대로 복사해 두시면 고칠 수 있습니다.
+echo.
+echo.
+echo  화면으로 보기 - index.html 을 엽니다.
+start &amp;amp;quot;&amp;amp;quot; &amp;amp;quot;%~dp0index.html&amp;amp;quot;
+pause
+exit /b 1
+&amp;lt;/pre&amp;gt;&amp;lt;/details&amp;gt;
+  &amp;lt;/div&amp;gt;
+  &amp;lt;div class=&amp;quot;item&amp;quot;&amp;gt;
+    &amp;lt;div class=&amp;quot;ihead&amp;quot;&amp;gt;
+      &amp;lt;span class=&amp;quot;kind k-run&amp;quot;&amp;gt;누르는 것&amp;lt;/span&amp;gt;
+      &amp;lt;span class=&amp;quot;iname&amp;quot;&amp;gt;메일확인만.bat&amp;lt;/span&amp;gt;
+      &amp;lt;span class=&amp;quot;imeta&amp;quot;&amp;gt;518 B · 2026-09-22&amp;lt;/span&amp;gt;
+    &amp;lt;/div&amp;gt;
+    &amp;lt;div class=&amp;quot;iwhat&amp;quot;&amp;gt;PLISM 은 건너뛰고 보낸편지함만 봅니다. 로그인이 필요 없어 빠릅니다.&amp;lt;/div&amp;gt;
+    &amp;lt;div class=&amp;quot;iwhen&amp;quot;&amp;gt;마감리스트 보냈는지만 볼 때&amp;lt;/div&amp;gt;
+    &amp;lt;details&amp;gt;&amp;lt;summary&amp;gt;안을 열어보기 &amp;lt;span class=&amp;quot;arw&amp;quot;&amp;gt;&amp;lt;/span&amp;gt;&amp;lt;/summary&amp;gt;&amp;lt;pre id=&amp;quot;f4&amp;quot;&amp;gt;@echo off
+chcp 65001 &amp;amp;gt;nul
+cd /d &amp;amp;quot;%~dp0&amp;amp;quot;
+title 보낸 메일로 확인
+
+set &amp;amp;quot;PY=C:\Users\SMLEE\AppData\Local\Python\bin\python.exe&amp;amp;quot;
+if not exist &amp;amp;quot;%PY%&amp;amp;quot; set &amp;amp;quot;PY=python&amp;amp;quot;
+
+echo.
+echo  체크리스트의 모선에 대해, 마감리스트를 보냈는지 보낸편지함에서 확인합니다.
+echo  (PLISM 조회는 하지 않습니다. 로그인할 필요 없습니다.)
+echo.
+&amp;amp;quot;%PY%&amp;amp;quot; keys.py
+&amp;amp;quot;%PY%&amp;amp;quot; mail.py
+echo.
+echo.
+echo  화면으로 보기 - index.html 을 엽니다.
+start &amp;amp;quot;&amp;amp;quot; &amp;amp;quot;%~dp0index.html&amp;amp;quot;
+pause
+&amp;lt;/pre&amp;gt;&amp;lt;/details&amp;gt;
+  &amp;lt;/div&amp;gt;&amp;lt;/div&amp;gt;&amp;lt;div class=&amp;quot;grp&amp;quot;&amp;gt;&amp;lt;h2&amp;gt;3 · 결과를 보는 화면&amp;lt;/h2&amp;gt;&amp;lt;div class=&amp;quot;gd&amp;quot;&amp;gt;실행.bat 을 돌리면 저절로 열립니다. 따로 눌러서 열어도 됩니다.&amp;lt;/div&amp;gt;
+  &amp;lt;div class=&amp;quot;item&amp;quot;&amp;gt;
+    &amp;lt;div class=&amp;quot;ihead&amp;quot;&amp;gt;
+      &amp;lt;span class=&amp;quot;kind k-view&amp;quot;&amp;gt;화면&amp;lt;/span&amp;gt;
+      &amp;lt;span class=&amp;quot;iname&amp;quot;&amp;gt;index.html&amp;lt;/span&amp;gt;
+      &amp;lt;span class=&amp;quot;imeta&amp;quot;&amp;gt;26.6 KB · 2026-09-22&amp;lt;/span&amp;gt;
+    &amp;lt;/div&amp;gt;
+    &amp;lt;div class=&amp;quot;iwhat&amp;quot;&amp;gt;신고현황 표와 마감리스트 발송 현황을 봅니다. data 폴더의 파일을 끌어다 놓아도 바로 표가 나옵니다.&amp;lt;/div&amp;gt;
+    &amp;lt;div class=&amp;quot;iwhen&amp;quot;&amp;gt;결과를 볼 때&amp;lt;/div&amp;gt;
+    &amp;lt;details&amp;gt;&amp;lt;summary&amp;gt;안을 열어보기 &amp;lt;span class=&amp;quot;arw&amp;quot;&amp;gt;&amp;lt;/span&amp;gt;&amp;lt;/summary&amp;gt;&amp;lt;pre id=&amp;quot;f5&amp;quot;&amp;gt;&amp;amp;lt;!DOCTYPE html&amp;amp;gt;
+&amp;amp;lt;html lang=&amp;amp;quot;ko&amp;amp;quot;&amp;amp;gt;
+&amp;amp;lt;head&amp;amp;gt;
+&amp;amp;lt;meta charset=&amp;amp;quot;UTF-8&amp;amp;quot;&amp;amp;gt;
+&amp;amp;lt;meta name=&amp;amp;quot;viewport&amp;amp;quot; content=&amp;amp;quot;width=device-width,initial-scale=1&amp;amp;quot;&amp;amp;gt;
+&amp;amp;lt;title&amp;amp;gt;신고현황&amp;amp;lt;/title&amp;amp;gt;
+&amp;amp;lt;link rel=&amp;amp;quot;preconnect&amp;amp;quot; href=&amp;amp;quot;https://fonts.googleapis.com&amp;amp;quot;&amp;amp;gt;
+&amp;amp;lt;link rel=&amp;amp;quot;preconnect&amp;amp;quot; href=&amp;amp;quot;https://fonts.gstatic.com&amp;amp;quot; crossorigin&amp;amp;gt;
+&amp;amp;lt;link href=&amp;amp;quot;https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&amp;amp;amp;family=Nunito:wght@600;700;800&amp;amp;amp;display=swap&amp;amp;quot; rel=&amp;amp;quot;stylesheet&amp;amp;quot;&amp;amp;gt;
+&amp;amp;lt;script src=&amp;amp;quot;https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js&amp;amp;quot;&amp;amp;gt;&amp;amp;lt;/script&amp;amp;gt;
+&amp;amp;lt;style&amp;amp;gt;
+:root{
+  --bg:#f4f6fb; --card:#fff; --border:#e4eaf4;
+  --blue:#2563eb; --blue-lt:#eff6ff; --blue-mid:#bfdbfe;
+  --navy:#0f2d5e; --green:#16a34a; --green-lt:#f0fdf4; --green-bd:#86efac;
+  --red:#dc2626; --red-lt:#fff1f1;
+  --text:#0f172a; --sub:#64748b; --muted:#94a3b8;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Noto Sans KR','Apple SD Gothic Neo',sans-serif;background:var(--bg);
+     color:var(--text);font-size:15px;line-height:1.6;padding:0 0 40px}
+.wrap{max-width:1180px;margin:0 auto;padding:0 16px}
+
+.hdr{background:linear-gradient(135deg,var(--navy),#1d4ed8);color:#fff;padding:18px 0;margin-bottom:16px}
+.hdr .wrap{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.hdr h1{font-size:20px;font-weight:700}
+.hdr .meta{font-size:14px;color:#c7d9f5;margin-left:auto;text-align:right}
+.hdr .meta b{color:#fff;font-weight:500}
+
+.btn{display:inline-flex;align-items:center;gap:6px;padding:7px 15px;border-radius:8px;
+     border:1px solid var(--border);background:var(--card);color:var(--blue);
+     font-size:14px;font-weight:500;font-family:inherit;cursor:pointer;transition:all .12s}
+.btn:hover{background:var(--blue-lt)}
+.btn.primary{background:var(--navy);color:#fff;border-color:var(--navy)}
+.btn.primary:hover{background:#12386f}
+.btn.danger{background:var(--card);color:var(--red);border-color:#f3c7c7}
+.btn.danger:hover{background:var(--red-lt)}
+
+.card{background:var(--card);border:1px solid var(--border);border-radius:8px;
+      padding:16px;margin-bottom:12px}
+.card &amp;amp;gt; h2{font-size:16px;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.card &amp;amp;gt; h2 .cnt{font-size:14px;font-weight:500;color:var(--sub)}
+.note{font-size:14px;color:var(--sub)}
+
+/* ── 올리는 칸 ── */
+.drop{border:1.5px dashed #c7d7f0;border-radius:8px;padding:16px;background:#f8faff;
+      cursor:pointer;transition:all .15s;text-align:center}
+.drop:hover,.drop.over{background:var(--blue-lt);border-color:var(--blue)}
+.drop .big{font-size:15px;font-weight:500}
+.drop .sm{font-size:14px;color:var(--sub);margin-top:4px}
+.loaded{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:99px;
+      font-size:13px;background:var(--green-lt);color:var(--green);border:1px solid var(--green-bd)}
+.chip.miss{background:#f8fafc;color:var(--sub);border-color:var(--border)}
+
+.sum{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+.sum .box{flex:1 1 150px;background:var(--card);border:1px solid var(--border);
+          border-radius:8px;padding:16px}
+.sum .k{font-size:14px;color:var(--sub)}
+.sum .v{font-size:24px;font-weight:800;font-family:'Nunito',sans-serif;margin-top:2px}
+.sum .box.warn{border-color:#f3c7c7;background:var(--red-lt)}
+.sum .box.warn .v{color:var(--red)}
+.sum .box.good{border-color:var(--green-bd);background:var(--green-lt)}
+.sum .box.good .v{color:var(--green)}
+
+.alert{border-left:4px solid var(--red);background:var(--red-lt);border-radius:8px;
+       padding:12px 16px;margin-bottom:8px}
+.alert.wait{border-left-color:var(--sub);background:#f8fafc}
+.alert .ttl{font-weight:700;font-size:15px}
+.alert .sub{font-size:14px;color:var(--sub);margin-top:2px}
+.alert .det{font-size:14px;margin-top:4px}
+
+table{width:100%;border-collapse:collapse;font-size:14px}
+th{background:#f7f9fd;color:var(--sub);font-weight:500;text-align:left;
+   padding:10px 8px;border-bottom:2px solid var(--border);white-space:nowrap}
+td{padding:9px 8px;border-bottom:1px solid #f1f5f9;height:38px;vertical-align:middle}
+tbody tr:hover{background:#f7fbff}
+td.vsl{font-weight:700}
+td.num{text-align:right;font-family:'Nunito',monospace}
+.tb-wrap{overflow-x:auto}
+
+.st{display:inline-block;padding:2px 9px;border-radius:99px;font-size:13px;
+    font-weight:500;white-space:nowrap}
+.st.ok  {background:var(--green-lt);color:var(--green);border:1px solid var(--green-bd)}
+.st.work{background:var(--blue-lt); color:var(--blue); border:1px solid var(--blue-mid)}
+.st.err {background:var(--red-lt);  color:var(--red);  border:1px solid #f3c7c7}
+.st.none{background:#f8fafc;        color:var(--sub);  border:1px solid var(--border)}
+.st.na  {background:transparent;    color:var(--muted);border:1px solid transparent}
+.why{font-size:13px;color:var(--muted);display:block;margin-top:1px}
+
+details{margin-bottom:12px}
+details &amp;amp;gt; summary{background:var(--card);border:1px solid var(--border);border-radius:8px;
+  padding:14px 16px;font-size:16px;font-weight:700;cursor:pointer;list-style:none;
+  display:flex;align-items:center;gap:8px}
+details[open] &amp;amp;gt; summary{border-radius:8px 8px 0 0;border-bottom:none}
+details &amp;amp;gt; summary::-webkit-details-marker{display:none}
+details &amp;amp;gt; summary .cnt{font-size:14px;font-weight:500;color:var(--sub)}
+details &amp;amp;gt; summary .arw{margin-left:auto;color:var(--muted);font-size:13px;font-weight:500}
+details[open] &amp;amp;gt; summary .arw::after{content:'접기'}
+details:not([open]) &amp;amp;gt; summary .arw::after{content:'펼치기'}
+details .body{background:var(--card);border:1px solid var(--border);border-top:none;
+  border-radius:0 0 8px 8px;padding:0 16px 8px}
+
+.empty{padding:24px 16px;text-align:center;color:var(--sub);font-size:14px}
+.stale{background:#fffbea;border:1px solid #f0d98c;border-radius:8px;padding:12px 16px;
+       margin-bottom:12px;font-size:14px}
+.legend{font-size:13px;color:var(--muted);margin-top:8px}
+.legend b{color:var(--sub);font-weight:500}
+.log{font-size:13px;color:var(--sub);margin-top:10px;white-space:pre-wrap;
+     font-family:'Nunito',monospace;max-height:150px;overflow:auto}
+&amp;amp;lt;/style&amp;amp;gt;
+&amp;amp;lt;/head&amp;amp;gt;
+&amp;amp;lt;body&amp;amp;gt;
+
+&amp;amp;lt;div class=&amp;amp;quot;hdr&amp;amp;quot;&amp;amp;gt;
+  &amp;amp;lt;div class=&amp;amp;quot;wrap&amp;amp;quot;&amp;amp;gt;
+    &amp;amp;lt;h1&amp;amp;gt;신고현황&amp;amp;lt;/h1&amp;amp;gt;
+    &amp;amp;lt;div class=&amp;amp;quot;meta&amp;amp;quot; id=&amp;amp;quot;meta&amp;amp;quot;&amp;amp;gt;&amp;amp;lt;/div&amp;amp;gt;
+  &amp;amp;lt;/div&amp;amp;gt;
+&amp;amp;lt;/div&amp;amp;gt;
+
+&amp;amp;lt;div class=&amp;amp;quot;wrap&amp;amp;quot;&amp;amp;gt;
+
+  &amp;amp;lt;!-- ══ 자료 올리기 ══ --&amp;amp;gt;
+  &amp;amp;lt;div class=&amp;amp;quot;card&amp;amp;quot;&amp;amp;gt;
+    &amp;amp;lt;h2&amp;amp;gt;자료 올리기 &amp;amp;lt;span class=&amp;amp;quot;cnt&amp;amp;quot;&amp;amp;gt;올린 것은 이 컴퓨터 밖으로 나가지 않습니다&amp;amp;lt;/span&amp;amp;gt;&amp;amp;lt;/h2&amp;amp;gt;
+    &amp;amp;lt;div class=&amp;amp;quot;drop&amp;amp;quot; id=&amp;amp;quot;drop&amp;amp;quot;&amp;amp;gt;
+      &amp;amp;lt;div class=&amp;amp;quot;big&amp;amp;quot;&amp;amp;gt;여기로 끌어다 놓거나, 눌러서 고르세요&amp;amp;lt;/div&amp;amp;gt;
+      &amp;amp;lt;div class=&amp;amp;quot;sm&amp;amp;quot;&amp;amp;gt;여러 개 한 번에 올려도 됩니다 · 파일 이름이 달라도 내용을 보고 알아서 가립니다&amp;amp;lt;/div&amp;amp;gt;
+      &amp;amp;lt;input type=&amp;amp;quot;file&amp;amp;quot; id=&amp;amp;quot;file&amp;amp;quot; multiple accept=&amp;amp;quot;.json,.js,.xls,.xlsx&amp;amp;quot; style=&amp;amp;quot;display:none&amp;amp;quot;&amp;amp;gt;
+    &amp;amp;lt;/div&amp;amp;gt;
+    &amp;amp;lt;div class=&amp;amp;quot;loaded&amp;amp;quot; id=&amp;amp;quot;loaded&amp;amp;quot;&amp;amp;gt;&amp;amp;lt;/div&amp;amp;gt;
+    &amp;amp;lt;div class=&amp;amp;quot;log&amp;amp;quot; id=&amp;amp;quot;log&amp;amp;quot;&amp;amp;gt;&amp;amp;lt;/div&amp;amp;gt;
+  &amp;amp;lt;/div&amp;amp;gt;
+
+  &amp;amp;lt;div id=&amp;amp;quot;app&amp;amp;quot;&amp;amp;gt;&amp;amp;lt;/div&amp;amp;gt;
+&amp;amp;lt;/div&amp;amp;gt;
+
+&amp;amp;lt;!-- 배치파일로 돌렸으면 이 두 개가 자동으로 들어온다. 없으면 위에서 올리면 된다. --&amp;amp;gt;
+&amp;amp;lt;script src=&amp;amp;quot;data/board.js&amp;amp;quot; onerror=&amp;amp;quot;void 0&amp;amp;quot;&amp;amp;gt;&amp;amp;lt;/script&amp;amp;gt;
+&amp;amp;lt;script src=&amp;amp;quot;data/mail.js&amp;amp;quot;  onerror=&amp;amp;quot;void 0&amp;amp;quot;&amp;amp;gt;&amp;amp;lt;/script&amp;amp;gt;
+&amp;amp;lt;script&amp;amp;gt;
+'use strict';
+
+/* ════════════════════════════════════════════════════════════
+   판정 규칙 — board.py 와 같은 규칙이다.
+   한쪽만 고치면 화면과 검은 창의 답이 달라진다. 고칠 땐 둘 다 고친다.
+   (board.js 가 있으면 그쪽 판정을 그대로 쓰고 여기는 쓰지 않는다)
+   ════════════════════════════════════════════════════════════ */
+var OK='승인', WORK='진행중', ERR='오류', NONE='미신고', MINE='타서비스';
+
+function isMrn(cell){
+  var s = String(cell || '').trim().toUpperCase();
+  return (s.length &amp;amp;gt;= 10 &amp;amp;amp;&amp;amp;amp; /^\d\d/.test(s) &amp;amp;amp;&amp;amp;amp; (s.slice(-1) === 'I' || s.slice(-1) === 'E')) ? s : null;
+}
+function findRow(cell, name, vygs, rows){
+  var mrn = isMrn(cell), i;
+  if (mrn) for (i = 0; i &amp;amp;lt; rows.length; i++) if (rows[i].mrn === mrn) return [rows[i], ''];
+  var up = function(x){ return String(x || '').trim().toUpperCase(); };
+  var hit = rows.filter(function(r){
+    return up(r.vsl) === up(name) &amp;amp;amp;&amp;amp;amp; vygs.some(function(v){ return v &amp;amp;amp;&amp;amp;amp; up(r.vyg) === up(v); });
+  });
+  if (hit.length === 1) return [hit[0], mrn ? 'MRN 다름' : '체크리스트에 MRN 미기재'];
+  return [null, ''];
+}
+function judgeMf(cell, row, how){
+  if (!row) {
+    var memo = String(cell || '').trim();
+    if (memo &amp;amp;amp;&amp;amp;amp; !isMrn(memo)) return {s:MINE, d:memo};
+    return {s:NONE, d:'PLISM 에 없음'};
+  }
+  var tail = how ? ' (' + how + ')' : '';
+  if (row.err) return {s:ERR, d:'오류 B/L ' + row.err + '건' + tail};
+  var st = String(row.st || '').trim();
+  if (st === '승인') return {s:OK, d:'승인' + tail};
+  if (st) return {s:WORK, d:st + tail};
+  return {s:WORK, d:'상태 없음' + tail};
+}
+function judgeDg(rows){
+  if (!rows.length) return {s:NONE, d:'신고 없음'};
+  var latest = {};
+  rows.forEach(function(r){
+    (r.res || []).forEach(function(res){
+      var doc = res.doc, at = String(res.at || '');
+      if (doc &amp;amp;amp;&amp;amp;amp; (!(doc in latest) || at &amp;amp;gt; String(latest[doc].at || ''))) latest[doc] = res;
+    });
+  });
+  var docs = Object.keys(latest);
+  if (!docs.length) return {s:WORK, d:'전송됨 · 응답 대기'};
+  var bad = docs.filter(function(d){ return (latest[d].stat || '') !== '(정상처리)'; })
+                .map(function(d){ return (d + ' ' + (latest[d].code || '')).trim(); });
+  if (bad.length) return {s:ERR, d:bad.join(' / ')};
+  if (rows.some(function(r){ return r.wEq === 'N' || r.cEq === 'N'; }))
+    return {s:WORK, d:'정상처리 (중량·컨 수량 불일치)'};
+  return {s:OK, d:'정상처리 ' + docs.length + '종'};
+}
+
+/* ════════════════════════════════════════════════════════════
+   올린 자료 보관함
+   ════════════════════════════════════════════════════════════ */
+var DATA = {
+  board: window.BOARD || null,   // board.py 가 이미 판정해 둔 것
+  keys:  null,                   // keys.json — 모선 목록
+  plism: null,                   // plism.json — PLISM 조회 원자료
+  mail:  window.MAIL || null,    // mail.json — 마감리스트 발송
+  signs: null                    // 엑셀에서 읽은 호출부호 명부
+};
+var logLines = [];
+function say(s){ logLines.push(s); document.getElementById('log').textContent = logLines.join('\n'); }
+
+function esc(s){
+  return String(s == null ? '' : s)
+    .replace(/&amp;amp;amp;/g,'&amp;amp;amp;amp;').replace(/&amp;amp;lt;/g,'&amp;amp;amp;lt;').replace(/&amp;amp;gt;/g,'&amp;amp;amp;gt;').replace(/&amp;amp;quot;/g,'&amp;amp;amp;quot;');
+}
+
+/* ── 파일 가리기: 이름이 아니라 내용을 본다 ───────────────── */
+function takeJson(obj, fname){
+  if (obj &amp;amp;amp;&amp;amp;amp; obj.rows &amp;amp;amp;&amp;amp;amp; obj.rows.length &amp;amp;amp;&amp;amp;amp; ('imp_mf' in (obj.rows[0] || {}))) {
+    DATA.board = obj; return 'board (판정 끝난 신고현황)';
+  }
+  if (obj &amp;amp;amp;&amp;amp;amp; obj.imp &amp;amp;amp;&amp;amp;amp; obj.exp &amp;amp;amp;&amp;amp;amp; obj.dg) { DATA.plism = obj; return 'plism (PLISM 조회 원자료)'; }
+  if (obj &amp;amp;amp;&amp;amp;amp; obj.rows &amp;amp;amp;&amp;amp;amp; obj.rows.length &amp;amp;amp;&amp;amp;amp; ('수입리스트' in (obj.rows[0] || {}))) {
+    DATA.mail = obj; return 'mail (마감리스트 발송)';
+  }
+  if (obj &amp;amp;amp;&amp;amp;amp; obj.rows &amp;amp;amp;&amp;amp;amp; obj.rows.length &amp;amp;amp;&amp;amp;amp; ('vyg_in' in (obj.rows[0] || {}))) {
+    DATA.keys = obj; return 'keys (모선 목록 ' + obj.rows.length + '척)';
+  }
+  if (obj &amp;amp;amp;&amp;amp;amp; obj.rows &amp;amp;amp;&amp;amp;amp; !Array.isArray(obj.rows)) {          // 체크리스트 스냅샷
+    var arr = Object.keys(obj.rows).map(function(k){ var v = obj.rows[k]; v.key = k; return v; });
+    DATA.keys = {rows: arr, week: obj.week, snapshot: fname};
+    return '체크리스트 스냅샷 (' + arr.length + '척)';
+  }
+  return null;
+}
+function takeExcel(wb, fname){
+  /* 선박 파티큘러(선박|VesselName|Service|CallSign) 또는 체크리스트 AY:AZ 표 */
+  var map = DATA.signs || {}, n = 0;
+  wb.SheetNames.forEach(function(sn){
+    var rows = XLSX.utils.sheet_to_json(wb.Sheets[sn], {header:1, defval:''});
+    rows.forEach(function(r){
+      var code = String(r[0] || '').trim(), sign = String(r[3] || '').trim();
+      if (code &amp;amp;amp;&amp;amp;amp; /^[A-Z0-9]{4,10}$/i.test(sign) &amp;amp;amp;&amp;amp;amp; !map[code.toUpperCase()]) { map[code.toUpperCase()] = sign; n++; }
+      var c2 = String(r[50] || '').trim(), s2 = String(r[51] || '').trim();   /* AY / AZ */
+      if (c2 &amp;amp;amp;&amp;amp;amp; /^[A-Z0-9]{4,10}$/i.test(s2) &amp;amp;amp;&amp;amp;amp; !map[c2.toUpperCase()]) { map[c2.toUpperCase()] = s2; n++; }
+    });
+  });
+  DATA.signs = map;
+  return n ? '호출부호 명부 ' + n + '척' : null;
+}
+
+function readFiles(files){
+  var left = files.length;
+  if (!left) return;
+  Array.prototype.forEach.call(files, function(f){
+    var rd = new FileReader();
+    var isX = /\.(xls|xlsx)$/i.test(f.name);
+    rd.onload = function(e){
+      try {
+        var what = null;
+        if (isX) {
+          if (typeof XLSX === 'undefined') throw new Error('엑셀 읽는 부품을 못 불러왔습니다 (인터넷 확인)');
+          what = takeExcel(XLSX.read(e.target.result, {type:'binary'}), f.name);
+        } else {
+          var txt = e.target.result;
+          var m = String(txt).match(/^\s*window\.\w+\s*=\s*([\s\S]*?);?\s*$/);   /* board.js / mail.js */
+          what = takeJson(JSON.parse(m ? m[1] : txt), f.name);
+        }
+        say(what ? ('읽음  ' + f.name + '  →  ' + what)
+                 : ('모르는 형식  ' + f.name + ' — 건너뜁니다'));
+      } catch (err) {
+        say('못 읽음  ' + f.name + ' — ' + err.message);
+      }
+      if (--left === 0) render();
+    };
+    rd.onerror = function(){ say('못 읽음  ' + f.name); if (--left === 0) render(); };
+    if (isX) rd.readAsBinaryString(f); else rd.readAsText(f, 'utf-8');
+  });
+}
+
+/* ── 올리는 칸 동작 ─────────────────────────────────────── */
+var drop = document.getElementById('drop'), fileInput = document.getElementById('file');
+drop.onclick = function(){ fileInput.click(); };
+fileInput.onchange = function(){ readFiles(this.files); this.value = ''; };
+['dragenter','dragover'].forEach(function(ev){
+  drop.addEventListener(ev, function(e){ e.preventDefault(); drop.classList.add('over'); });
+});
+['dragleave','drop'].forEach(function(ev){
+  drop.addEventListener(ev, function(e){ e.preventDefault(); drop.classList.remove('over'); });
+});
+drop.addEventListener('drop', function(e){ readFiles(e.dataTransfer.files); });
+
+/* ════════════════════════════════════════════════════════════
+   화면 그리기
+   ════════════════════════════════════════════════════════════ */
+function etbText(iso){
+  if (!iso) return '—';
+  return String(iso).replace('T',' ').slice(5,16);       /* 09-21 04:30 */
+}
+function today(){
+  var d = new Date();
+  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+}
+var STYLE = {};
+STYLE[OK]={cls:'ok'}; STYLE[WORK]={cls:'work'}; STYLE[ERR]={cls:'err'};
+STYLE[NONE]={cls:'none'}; STYLE[MINE]={cls:'na'};
+STYLE['보냄']={cls:'ok'}; STYLE['아직']={cls:'none'}; STYLE['해당없음']={cls:'na'};
+function stTag(state, why, showWhy){
+  var st = STYLE[state] || {cls:'none'};
+  var h = '&amp;amp;lt;span class=&amp;amp;quot;st ' + st.cls + '&amp;amp;quot;&amp;amp;gt;' + esc(state || '—') + '&amp;amp;lt;/span&amp;amp;gt;';
+  if (showWhy &amp;amp;amp;&amp;amp;amp; why) h += '&amp;amp;lt;span class=&amp;amp;quot;why&amp;amp;quot;&amp;amp;gt;' + esc(why) + '&amp;amp;lt;/span&amp;amp;gt;';
+  return h;
+}
+
+/* keys + plism 을 합쳐 board 와 같은 모양으로 만든다 (board.js 가 없을 때만) */
+function buildBoard(){
+  if (DATA.board) return DATA.board;
+  if (!DATA.keys) return null;
+  var p = DATA.plism;
+  var rows = DATA.keys.rows.map(function(v){
+    var sign = (v.sign || v.call || '') || (DATA.signs &amp;amp;amp;&amp;amp;amp; DATA.signs[String(v.vsl||'').toUpperCase()]) || '';
+    var base = {name:v.name, vsl:v.vsl, svc_in:v.svc_in, svc_out:v.svc_out, opr:v.opr,
+                sign:sign, seq:(v.seq||''), vyg_in:v.vyg_in, vyg_out:v.vyg_out,
+                etb:v.etb, etd:v.etd};
+    if (!p) {                                   /* PLISM 자료가 없으면 판정하지 않는다 */
+      base.imp_mf = base.exp_mf = base.imp_dg = base.exp_dg = {s:'', d:''};
+      return base;
+    }
+    var seq = String(v.seq || '').trim();
+    function dgRows(flag){
+      return (p.dg || []).filter(function(r){
+        return r.cs === sign &amp;amp;amp;&amp;amp;amp; r.inflag === flag &amp;amp;amp;&amp;amp;amp;
+               (!seq || String(r.ser).replace(/^0+/,'') === seq.replace(/^0+/,''));
+      });
+    }
+    var a = findRow(v.imp_cell, v.name, [v.vyg_in, v.vyg_out], p.imp || []);
+    var b = findRow(v.exp_cell, v.name, [v.vyg_out, v.vyg_in], p.exp || []);
+    base.imp_mf = judgeMf(v.imp_cell, a[0], a[1]);
+    base.exp_mf = judgeMf(v.exp_cell, b[0], b[1]);
+    base.imp_dg = judgeDg(dgRows(1));
+    base.exp_dg = judgeDg(dgRows(2));
+    return base;
+  });
+  rows.sort(function(x,y){ return String(x.etb||'9999').localeCompare(String(y.etb||'9999')); });
+  return {rows:rows, made_at:'', pulled_at:(p &amp;amp;amp;&amp;amp;amp; p.pulled_at) || '', klnet:(p &amp;amp;amp;&amp;amp;amp; p.klnet) || '',
+          judged_here:!!p};
+}
+
+function render(){
+  var B = buildBoard(), M = DATA.mail, out = [];
+
+  /* 올린 것 표시 */
+  var chips = [
+    ['모선 목록',      DATA.keys || DATA.board],
+    ['PLISM 신고현황', DATA.board || DATA.plism],
+    ['마감리스트 발송', DATA.mail],
+    ['호출부호 명부',  DATA.signs]
+  ].map(function(c){
+    return '&amp;amp;lt;span class=&amp;amp;quot;chip' + (c[1] ? '' : ' miss') + '&amp;amp;quot;&amp;amp;gt;' + (c[1] ? '있음' : '없음') + ' · ' + c[0] + '&amp;amp;lt;/span&amp;amp;gt;';
+  }).join('');
+  document.getElementById('loaded').innerHTML = chips;
+
+  /* 머리말 */
+  var meta = [];
+  if (B &amp;amp;amp;&amp;amp;amp; B.pulled_at) meta.push('PLISM 조회 &amp;amp;lt;b&amp;amp;gt;' + esc(B.pulled_at) + '&amp;amp;lt;/b&amp;amp;gt;');
+  if (B &amp;amp;amp;&amp;amp;amp; B.klnet)     meta.push('계정 &amp;amp;lt;b&amp;amp;gt;' + esc(B.klnet) + '&amp;amp;lt;/b&amp;amp;gt;');
+  if (M &amp;amp;amp;&amp;amp;amp; M.checked_at) meta.push('메일 확인 &amp;amp;lt;b&amp;amp;gt;' + esc(M.checked_at) + '&amp;amp;lt;/b&amp;amp;gt;');
+  if (M &amp;amp;amp;&amp;amp;amp; M.week) meta.push('&amp;amp;lt;b&amp;amp;gt;' + esc(M.week[0]) + ' ~ ' + esc(M.week[1]) + '&amp;amp;lt;/b&amp;amp;gt;');
+  document.getElementById('meta').innerHTML = meta.length ? meta.join(' · ') : '올린 자료 없음';
+
+  /* 아무것도 없을 때 */
+  if (!B &amp;amp;amp;&amp;amp;amp; !M) {
+    out.push('&amp;amp;lt;div class=&amp;amp;quot;card&amp;amp;quot;&amp;amp;gt;&amp;amp;lt;h2&amp;amp;gt;아직 올린 자료가 없습니다&amp;amp;lt;/h2&amp;amp;gt;' +
+      '&amp;amp;lt;p class=&amp;amp;quot;note&amp;amp;quot;&amp;amp;gt;위 칸에 &amp;amp;lt;b&amp;amp;gt;data&amp;amp;lt;/b&amp;amp;gt; 폴더의 파일을 끌어다 놓으면 바로 표가 나옵니다. ' +
+      '받는 것은 이렇습니다.&amp;amp;lt;/p&amp;amp;gt;' +
+      '&amp;amp;lt;div class=&amp;amp;quot;tb-wrap&amp;amp;quot;&amp;amp;gt;&amp;amp;lt;table&amp;amp;gt;&amp;amp;lt;thead&amp;amp;gt;&amp;amp;lt;tr&amp;amp;gt;&amp;amp;lt;th&amp;amp;gt;파일&amp;amp;lt;/th&amp;amp;gt;&amp;amp;lt;th&amp;amp;gt;채워지는 것&amp;amp;lt;/th&amp;amp;gt;&amp;amp;lt;/tr&amp;amp;gt;&amp;amp;lt;/thead&amp;amp;gt;&amp;amp;lt;tbody&amp;amp;gt;' +
+      '&amp;amp;lt;tr&amp;amp;gt;&amp;amp;lt;td class=&amp;amp;quot;vsl&amp;amp;quot;&amp;amp;gt;keys.json&amp;amp;lt;/td&amp;amp;gt;&amp;amp;lt;td&amp;amp;gt;모선 · 항차 · 호출부호 · 해수청&amp;amp;lt;/td&amp;amp;gt;&amp;amp;lt;/tr&amp;amp;gt;' +
+      '&amp;amp;lt;tr&amp;amp;gt;&amp;amp;lt;td class=&amp;amp;quot;vsl&amp;amp;quot;&amp;amp;gt;plism.json&amp;amp;lt;/td&amp;amp;gt;&amp;amp;lt;td&amp;amp;gt;신고 4칸 (이 화면에서 판정)&amp;amp;lt;/td&amp;amp;gt;&amp;amp;lt;/tr&amp;amp;gt;' +
+      '&amp;amp;lt;tr&amp;amp;gt;&amp;amp;lt;td class=&amp;amp;quot;vsl&amp;amp;quot;&amp;amp;gt;board.js&amp;amp;lt;/td&amp;amp;gt;&amp;amp;lt;td&amp;amp;gt;신고 4칸 (board.py 가 판정한 것 — 이게 있으면 우선)&amp;amp;lt;/td&amp;amp;gt;&amp;amp;lt;/tr&amp;amp;gt;' +
+      '&amp;amp;lt;tr&amp;amp;gt;&amp;amp;lt;td class=&amp;amp;quot;vsl&amp;amp;quot;&amp;amp;gt;mail.json&amp;amp;lt;/td&amp;amp;gt;&amp;amp;lt;td&amp;amp;gt;마감리스트 발송 · 이번 주 할 일&amp;amp;lt;/td&amp;amp;gt;&amp;amp;lt;/tr&amp;amp;gt;' +
+      '&amp;amp;lt;tr&amp;amp;gt;&amp;amp;lt;td class=&amp;amp;quot;vsl&amp;amp;quot;&amp;amp;gt;선박 파티큘러-콜사인정보.xls&amp;amp;lt;/td&amp;amp;gt;&amp;amp;lt;td&amp;amp;gt;비어 있는 호출부호 메우기&amp;amp;lt;/td&amp;amp;gt;&amp;amp;lt;/tr&amp;amp;gt;' +
+      '&amp;amp;lt;tr&amp;amp;gt;&amp;amp;lt;td class=&amp;amp;quot;vsl&amp;amp;quot;&amp;amp;gt;체크리스트 스냅샷 json&amp;amp;lt;/td&amp;amp;gt;&amp;amp;lt;td&amp;amp;gt;keys.json 이 없을 때 모선 목록&amp;amp;lt;/td&amp;amp;gt;&amp;amp;lt;/tr&amp;amp;gt;' +
+      '&amp;amp;lt;/tbody&amp;amp;gt;&amp;amp;lt;/table&amp;amp;gt;&amp;amp;lt;/div&amp;amp;gt;' +
+      '&amp;amp;lt;p class=&amp;amp;quot;note&amp;amp;quot; style=&amp;amp;quot;margin-top:12px&amp;amp;quot;&amp;amp;gt;실행.bat 을 돌리면 이 자료들이 ' +
+      '&amp;amp;lt;b&amp;amp;gt;신고현황\\data\\&amp;amp;lt;/b&amp;amp;gt; 에 생깁니다.&amp;amp;lt;/p&amp;amp;gt;&amp;amp;lt;/div&amp;amp;gt;');
+    document.getElementById('app').innerHTML = out.join('');
+    return;
+  }
+
+  /* 오래된 자료 경고 */
+  var stale = [];
+  if (B &amp;amp;amp;&amp;amp;amp; B.made_at &amp;amp;amp;&amp;amp;amp; String(B.made_at).slice(0,10) !== today())
+    stale.push('신고현황은 &amp;amp;lt;b&amp;amp;gt;' + esc(B.made_at) + '&amp;amp;lt;/b&amp;amp;gt; 에 만든 것');
+  if (M &amp;amp;amp;&amp;amp;amp; M.checked_at &amp;amp;amp;&amp;amp;amp; String(M.checked_at).slice(0,10) !== today())
+    stale.push('마감리스트 확인은 &amp;amp;lt;b&amp;amp;gt;' + esc(M.checked_at) + '&amp;amp;lt;/b&amp;amp;gt; 에 한 것');
+  if (stale.length)
+    out.push('&amp;amp;lt;div class=&amp;amp;quot;stale&amp;amp;quot;&amp;amp;gt;' + stale.join(' · ') + ' — &amp;amp;lt;b&amp;amp;gt;오늘 자료가 아닙니다.&amp;amp;lt;/b&amp;amp;gt;&amp;amp;lt;/div&amp;amp;gt;');
+
+  var hasJudge = B &amp;amp;amp;&amp;amp;amp; B.rows.length &amp;amp;amp;&amp;amp;amp; B.rows[0].imp_mf.s !== '';
+
+  /* 요약 */
+  var problems = [];
+  if (hasJudge) B.rows.forEach(function(r){
+    var bad = [['수입신고',r.imp_mf],['수출신고',r.exp_mf],['수입위험물',r.imp_dg],['수출위험물',r.exp_dg]]
+      .filter(function(p){ return p[1].s === ERR || p[1].s === NONE; });
+    if (bad.length) problems.push({row:r, bad:bad, hasErr:bad.some(function(p){ return p[1].s === ERR; })});
+  });
+  var notSent = [];
+  if (M) M.rows.forEach(function(r){
+    ['수입리스트','수출리스트'].forEach(function(k){
+      if (r[k] &amp;amp;amp;&amp;amp;amp; r[k][0] === '아직') notSent.push(r.name);
+    });
+  });
+  var s = '&amp;amp;lt;div class=&amp;amp;quot;sum&amp;amp;quot;&amp;amp;gt;';
+  if (B) s += '&amp;amp;lt;div class=&amp;amp;quot;box&amp;amp;quot;&amp;amp;gt;&amp;amp;lt;div class=&amp;amp;quot;k&amp;amp;quot;&amp;amp;gt;모선&amp;amp;lt;/div&amp;amp;gt;&amp;amp;lt;div class=&amp;amp;quot;v&amp;amp;quot;&amp;amp;gt;' + B.rows.length + '&amp;amp;lt;/div&amp;amp;gt;&amp;amp;lt;/div&amp;amp;gt;';
+  if (hasJudge) s += '&amp;amp;lt;div class=&amp;amp;quot;box ' + (problems.length?'warn':'good') + '&amp;amp;quot;&amp;amp;gt;&amp;amp;lt;div class=&amp;amp;quot;k&amp;amp;quot;&amp;amp;gt;미신고 · 오류&amp;amp;lt;/div&amp;amp;gt;&amp;amp;lt;div class=&amp;amp;quot;v&amp;amp;quot;&amp;amp;gt;' + problems.length + '&amp;amp;lt;/div&amp;amp;gt;&amp;amp;lt;/div&amp;amp;gt;';
+  if (M) {
+    s += '&amp;amp;lt;div class=&amp;amp;quot;box ' + (notSent.length?'warn':'good') + '&amp;amp;quot;&amp;amp;gt;&amp;amp;lt;div class=&amp;amp;quot;k&amp;amp;quot;&amp;amp;gt;아직 안 보낸 리스트&amp;amp;lt;/div&amp;amp;gt;&amp;amp;lt;div class=&amp;amp;quot;v&amp;amp;quot;&amp;amp;gt;' + notSent.length + '&amp;amp;lt;/div&amp;amp;gt;&amp;amp;lt;/div&amp;amp;gt;';
+    var left = M.weekly ? M.weekly.filter(function(w){ return w.state !== '보냄'; }).length : 0;
+    s += '&amp;amp;lt;div class=&amp;amp;quot;box ' + (left?'warn':'good') + '&amp;amp;quot;&amp;amp;gt;&amp;amp;lt;div class=&amp;amp;quot;k&amp;amp;quot;&amp;amp;gt;이번 주 남은 일&amp;amp;lt;/div&amp;amp;gt;&amp;amp;lt;div class=&amp;amp;quot;v&amp;amp;quot;&amp;amp;gt;' + left + '&amp;amp;lt;/div&amp;amp;gt;&amp;amp;lt;/div&amp;amp;gt;';
+  }
+  out.push(s + '&amp;amp;lt;/div&amp;amp;gt;');
+
+  /* 무엇이 모자란지 먼저 알린다 */
+  var need = [];
+  if (!B)             need.push('&amp;amp;lt;b&amp;amp;gt;모선 목록&amp;amp;lt;/b&amp;amp;gt;이 없습니다 — &amp;amp;lt;b&amp;amp;gt;keys.json&amp;amp;lt;/b&amp;amp;gt; 을 올리세요.');
+  else if (!hasJudge) need.push('&amp;amp;lt;b&amp;amp;gt;PLISM 신고현황&amp;amp;lt;/b&amp;amp;gt;이 없습니다 — &amp;amp;lt;b&amp;amp;gt;plism.json&amp;amp;lt;/b&amp;amp;gt; 또는 &amp;amp;lt;b&amp;amp;gt;board.js&amp;amp;lt;/b&amp;amp;gt; 를 올리면 4칸이 채워집니다.');
+  if (!M)             need.push('&amp;amp;lt;b&amp;amp;gt;마감리스트 발송&amp;amp;lt;/b&amp;amp;gt; 확인이 없습니다 — &amp;amp;lt;b&amp;amp;gt;mail.json&amp;amp;lt;/b&amp;amp;gt; 을 올리세요.');
+  if (need.length)
+    out.push('&amp;amp;lt;div class=&amp;amp;quot;card&amp;amp;quot;&amp;amp;gt;&amp;amp;lt;p class=&amp;amp;quot;note&amp;amp;quot;&amp;amp;gt;' + need.join('&amp;amp;lt;br&amp;amp;gt;') + '&amp;amp;lt;/p&amp;amp;gt;&amp;amp;lt;/div&amp;amp;gt;');
+
+  /* 먼저 볼 것 */
+  if (hasJudge) {
+    var a = '&amp;amp;lt;div class=&amp;amp;quot;card&amp;amp;quot;&amp;amp;gt;&amp;amp;lt;h2&amp;amp;gt;먼저 볼 것 &amp;amp;lt;span class=&amp;amp;quot;cnt&amp;amp;quot;&amp;amp;gt;미신고 · 오류&amp;amp;lt;/span&amp;amp;gt;&amp;amp;lt;/h2&amp;amp;gt;';
+    if (!problems.length) a += '&amp;amp;lt;div class=&amp;amp;quot;empty&amp;amp;quot;&amp;amp;gt;미신고도 오류도 없습니다.&amp;amp;lt;/div&amp;amp;gt;';
+    else {
+      a += '&amp;amp;lt;p class=&amp;amp;quot;note&amp;amp;quot; style=&amp;amp;quot;margin-bottom:10px&amp;amp;quot;&amp;amp;gt;마감 전이라 아직 안 한 것도 그대로 나옵니다. 판단은 직접 하세요.&amp;amp;lt;/p&amp;amp;gt;';
+      problems.forEach(function(p){
+        var r = p.row;
+        a += '&amp;amp;lt;div class=&amp;amp;quot;alert' + (p.hasErr?'':' wait') + '&amp;amp;quot;&amp;amp;gt;' +
+          '&amp;amp;lt;div class=&amp;amp;quot;ttl&amp;amp;quot;&amp;amp;gt;' + esc(r.name) + ' &amp;amp;lt;span style=&amp;amp;quot;font-weight:500;color:var(--sub)&amp;amp;quot;&amp;amp;gt;' + esc(r.vyg_out||r.vyg_in||'') + '&amp;amp;lt;/span&amp;amp;gt;&amp;amp;lt;/div&amp;amp;gt;' +
+          '&amp;amp;lt;div class=&amp;amp;quot;sub&amp;amp;quot;&amp;amp;gt;입항 ' + esc(etbText(r.etb)) +
+            (r.sign?' · 호출부호 ' + esc(r.sign):'') + (r.seq?' · 해수청 ' + esc(r.seq):'') + '&amp;amp;lt;/div&amp;amp;gt;' +
+          '&amp;amp;lt;div class=&amp;amp;quot;det&amp;amp;quot;&amp;amp;gt;' + p.bad.map(function(x){
+            return esc(x[0]) + ' ' + stTag(x[1].s,'',false) +
+              (x[1].s === ERR &amp;amp;amp;&amp;amp;amp; x[1].d ? ' &amp;amp;lt;span class=&amp;amp;quot;why&amp;amp;quot; style=&amp;amp;quot;display:inline&amp;amp;quot;&amp;amp;gt;' + esc(x[1].d) + '&amp;amp;lt;/span&amp;amp;gt;' : '');
+          }).join(' &amp;amp;amp;nbsp; ') + '&amp;amp;lt;/div&amp;amp;gt;&amp;amp;lt;/div&amp;amp;gt;';
+      });
+    }
+    out.push(a + '&amp;amp;lt;/div&amp;amp;gt;');
+  }
+
+  /* 신고현황 표 */
+  if (B) {
+    var t = '&amp;amp;lt;details open&amp;amp;gt;&amp;amp;lt;summary&amp;amp;gt;신고현황 &amp;amp;lt;span class=&amp;amp;quot;cnt&amp;amp;quot;&amp;amp;gt;' + B.rows.length + '척' +
+      (hasJudge ? (B.judged_here ? ' · 이 화면에서 판정' : '') : ' · PLISM 자료 없음') +
+      '&amp;amp;lt;/span&amp;amp;gt;&amp;amp;lt;span class=&amp;amp;quot;arw&amp;amp;quot;&amp;amp;gt;&amp;amp;lt;/span&amp;amp;gt;&amp;amp;lt;/summary&amp;amp;gt;&amp;amp;lt;div class=&amp;amp;quot;body&amp;amp;quot;&amp;amp;gt;&amp;amp;lt;div class=&amp;amp;quot;tb-wrap&amp;amp;quot;&amp;amp;gt;&amp;amp;lt;table&amp;amp;gt;' +
+      '&amp;amp;lt;thead&amp;amp;gt;&amp;amp;lt;tr&amp;amp;gt;&amp;amp;lt;th&amp;amp;gt;모선&amp;amp;lt;/th&amp;amp;gt;&amp;amp;lt;th&amp;amp;gt;항차&amp;amp;lt;/th&amp;amp;gt;&amp;amp;lt;th&amp;amp;gt;호출부호&amp;amp;lt;/th&amp;amp;gt;&amp;amp;lt;th&amp;amp;gt;해수청&amp;amp;lt;/th&amp;amp;gt;&amp;amp;lt;th&amp;amp;gt;입항&amp;amp;lt;/th&amp;amp;gt;' +
+      '&amp;amp;lt;th&amp;amp;gt;수입신고&amp;amp;lt;/th&amp;amp;gt;&amp;amp;lt;th&amp;amp;gt;수출신고&amp;amp;lt;/th&amp;amp;gt;&amp;amp;lt;th&amp;amp;gt;수입위험물&amp;amp;lt;/th&amp;amp;gt;&amp;amp;lt;th&amp;amp;gt;수출위험물&amp;amp;lt;/th&amp;amp;gt;&amp;amp;lt;/tr&amp;amp;gt;&amp;amp;lt;/thead&amp;amp;gt;&amp;amp;lt;tbody&amp;amp;gt;';
+    B.rows.forEach(function(r){
+      function c(j){ return j &amp;amp;amp;&amp;amp;amp; j.s ? stTag(j.s, j.d, true) : '&amp;amp;lt;span class=&amp;amp;quot;st na&amp;amp;quot;&amp;amp;gt;—&amp;amp;lt;/span&amp;amp;gt;'; }
+      t += '&amp;amp;lt;tr&amp;amp;gt;&amp;amp;lt;td class=&amp;amp;quot;vsl&amp;amp;quot;&amp;amp;gt;' + esc(r.name) + '&amp;amp;lt;/td&amp;amp;gt;' +
+        '&amp;amp;lt;td&amp;amp;gt;' + esc(r.vyg_out || r.vyg_in || '') + '&amp;amp;lt;/td&amp;amp;gt;' +
+        '&amp;amp;lt;td class=&amp;amp;quot;num&amp;amp;quot;&amp;amp;gt;' + esc(r.sign || '—') + '&amp;amp;lt;/td&amp;amp;gt;' +
+        '&amp;amp;lt;td class=&amp;amp;quot;num&amp;amp;quot;&amp;amp;gt;' + esc(r.seq || '—') + '&amp;amp;lt;/td&amp;amp;gt;' +
+        '&amp;amp;lt;td class=&amp;amp;quot;num&amp;amp;quot;&amp;amp;gt;' + esc(etbText(r.etb)) + '&amp;amp;lt;/td&amp;amp;gt;' +
+        '&amp;amp;lt;td&amp;amp;gt;' + c(r.imp_mf) + '&amp;amp;lt;/td&amp;amp;gt;&amp;amp;lt;td&amp;amp;gt;' + c(r.exp_mf) + '&amp;amp;lt;/td&amp;amp;gt;' +
+        '&amp;amp;lt;td&amp;amp;gt;' + c(r.imp_dg) + '&amp;amp;lt;/td&amp;amp;gt;&amp;amp;lt;td&amp;amp;gt;' + c(r.exp_dg) + '&amp;amp;lt;/td&amp;amp;gt;&amp;amp;lt;/tr&amp;amp;gt;';
+    });
+    t += '&amp;amp;lt;/tbody&amp;amp;gt;&amp;amp;lt;/table&amp;amp;gt;&amp;amp;lt;/div&amp;amp;gt;&amp;amp;lt;p class=&amp;amp;quot;legend&amp;amp;quot;&amp;amp;gt;&amp;amp;lt;b&amp;amp;gt;승인&amp;amp;lt;/b&amp;amp;gt; 끝남 · &amp;amp;lt;b&amp;amp;gt;진행중&amp;amp;lt;/b&amp;amp;gt; 선별마감·접수 단계 · ' +
+      '&amp;amp;lt;b&amp;amp;gt;오류&amp;amp;lt;/b&amp;amp;gt; 오류통보 옴 · &amp;amp;lt;b&amp;amp;gt;미신고&amp;amp;lt;/b&amp;amp;gt; PLISM 에 없음 · &amp;amp;lt;b&amp;amp;gt;타서비스&amp;amp;lt;/b&amp;amp;gt; 내 소관 아님' +
+      (hasJudge ? '' : ' · &amp;amp;lt;b&amp;amp;gt;—&amp;amp;lt;/b&amp;amp;gt; PLISM 자료를 아직 안 올림') + '&amp;amp;lt;/p&amp;amp;gt;&amp;amp;lt;/div&amp;amp;gt;&amp;amp;lt;/details&amp;amp;gt;';
+    out.push(t);
+  }
+
+  /* 마감리스트 발송 */
+  if (M) {
+    var m = '&amp;amp;lt;details open&amp;amp;gt;&amp;amp;lt;summary&amp;amp;gt;마감리스트 발송 &amp;amp;lt;span class=&amp;amp;quot;cnt&amp;amp;quot;&amp;amp;gt;' +
+      (notSent.length ? '아직 ' + notSent.length + '건' : '모두 보냄') + '&amp;amp;lt;/span&amp;amp;gt;&amp;amp;lt;span class=&amp;amp;quot;arw&amp;amp;quot;&amp;amp;gt;&amp;amp;lt;/span&amp;amp;gt;&amp;amp;lt;/summary&amp;amp;gt;' +
+      '&amp;amp;lt;div class=&amp;amp;quot;body&amp;amp;quot;&amp;amp;gt;&amp;amp;lt;div class=&amp;amp;quot;tb-wrap&amp;amp;quot;&amp;amp;gt;&amp;amp;lt;table&amp;amp;gt;&amp;amp;lt;thead&amp;amp;gt;&amp;amp;lt;tr&amp;amp;gt;&amp;amp;lt;th&amp;amp;gt;모선&amp;amp;lt;/th&amp;amp;gt;&amp;amp;lt;th&amp;amp;gt;수입항차&amp;amp;lt;/th&amp;amp;gt;' +
+      '&amp;amp;lt;th&amp;amp;gt;수출항차&amp;amp;lt;/th&amp;amp;gt;&amp;amp;lt;th&amp;amp;gt;수입리스트&amp;amp;lt;/th&amp;amp;gt;&amp;amp;lt;th&amp;amp;gt;수출리스트&amp;amp;lt;/th&amp;amp;gt;&amp;amp;lt;/tr&amp;amp;gt;&amp;amp;lt;/thead&amp;amp;gt;&amp;amp;lt;tbody&amp;amp;gt;';
+    M.rows.forEach(function(r){
+      function cell(k){ var v = r[k] || ['','']; return stTag(v[0], v[0]==='보냄'?v[1]:'', true); }
+      m += '&amp;amp;lt;tr&amp;amp;gt;&amp;amp;lt;td class=&amp;amp;quot;vsl&amp;amp;quot;&amp;amp;gt;' + esc(r.name) + '&amp;amp;lt;/td&amp;amp;gt;&amp;amp;lt;td&amp;amp;gt;' + esc(r.vyg_in||'') + '&amp;amp;lt;/td&amp;amp;gt;' +
+        '&amp;amp;lt;td&amp;amp;gt;' + esc(r.vyg_out||'') + '&amp;amp;lt;/td&amp;amp;gt;&amp;amp;lt;td&amp;amp;gt;' + cell('수입리스트') + '&amp;amp;lt;/td&amp;amp;gt;' +
+        '&amp;amp;lt;td&amp;amp;gt;' + cell('수출리스트') + '&amp;amp;lt;/td&amp;amp;gt;&amp;amp;lt;/tr&amp;amp;gt;';
+    });
+    out.push(m + '&amp;amp;lt;/tbody&amp;amp;gt;&amp;amp;lt;/table&amp;amp;gt;&amp;amp;lt;/div&amp;amp;gt;&amp;amp;lt;p class=&amp;amp;quot;legend&amp;amp;quot;&amp;amp;gt;보낸편지함 제목으로 가려냅니다. ' +
+      '&amp;amp;lt;b&amp;amp;gt;해당없음&amp;amp;lt;/b&amp;amp;gt; 은 양하만·타서비스라 보낼 일이 없는 것입니다.&amp;amp;lt;/p&amp;amp;gt;&amp;amp;lt;/div&amp;amp;gt;&amp;amp;lt;/details&amp;amp;gt;');
+  }
+
+  /* 이번 주 할 일 */
+  if (M &amp;amp;amp;&amp;amp;amp; M.weekly &amp;amp;amp;&amp;amp;amp; M.weekly.length) {
+    var w = '&amp;amp;lt;div class=&amp;amp;quot;card&amp;amp;quot;&amp;amp;gt;&amp;amp;lt;h2&amp;amp;gt;이번 주 할 일&amp;amp;lt;/h2&amp;amp;gt;&amp;amp;lt;div class=&amp;amp;quot;tb-wrap&amp;amp;quot;&amp;amp;gt;&amp;amp;lt;table&amp;amp;gt;&amp;amp;lt;tbody&amp;amp;gt;';
+    M.weekly.forEach(function(x){
+      w += '&amp;amp;lt;tr&amp;amp;gt;&amp;amp;lt;td style=&amp;amp;quot;width:1%;white-space:nowrap&amp;amp;quot;&amp;amp;gt;' + stTag(x.state,'',false) + '&amp;amp;lt;/td&amp;amp;gt;' +
+        '&amp;amp;lt;td class=&amp;amp;quot;vsl&amp;amp;quot;&amp;amp;gt;' + esc(x.label) + '&amp;amp;lt;/td&amp;amp;gt;&amp;amp;lt;td class=&amp;amp;quot;note&amp;amp;quot;&amp;amp;gt;' + esc(x.due) + '&amp;amp;lt;/td&amp;amp;gt;' +
+        '&amp;amp;lt;td class=&amp;amp;quot;num&amp;amp;quot;&amp;amp;gt;' + esc(x.at||'') + '&amp;amp;lt;/td&amp;amp;gt;&amp;amp;lt;/tr&amp;amp;gt;';
+      if (x.state !== '보냄' &amp;amp;amp;&amp;amp;amp; x.subject)
+        w += '&amp;amp;lt;tr&amp;amp;gt;&amp;amp;lt;td&amp;amp;gt;&amp;amp;lt;/td&amp;amp;gt;&amp;amp;lt;td colspan=&amp;amp;quot;3&amp;amp;quot; class=&amp;amp;quot;why&amp;amp;quot;&amp;amp;gt;' + esc(x.subject) + '&amp;amp;lt;/td&amp;amp;gt;&amp;amp;lt;/tr&amp;amp;gt;';
+    });
+    out.push(w + '&amp;amp;lt;/tbody&amp;amp;gt;&amp;amp;lt;/table&amp;amp;gt;&amp;amp;lt;/div&amp;amp;gt;&amp;amp;lt;/div&amp;amp;gt;');
+  }
+
+
+
+  out.push('&amp;amp;lt;div style=&amp;amp;quot;margin-top:16px;display:flex;gap:8px;flex-wrap:wrap&amp;amp;quot;&amp;amp;gt;' +
+    '&amp;amp;lt;button class=&amp;amp;quot;btn&amp;amp;quot; onclick=&amp;amp;quot;document.querySelectorAll(\'details\').forEach(function(d){d.open=true})&amp;amp;quot;&amp;amp;gt;모두 펼치기&amp;amp;lt;/button&amp;amp;gt;' +
+    '&amp;amp;lt;button class=&amp;amp;quot;btn&amp;amp;quot; onclick=&amp;amp;quot;document.querySelectorAll(\'details\').forEach(function(d){d.open=false})&amp;amp;quot;&amp;amp;gt;모두 접기&amp;amp;lt;/button&amp;amp;gt;' +
+    '&amp;amp;lt;button class=&amp;amp;quot;btn danger&amp;amp;quot; onclick=&amp;amp;quot;location.reload()&amp;amp;quot;&amp;amp;gt;올린 것 비우기&amp;amp;lt;/button&amp;amp;gt;&amp;amp;lt;/div&amp;amp;gt;');
+
+  document.getElementById('app').innerHTML = out.join('');
+}
+
+render();
+&amp;amp;lt;/script&amp;amp;gt;
+&amp;amp;lt;/body&amp;amp;gt;
+&amp;amp;lt;/html&amp;amp;gt;
+&amp;lt;/pre&amp;gt;&amp;lt;/details&amp;gt;
+  &amp;lt;/div&amp;gt;&amp;lt;/div&amp;gt;&amp;lt;div class=&amp;quot;grp&amp;quot;&amp;gt;&amp;lt;h2&amp;gt;4 · 속에서 도는 것&amp;lt;/h2&amp;gt;&amp;lt;div class=&amp;quot;gd&amp;quot;&amp;gt;직접 누를 일은 없습니다. 실행.bat 이 차례로 부릅니다. 무엇이 무엇을 만드는지만 알아두면 됩니다.&amp;lt;/div&amp;gt;
+  &amp;lt;div class=&amp;quot;item&amp;quot;&amp;gt;
+    &amp;lt;div class=&amp;quot;ihead&amp;quot;&amp;gt;
+      &amp;lt;span class=&amp;quot;kind k-code&amp;quot;&amp;gt;프로그램&amp;lt;/span&amp;gt;
+      &amp;lt;span class=&amp;quot;iname&amp;quot;&amp;gt;keys.py&amp;lt;/span&amp;gt;
+      &amp;lt;span class=&amp;quot;imeta&amp;quot;&amp;gt;5.9 KB · 2026-09-19&amp;lt;/span&amp;gt;
+    &amp;lt;/div&amp;gt;
+    &amp;lt;div class=&amp;quot;iwhat&amp;quot;&amp;gt;체크리스트가 남긴 기록에서 조회에 필요한 것만 뽑습니다 — 모선 · 항차 · 호출부호 · 해수청번호.&amp;lt;/div&amp;gt;
+    &amp;lt;div class=&amp;quot;iwhen&amp;quot;&amp;gt;만드는 것: data\keys.json&amp;lt;/div&amp;gt;
+    &amp;lt;details&amp;gt;&amp;lt;summary&amp;gt;안을 열어보기 &amp;lt;span class=&amp;quot;arw&amp;quot;&amp;gt;&amp;lt;/span&amp;gt;&amp;lt;/summary&amp;gt;&amp;lt;pre id=&amp;quot;f6&amp;quot;&amp;gt;# -*- coding: utf-8 -*-
+&amp;amp;quot;&amp;amp;quot;&amp;amp;quot;
+조회 열쇠 모으기 — 체크리스트에서 PLISM 조회에 필요한 값만 뽑아 data/keys.json 으로 낸다.
+
+  모선 · 항차 · 수입MRN · 수출MRN · 호출부호 · 해수청번호
+
+체크리스트를 만들면 조회 열쇠가 같이 만들어진다. 따로 입력할 것이 없다.
+&amp;amp;quot;&amp;amp;quot;&amp;amp;quot;
+from __future__ import annotations
+
+import json
+import re
+from pathlib import Path
+
+BASE = Path(__file__).resolve().parent.parent / &amp;amp;quot;체크리스트&amp;amp;quot;
+DATA = Path(__file__).resolve().parent / &amp;amp;quot;data&amp;amp;quot;
+
+
+def newest(pattern: str, where: Path) -&amp;amp;gt; Path:
+    hits = sorted(where.glob(pattern), key=lambda p: p.stat().st_mtime, reverse=True)
+    if not hits:
+        raise SystemExit(f&amp;amp;quot;파일을 찾지 못했습니다: {where}\\{pattern}&amp;amp;quot;)
+    return hits[0]
+
+
+def callsigns() -&amp;amp;gt; tuple[dict[str, str], dict[str, str]]:
+    &amp;amp;quot;&amp;amp;quot;&amp;amp;quot;선명코드 → 호출부호.
+
+    출처가 셋이다. 앞에 오는 것이 이긴다.
+      1) 선박 파티큘러 파일       — **DB**. 호출부호가 바뀌면 이 파일을 고친다
+      2) 체크리스트 `AY:AZ`      — 명부에 아직 없는 배를 메우는 보조
+      3) 마감관리 CALLSIGN_MAP   — 마지막 보루
+
+    서로 다른 값을 들고 있으면 돌려준다. 호출부호가 틀리면 엉뚱한 배의 위험물을 조회한다.
+    **다만 이번 주 모선만 알린다.** 표(36척)와 명부(3,900척)를 통째로 비교하면
+    이번 주와 상관없는 배까지 매주 경고가 떠서 금방 안 보게 된다.
+
+    반환: (호출부호표, {선박: '표값 ↔ 명부값'})
+    &amp;amp;quot;&amp;amp;quot;&amp;amp;quot;
+    table: dict[str, str] = {}
+    conflict: dict[str, str] = {}
+
+    def add(code: str, sign: str, src: str) -&amp;amp;gt; None:
+        code, sign = str(code).strip(), str(sign).strip()
+        if not code or not sign:
+            return
+        if code in table:
+            if table[code] != sign:
+                conflict.setdefault(code, f&amp;amp;quot;{table[code]} ↔ {sign}({src})&amp;amp;quot;)
+            return                                  # 먼저 넣은 쪽이 이긴다
+        table[code] = sign
+
+    # 명부가 DB 다. 바뀐 호출부호는 이 파일을 고쳐서 쓴다 — 고칠 곳이 한 군데여야 한다.
+    # `자료\` 로 옮겨졌지만 예전 자리(`체크리스트\`)도 같이 본다.
+    for part in (BASE.parent / &amp;amp;quot;자료&amp;amp;quot; / &amp;amp;quot;선박 파티큘러-콜사인정보.xls&amp;amp;quot;,
+                 BASE / &amp;amp;quot;선박 파티큘러-콜사인정보.xls&amp;amp;quot;):
+        if not part.exists():
+            continue
+        try:
+            import xlrd
+            ws = xlrd.open_workbook(part).sheet_by_index(0)
+            for r in range(1, ws.nrows):            # 선박 | Vessel Name | Service | Call Sign
+                add(ws.cell_value(r, 0), ws.cell_value(r, 3), &amp;amp;quot;파티큘러&amp;amp;quot;)
+            break
+        except Exception as e:
+            print(f&amp;amp;quot;  선박 파티큘러 파일을 못 읽었습니다({e}).&amp;amp;quot;)
+
+    # 명부에 아직 없는 배는 체크리스트 표로 메운다
+    try:
+        import openpyxl
+        ws = openpyxl.load_workbook(newest(&amp;amp;quot;체크리스트*.xlsx&amp;amp;quot;, BASE), data_only=True)[&amp;amp;quot;CK 2025&amp;amp;quot;]
+        for r in range(3, 78):                      # AY3:AZ77 — 선명 → 호출부호
+            add(ws.cell(r, 51).value or &amp;amp;quot;&amp;amp;quot;, ws.cell(r, 52).value or &amp;amp;quot;&amp;amp;quot;, &amp;amp;quot;체크리스트&amp;amp;quot;)
+    except Exception as e:
+        print(f&amp;amp;quot;  체크리스트 호출부호표를 못 읽었습니다({e}). 넘어갑니다.&amp;amp;quot;)
+
+    html = BASE / &amp;amp;quot;CBF&amp;amp;quot; / &amp;amp;quot;마감관리v4.34.html&amp;amp;quot;
+    if html.exists():
+        m = re.search(r&amp;amp;quot;var CALLSIGN_MAP\s*=\s*(\{.*?\});&amp;amp;quot;, html.read_text(&amp;amp;quot;utf-8&amp;amp;quot;, &amp;amp;quot;ignore&amp;amp;quot;), re.S)
+        if m:
+            for vsl, sign in json.loads(m.group(1)).items():
+                add(vsl, sign, &amp;amp;quot;마감관리&amp;amp;quot;)
+
+    return table, conflict
+
+
+def main() -&amp;amp;gt; None:
+    snap_path = newest(&amp;amp;quot;*.json&amp;amp;quot;, BASE / &amp;amp;quot;.체크리스트이력&amp;amp;quot;)
+    snap = json.loads(snap_path.read_text(&amp;amp;quot;utf-8&amp;amp;quot;))
+    signs, clash = callsigns()
+
+    rows = []
+    missing = []
+    for key, v in snap[&amp;amp;quot;rows&amp;amp;quot;].items():
+        # 체크리스트가 이미 명부와 표를 둘 다 보고 고른 값이다. 그게 있으면 그걸 쓴다.
+        sign = (v.get(&amp;amp;quot;call&amp;amp;quot;) or &amp;amp;quot;&amp;amp;quot;).strip() or signs.get(v[&amp;amp;quot;vsl&amp;amp;quot;])
+        if not sign:
+            missing.append(f&amp;amp;quot;{v['vsl']} ({v['name']})&amp;amp;quot;)
+        rows.append({
+            &amp;amp;quot;key&amp;amp;quot;: key, &amp;amp;quot;vsl&amp;amp;quot;: v[&amp;amp;quot;vsl&amp;amp;quot;], &amp;amp;quot;name&amp;amp;quot;: v[&amp;amp;quot;name&amp;amp;quot;],
+            &amp;amp;quot;svc_in&amp;amp;quot;: v[&amp;amp;quot;svc_in&amp;amp;quot;], &amp;amp;quot;svc_out&amp;amp;quot;: v[&amp;amp;quot;svc_out&amp;amp;quot;], &amp;amp;quot;opr&amp;amp;quot;: v[&amp;amp;quot;opr&amp;amp;quot;],
+            &amp;amp;quot;vyg_in&amp;amp;quot;: v[&amp;amp;quot;vyg_in&amp;amp;quot;], &amp;amp;quot;vyg_out&amp;amp;quot;: v[&amp;amp;quot;vyg_out&amp;amp;quot;],
+            &amp;amp;quot;sign&amp;amp;quot;: sign, &amp;amp;quot;seq&amp;amp;quot;: (v.get(&amp;amp;quot;seq&amp;amp;quot;) or &amp;amp;quot;&amp;amp;quot;).strip(),
+            &amp;amp;quot;etb&amp;amp;quot;: v[&amp;amp;quot;etb&amp;amp;quot;], &amp;amp;quot;etd&amp;amp;quot;: v[&amp;amp;quot;etd&amp;amp;quot;], &amp;amp;quot;doc&amp;amp;quot;: v[&amp;amp;quot;doc&amp;amp;quot;],
+            &amp;amp;quot;imp_cell&amp;amp;quot;: v[&amp;amp;quot;imp_cell&amp;amp;quot;], &amp;amp;quot;exp_cell&amp;amp;quot;: v[&amp;amp;quot;exp_cell&amp;amp;quot;],
+        })
+
+    # 조회 날짜 범위 — 체크리스트 주간의 앞뒤로 며칠 여유를 둔다
+    etbs = sorted(r[&amp;amp;quot;etb&amp;amp;quot;][:10].replace(&amp;amp;quot;-&amp;amp;quot;, &amp;amp;quot;&amp;amp;quot;) for r in rows if r[&amp;amp;quot;etb&amp;amp;quot;])
+    DATA.mkdir(exist_ok=True)
+    (DATA / &amp;amp;quot;keys.json&amp;amp;quot;).write_text(json.dumps({
+        &amp;amp;quot;snapshot&amp;amp;quot;: snap_path.name,
+        &amp;amp;quot;week&amp;amp;quot;: snap.get(&amp;amp;quot;week&amp;amp;quot;),
+        &amp;amp;quot;date_fr&amp;amp;quot;: etbs[0] if etbs else &amp;amp;quot;&amp;amp;quot;,
+        &amp;amp;quot;date_to&amp;amp;quot;: etbs[-1] if etbs else &amp;amp;quot;&amp;amp;quot;,
+        &amp;amp;quot;signs&amp;amp;quot;: sorted({r[&amp;amp;quot;sign&amp;amp;quot;] for r in rows if r[&amp;amp;quot;sign&amp;amp;quot;]}),
+        &amp;amp;quot;rows&amp;amp;quot;: rows,
+    }, ensure_ascii=False, indent=1), &amp;amp;quot;utf-8&amp;amp;quot;)
+
+    print(f&amp;amp;quot;  기준 체크리스트: {snap_path.name} · {len(rows)}척&amp;amp;quot;)
+    print(f&amp;amp;quot;  조회 범위: {etbs[0] if etbs else '?'} ~ {etbs[-1] if etbs else '?'}&amp;amp;quot;)
+    if missing:
+        print(f&amp;amp;quot;  ⚠ 호출부호를 못 찾은 배: {', '.join(missing)} — 위험물 조회에서 빠집니다&amp;amp;quot;)
+
+    # 이번 주 모선 중에서만 알린다. 상관없는 배까지 매주 뜨면 금방 안 보게 된다.
+    hit = [(r[&amp;amp;quot;vsl&amp;amp;quot;], clash[r[&amp;amp;quot;vsl&amp;amp;quot;]]) for r in rows if r[&amp;amp;quot;vsl&amp;amp;quot;] in clash]
+    for vsl, how in hit:
+        print(f&amp;amp;quot;  ⚠ {vsl} 호출부호가 출처마다 다릅니다 — {how}&amp;amp;quot;)
+        print(f&amp;amp;quot;      명부 값을 씁니다. 틀렸으면 선박 파티큘러 파일을 고쳐주세요.&amp;amp;quot;)
+
+
+if __name__ == &amp;amp;quot;__main__&amp;amp;quot;:
+    main()
+&amp;lt;/pre&amp;gt;&amp;lt;/details&amp;gt;
+  &amp;lt;/div&amp;gt;
+  &amp;lt;div class=&amp;quot;item&amp;quot;&amp;gt;
+    &amp;lt;div class=&amp;quot;ihead&amp;quot;&amp;gt;
+      &amp;lt;span class=&amp;quot;kind k-code&amp;quot;&amp;gt;프로그램&amp;lt;/span&amp;gt;
+      &amp;lt;span class=&amp;quot;iname&amp;quot;&amp;gt;pull.js&amp;lt;/span&amp;gt;
+      &amp;lt;span class=&amp;quot;imeta&amp;quot;&amp;gt;8.3 KB · 2026-09-22&amp;lt;/span&amp;gt;
+    &amp;lt;/div&amp;gt;
+    &amp;lt;div class=&amp;quot;iwhat&amp;quot;&amp;gt;크롬을 띄워 PLISM 에 들어가 적하목록·위험물 신고현황을 받아옵니다. 로그인은 사람이 합니다.&amp;lt;/div&amp;gt;
+    &amp;lt;div class=&amp;quot;iwhen&amp;quot;&amp;gt;만드는 것: data\plism.json&amp;lt;/div&amp;gt;
+    &amp;lt;details&amp;gt;&amp;lt;summary&amp;gt;안을 열어보기 &amp;lt;span class=&amp;quot;arw&amp;quot;&amp;gt;&amp;lt;/span&amp;gt;&amp;lt;/summary&amp;gt;&amp;lt;pre id=&amp;quot;f7&amp;quot;&amp;gt;// PLISM 조회 — 로그인된 창에서 신고현황을 받아 data/plism.json 으로 저장한다.
+//
+// 로그인은 사람이 직접 한다. 창이 뜨면 한 번 로그인해 두면 되고,
+// 그 다음부터는 이 폴더에 세션이 남아 창만 잠깐 떴다 사라진다.
+
+const fs = require('fs');
+const path = require('path');
+
+const HERE = __dirname;
+const DATA = path.join(HERE, 'data');
+const PROFILE = path.join(HERE, '.크롬프로필');
+const HOME = 'https://www.plism.com/uat/uia/plism3Sub.do?menu_no=11';
+const 로그인대기_분 = 10;
+
+// --login : 로그인만 해 두고 끝내는 모드. 조회는 하지 않는다.
+//   로그인이 이 폴더(.크롬프로필)에 남으므로, 한 번 해 두면 실행.bat 이 알아서 돌아간다.
+const LOGIN_ONLY = process.argv.includes('--login');
+
+// playwright 를 찾는다. 설치 위치가 환경마다 달라서 후보를 차례로 본다.
+function loadPlaywright() {
+  const home = process.env.LOCALAPPDATA || '';
+  const cands = [
+    'playwright',
+    path.join(HERE, 'node_modules', 'playwright'),
+    ...fs.existsSync(path.join(home, 'npm-cache', '_npx'))
+      ? fs.readdirSync(path.join(home, 'npm-cache', '_npx'))
+          .map(d =&amp;amp;gt; path.join(home, 'npm-cache', '_npx', d, 'node_modules', 'playwright'))
+      : [],
+  ];
+  for (const c of cands) {
+    try { return require(c); } catch (_) { /* 다음 후보 */ }
+  }
+  console.error('\n  playwright 를 찾지 못했습니다.');
+  console.error('  이 폴더에서 한 번만 실행해 주세요:  npm install playwright\n');
+  process.exit(3);
+}
+
+// 페이지 안에서 도는 조회. 같은 사이트 안이라 로그인 상태가 그대로 쓰인다.
+async function collect(page, keys) {
+  return page.evaluate(async ({ dateFr, dateTo, signs, klnet }) =&amp;amp;gt; {
+    const post = async (url, body) =&amp;amp;gt; {
+      const r = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json; charset=&amp;amp;quot;UTF-8&amp;amp;quot;', 'Accept': 'application/json' },
+        body: JSON.stringify(body), credentials: 'include',
+      });
+      if (!r.ok) throw new Error(`${url} → ${r.status}`);
+      return r.json();
+    };
+
+    const wide = (d, days) =&amp;amp;gt; {           // 앞뒤로 며칠 넉넉히 본다
+      const t = new Date(`${d.slice(0,4)}-${d.slice(4,6)}-${d.slice(6,8)}T00:00:00`);
+      t.setDate(t.getDate() + days);
+      return t.toISOString().slice(0, 10).replace(/-/g, '');
+    };
+    const fr = wide(dateFr, -3), to = wide(dateTo, 3);
+
+    const imp = await post('/plism3/iks/cms/mng/selectKmcsImpMrnList.do', { reqMap: {
+      mrn: '', customs_line_code: '', arv_date_fr: fr, arv_date_to: to,
+      pod: '', status_mng: '', pageIndex: 1, pageRowCount: 300,
+      sKlnetId: klnet, customs_code: '062', vessel_name: '', chkSV: '',
+      customs_send_yn: '', mrn_co_yn: '', pol: '' } });
+
+    const exp = await post('/plism3/oks/cms/mng/selectKmcsExpMrnList.do', { reqMap: {
+      mrn: '', customs_line_code: '', etd_date_fr: fr, etd_date_to: to,
+      pol: '', pageIndex: 1, pageRowCount: 300,
+      sKlnetId: klnet, customs_code: '062', vessel_name: '', chkSV: '',
+      customs_send_yn: '', mrn_co_yn: '', pod: '' } });
+
+    // 위험물 — 622 여수청, 호출부호 기준. 수입(1)·수출(2) 을 따로 본다.
+    //
+    // 체크리스트 호출부호표에 없는 배가 있다(오늘은 PACIFIC BEIJING). 그대로 두면 그 배는
+    // 위험물을 영영 확인하지 못한다. 적하목록 조회 결과에 호출부호가 같이 오므로 그걸로 메운다.
+    const found = [...new Set([...(imp.result || []), ...(exp.result || [])]
+      .map(r =&amp;amp;gt; r.call_sign).filter(Boolean))];
+    const all = [...new Set([...signs, ...found])];
+
+    const year = String(new Date().getFullYear());
+    const dg = [];
+    for (const cs of all) {
+      for (const inflag of [1, 2]) {
+        const list = await post('/plism3/dgs/lim/DgLineMngList.do', { mngKey: {
+          sch_gubun: '', sch_harbor_code: '', sch_in_flag: String(inflag),
+          sch_arv_year: year, sch_arv_ser_no: '',
+          sch_presenting_date1: wide(dateFr, -45), sch_presenting_date2: wide(dateTo, 3),
+          pageRowCount: 50, pageIndex: 1,
+          sch_prt_at_code: '622', sch_prt_at_code_name: '여수청',
+          sch_call_sign: cs, sch_person_in_charge: '', sch_vessel_name: '' } });
+
+        for (const row of (list.resultList || [])) {
+          const res = await post('/plism3/dgs/lim/DgCombineResList.do', { reqKey: {
+            prt_at_code: '622', call_sign: row.call_sign, arv_year: row.arv_year,
+            arv_ser_no: row.arv_ser_no, in_flag: row.in_flag } });
+          dg.push({
+            cs, inflag, vsl: row.vessel_name, ser: row.arv_ser_no,
+            st: row.status_name, send: row.send_status, cntr: row.cntr_num,
+            wEq: row.weight_equal_yn, cEq: row.cntr_equal_yn, remark: row.remark,
+            res: (res.resultList || []).map(x =&amp;amp;gt; ({
+              doc: x.docnm, stat: x.freetxt2, code: x.errmsg, at: x.genrestm })),
+          });
+        }
+      }
+    }
+
+    const pick = r =&amp;amp;gt; ({ mrn: r.mrn, vsl: r.vessel_name, vyg: r.voyage_no, cs: r.call_sign,
+      st: r.status_cus, err: r.err_bl_cnt, bl: r.bl_cls_yn, line: r.customs_line_code });
+
+    return {
+      range: [fr, to],
+      imp: (imp.result || []).map(r =&amp;amp;gt; ({ ...pick(r), arv: r.arv_date,
+        agd: r.status_cusagd, a: r.tot_cusagd_mbl, b: r.tot_cms_imp_mbl })),
+      exp: (exp.result || []).map(r =&amp;amp;gt; ({ ...pick(r), dpt: r.dpt_date })),
+      dg,
+    };
+  }, keys);
+}
+
+(async () =&amp;amp;gt; {
+  // 로그인만 할 때는 조회를 안 하므로 keys.json 이 없어도 된다.
+  const keysPath = path.join(DATA, 'keys.json');
+  if (!LOGIN_ONLY &amp;amp;amp;&amp;amp;amp; !fs.existsSync(keysPath)) {
+    console.error('  data/keys.json 이 없습니다. 실행.bat 으로 돌려 주세요.');
+    process.exit(2);
+  }
+  const keys = fs.existsSync(keysPath)
+    ? JSON.parse(fs.readFileSync(keysPath, 'utf8')) : null;
+  const { chromium } = loadPlaywright();
+
+  const ctx = await chromium.launchPersistentContext(PROFILE, {
+    channel: 'chrome', headless: false, viewport: null,
+    args: ['--start-maximized'],
+  });
+  const page = ctx.pages()[0] || await ctx.newPage();
+
+  try {
+    await page.goto(HOME, { waitUntil: 'domcontentloaded', timeout: 60000 });
+
+    // 로그인 확인 — 화면 어딘가에 `○○○님 [SNKOC010_장금상선]` 이 보이면 된 것이다.
+    const who = async () =&amp;amp;gt; {
+      for (const f of page.frames()) {
+        try {
+          const t = await f.evaluate(() =&amp;amp;gt; document.body ? document.body.innerText : '');
+          const m = t.match(/([가-힣]{2,4})님\s*\[([A-Z0-9]+)_/);
+          if (m) return { name: m[1], klnet: m[2] };
+        } catch (_) { /* 프레임이 아직 안 뜬 것 */ }
+      }
+      return null;
+    };
+
+    let me = await who();
+    const 이미로그인 = !!me;
+    if (!me) {
+      console.log('\n  PLISM 에 로그인해 주세요. 창을 띄워 두었습니다.');
+      console.log(`  (로그인하면 자동으로 이어집니다 · 최대 ${로그인대기_분}분 기다립니다)\n`);
+      const until = Date.now() + 로그인대기_분 * 60000;
+      while (!me &amp;amp;amp;&amp;amp;amp; Date.now() &amp;amp;lt; until) {
+        await page.waitForTimeout(3000);
+        me = await who();
+      }
+    }
+    if (!me) {
+      console.error('  로그인을 확인하지 못했습니다. 다시 실행해 주세요.');
+      process.exit(4);
+    }
+    console.log(`  로그인 확인: ${me.name}님 [${me.klnet}]`);
+
+    if (LOGIN_ONLY) {
+      console.log(이미로그인
+        ? '\n  이미 로그인되어 있었습니다. 그대로 쓰시면 됩니다.'
+        : '\n  로그인이 이 폴더에 저장되었습니다.');
+      console.log('  이제 실행.bat 을 돌리면 창이 잠깐 떴다 사라지며 조회까지 끝납니다.\n');
+      return;                         // 조회는 하지 않는다
+    }
+
+    const got = await collect(page, {
+      dateFr: keys.date_fr, dateTo: keys.date_to,
+      signs: keys.signs, klnet: me.klnet,
+    });
+
+    got.pulled_at = new Date().toISOString().slice(0, 19);
+    got.klnet = me.klnet;
+    fs.writeFileSync(path.join(DATA, 'plism.json'), JSON.stringify(got, null, 1), 'utf8');
+    console.log(`  조회 완료 — 수입 ${got.imp.length}건 · 수출 ${got.exp.length}건 · 위험물 ${got.dg.length}건`);
+  } catch (e) {
+    console.error(`  조회 중 문제가 생겼습니다: ${e.message}`);
+    process.exit(1);
+  } finally {
+    await ctx.close();
+  }
+})();
+&amp;lt;/pre&amp;gt;&amp;lt;/details&amp;gt;
+  &amp;lt;/div&amp;gt;
+  &amp;lt;div class=&amp;quot;item&amp;quot;&amp;gt;
+    &amp;lt;div class=&amp;quot;ihead&amp;quot;&amp;gt;
+      &amp;lt;span class=&amp;quot;kind k-code&amp;quot;&amp;gt;프로그램&amp;lt;/span&amp;gt;
+      &amp;lt;span class=&amp;quot;iname&amp;quot;&amp;gt;board.py&amp;lt;/span&amp;gt;
+      &amp;lt;span class=&amp;quot;imeta&amp;quot;&amp;gt;7.9 KB · 2026-09-22&amp;lt;/span&amp;gt;
+    &amp;lt;/div&amp;gt;
+    &amp;lt;div class=&amp;quot;iwhat&amp;quot;&amp;gt;받아온 것을 판정합니다 — 승인 / 진행중 / 오류 / 미신고 / 타서비스.&amp;lt;/div&amp;gt;
+    &amp;lt;div class=&amp;quot;iwhen&amp;quot;&amp;gt;만드는 것: data\board.js&amp;lt;/div&amp;gt;
+    &amp;lt;details&amp;gt;&amp;lt;summary&amp;gt;안을 열어보기 &amp;lt;span class=&amp;quot;arw&amp;quot;&amp;gt;&amp;lt;/span&amp;gt;&amp;lt;/summary&amp;gt;&amp;lt;pre id=&amp;quot;f8&amp;quot;&amp;gt;# -*- coding: utf-8 -*-
+&amp;amp;quot;&amp;amp;quot;&amp;amp;quot;
+신고현황 보드 — 체크리스트를 기준으로 PLISM 신고현황 4칸을 채운다.
+
+  수입신고 / 수출신고 / 수입위험물 / 수출위험물
+
+체크리스트가 모수(母數)다. PLISM 에 없으면 미신고로 잡힌다.
+걸러내지 않는다 — 아직 마감 전이라 안 된 것도 그대로 미신고로 보여주고, 판단은 사람이 한다.
+프로그램이 &amp;amp;quot;괜찮을 것&amp;amp;quot;이라고 숨기는 쪽이 더 위험하다.
+&amp;amp;quot;&amp;amp;quot;&amp;amp;quot;
+from __future__ import annotations
+
+import json
+from datetime import datetime
+from pathlib import Path
+
+DATA = Path(__file__).resolve().parent / &amp;amp;quot;data&amp;amp;quot;
+
+OK, WORK, ERR, NONE, MINE = &amp;amp;quot;승인&amp;amp;quot;, &amp;amp;quot;진행중&amp;amp;quot;, &amp;amp;quot;오류&amp;amp;quot;, &amp;amp;quot;미신고&amp;amp;quot;, &amp;amp;quot;타서비스&amp;amp;quot;
+MARK = {OK: &amp;amp;quot;○&amp;amp;quot;, WORK: &amp;amp;quot;△&amp;amp;quot;, ERR: &amp;amp;quot;✗&amp;amp;quot;, NONE: &amp;amp;quot;✗&amp;amp;quot;, MINE: &amp;amp;quot;–&amp;amp;quot;}
+
+
+def _mrn(cell: str) -&amp;amp;gt; str | None:
+    &amp;amp;quot;&amp;amp;quot;&amp;amp;quot;체크리스트 MRN 칸에서 진짜 MRN 만 꺼낸다. `BSS1 IN` 같은 메모는 아직 미발급.&amp;amp;quot;&amp;amp;quot;&amp;amp;quot;
+    s = (cell or &amp;amp;quot;&amp;amp;quot;).strip().upper()
+    if len(s) &amp;amp;gt;= 10 and s[:2].isdigit() and s[-1] in &amp;amp;quot;IE&amp;amp;quot;:
+        return s
+    return None
+
+
+def find_row(cell: str, name: str, vygs: list[str], rows: list[dict]) -&amp;amp;gt; tuple[dict | None, str]:
+    &amp;amp;quot;&amp;amp;quot;&amp;amp;quot;PLISM 결과에서 이 모선의 줄을 찾는다.
+
+    MRN 으로 먼저 찾고, 없으면 선명+항차로 찾는다.
+    체크리스트 MRN 칸이 비어 있어도(아직 안 옮겨 적었어도) 신고는 되어 있을 수 있기 때문이다.
+    &amp;amp;quot;&amp;amp;quot;&amp;amp;quot;
+    mrn = _mrn(cell)
+    if mrn:
+        for r in rows:
+            if r[&amp;amp;quot;mrn&amp;amp;quot;] == mrn:
+                return r, &amp;amp;quot;&amp;amp;quot;
+    hit = [r for r in rows
+           if (r[&amp;amp;quot;vsl&amp;amp;quot;] or &amp;amp;quot;&amp;amp;quot;).strip().upper() == (name or &amp;amp;quot;&amp;amp;quot;).strip().upper()
+           and any(v and (r[&amp;amp;quot;vyg&amp;amp;quot;] or &amp;amp;quot;&amp;amp;quot;).strip().upper() == v.strip().upper() for v in vygs)]
+    if len(hit) == 1:
+        return hit[0], (&amp;amp;quot;MRN 다름&amp;amp;quot; if mrn else &amp;amp;quot;체크리스트에 MRN 미기재&amp;amp;quot;)
+    return None, &amp;amp;quot;&amp;amp;quot;
+
+
+def judge_mf(cell: str, row: dict | None, how: str = &amp;amp;quot;&amp;amp;quot;) -&amp;amp;gt; tuple[str, str]:
+    &amp;amp;quot;&amp;amp;quot;&amp;amp;quot;적하목록(수입·수출) 한 칸을 판정한다. 돌려주는 값은 (판정, 설명).&amp;amp;quot;&amp;amp;quot;&amp;amp;quot;
+    if row is None:
+        memo = (cell or &amp;amp;quot;&amp;amp;quot;).strip()
+        if memo and not _mrn(memo):
+            return MINE, memo            # `BSS1 IN` — 그 방향은 타 서비스 소속이다
+        return NONE, &amp;amp;quot;PLISM 에 없음&amp;amp;quot;
+    tail = f&amp;amp;quot; ({how})&amp;amp;quot; if how else &amp;amp;quot;&amp;amp;quot;
+    if row.get(&amp;amp;quot;err&amp;amp;quot;):
+        return ERR, f&amp;amp;quot;오류 B/L {row['err']}건{tail}&amp;amp;quot;
+    status = (row.get(&amp;amp;quot;st&amp;amp;quot;) or &amp;amp;quot;&amp;amp;quot;).strip()
+    if status == &amp;amp;quot;승인&amp;amp;quot;:
+        return OK, &amp;amp;quot;승인&amp;amp;quot; + tail
+    if status:
+        return WORK, status + tail       # 선별마감 · 1차 접수 · 2차 접수 …
+    return WORK, &amp;amp;quot;상태 없음&amp;amp;quot; + tail
+
+
+def judge_dg(rows: list[dict]) -&amp;amp;gt; tuple[str, str]:
+    &amp;amp;quot;&amp;amp;quot;&amp;amp;quot;위험물 한 칸을 판정한다.
+
+    한 모선에 응답이 여러 줄 쌓인다 — 문서 종류별로 가장 최근 것만 본다.
+    그러지 않으면 이미 고친 어제 오류가 오늘도 계속 뜬다.
+    &amp;amp;quot;&amp;amp;quot;&amp;amp;quot;
+    if not rows:
+        return NONE, &amp;amp;quot;신고 없음&amp;amp;quot;
+
+    latest: dict[str, dict] = {}
+    for r in rows:
+        for res in r.get(&amp;amp;quot;res&amp;amp;quot;) or []:
+            doc, at = res.get(&amp;amp;quot;doc&amp;amp;quot;), str(res.get(&amp;amp;quot;at&amp;amp;quot;) or &amp;amp;quot;&amp;amp;quot;)
+            if doc and (doc not in latest or at &amp;amp;gt; str(latest[doc].get(&amp;amp;quot;at&amp;amp;quot;) or &amp;amp;quot;&amp;amp;quot;)):
+                latest[doc] = res
+
+    if not latest:
+        return WORK, &amp;amp;quot;전송됨 · 응답 대기&amp;amp;quot;
+
+    bad = [f&amp;amp;quot;{d} {r.get('code') or ''}&amp;amp;quot;.strip()
+           for d, r in latest.items() if (r.get(&amp;amp;quot;stat&amp;amp;quot;) or &amp;amp;quot;&amp;amp;quot;) != &amp;amp;quot;(정상처리)&amp;amp;quot;]
+    if bad:
+        return ERR, &amp;amp;quot; / &amp;amp;quot;.join(bad)
+
+    if any(r.get(&amp;amp;quot;wEq&amp;amp;quot;) == &amp;amp;quot;N&amp;amp;quot; or r.get(&amp;amp;quot;cEq&amp;amp;quot;) == &amp;amp;quot;N&amp;amp;quot; for r in rows):
+        return WORK, &amp;amp;quot;정상처리 (중량·컨 수량 불일치)&amp;amp;quot;
+
+    return OK, f&amp;amp;quot;정상처리 {len(latest)}종&amp;amp;quot;
+
+
+def build() -&amp;amp;gt; tuple[list[dict], dict]:
+    keys = json.loads((DATA / &amp;amp;quot;keys.json&amp;amp;quot;).read_text(&amp;amp;quot;utf-8&amp;amp;quot;))
+    pull = json.loads((DATA / &amp;amp;quot;plism.json&amp;amp;quot;).read_text(&amp;amp;quot;utf-8&amp;amp;quot;))
+    imp, exp, dg = pull[&amp;amp;quot;imp&amp;amp;quot;], pull[&amp;amp;quot;exp&amp;amp;quot;], pull[&amp;amp;quot;dg&amp;amp;quot;]
+
+    board = []
+    for v in keys[&amp;amp;quot;rows&amp;amp;quot;]:
+        sign, seq = v[&amp;amp;quot;sign&amp;amp;quot;], (v[&amp;amp;quot;seq&amp;amp;quot;] or &amp;amp;quot;&amp;amp;quot;).strip()
+
+        def dg_rows(in_flag: int) -&amp;amp;gt; list[dict]:
+            return [r for r in dg
+                    if r[&amp;amp;quot;cs&amp;amp;quot;] == sign and r[&amp;amp;quot;inflag&amp;amp;quot;] == in_flag
+                    and (not seq or str(r[&amp;amp;quot;ser&amp;amp;quot;]).lstrip(&amp;amp;quot;0&amp;amp;quot;) == seq.lstrip(&amp;amp;quot;0&amp;amp;quot;))]
+
+        imp_row, imp_how = find_row(v[&amp;amp;quot;imp_cell&amp;amp;quot;], v[&amp;amp;quot;name&amp;amp;quot;], [v[&amp;amp;quot;vyg_in&amp;amp;quot;], v[&amp;amp;quot;vyg_out&amp;amp;quot;]], imp)
+        exp_row, exp_how = find_row(v[&amp;amp;quot;exp_cell&amp;amp;quot;], v[&amp;amp;quot;name&amp;amp;quot;], [v[&amp;amp;quot;vyg_out&amp;amp;quot;], v[&amp;amp;quot;vyg_in&amp;amp;quot;]], exp)
+
+        board.append({**v,
+                      &amp;amp;quot;imp_mf&amp;amp;quot;: judge_mf(v[&amp;amp;quot;imp_cell&amp;amp;quot;], imp_row, imp_how),
+                      &amp;amp;quot;exp_mf&amp;amp;quot;: judge_mf(v[&amp;amp;quot;exp_cell&amp;amp;quot;], exp_row, exp_how),
+                      &amp;amp;quot;imp_dg&amp;amp;quot;: judge_dg(dg_rows(1)),
+                      &amp;amp;quot;exp_dg&amp;amp;quot;: judge_dg(dg_rows(2))})
+
+    board.sort(key=lambda b: b[&amp;amp;quot;etb&amp;amp;quot;] or &amp;amp;quot;9999&amp;amp;quot;)     # 입항 빠른 순 — 급한 것이 위로
+    return board, pull
+
+
+def show(board: list[dict], pull: dict) -&amp;amp;gt; None:
+    def cell(j):
+        return f&amp;amp;quot;{MARK[j[0]]}{j[0]}&amp;amp;quot;
+
+    print(f&amp;amp;quot;\n신고현황 · {datetime.now():%Y-%m-%d %H:%M} · 체크리스트 {len(board)}척 기준&amp;amp;quot;)
+    print(f&amp;amp;quot;조회: {pull.get('pulled_at','')} · PLISM {pull.get('klnet','')}\n&amp;amp;quot;)
+    print(f&amp;amp;quot;{'모선':19} {'항차':7} {'호출부호':8} {'해수청':5} {'입항':12} &amp;amp;quot;
+          f&amp;amp;quot;{'수입신고':10} {'수출신고':10} {'수입위험물':11} {'수출위험물':11}&amp;amp;quot;)
+    print(&amp;amp;quot;-&amp;amp;quot; * 118)
+    for b in board:
+        vyg = b[&amp;amp;quot;vyg_out&amp;amp;quot;] or b[&amp;amp;quot;vyg_in&amp;amp;quot;] or &amp;amp;quot;&amp;amp;quot;
+        etb = (b[&amp;amp;quot;etb&amp;amp;quot;] or &amp;amp;quot;&amp;amp;quot;).replace(&amp;amp;quot;T&amp;amp;quot;, &amp;amp;quot; &amp;amp;quot;)[5:16]
+        print(f&amp;amp;quot;{b['name'][:19]:19} {vyg:7} {(b['sign'] or '?'):8} {(b['seq'] or '-'):5} {etb:12} &amp;amp;quot;
+              f&amp;amp;quot;{cell(b['imp_mf']):10} {cell(b['exp_mf']):10} &amp;amp;quot;
+              f&amp;amp;quot;{cell(b['imp_dg']):11} {cell(b['exp_dg']):11}&amp;amp;quot;)
+
+    print(&amp;amp;quot;\n[ 미신고 · 오류 ]  ※ 마감 전이라 아직 안 한 것도 그대로 나온다&amp;amp;quot;)
+    hit = False
+    for b in board:
+        bad = [(label, j) for label, j in ((&amp;amp;quot;수입신고&amp;amp;quot;, b[&amp;amp;quot;imp_mf&amp;amp;quot;]), (&amp;amp;quot;수출신고&amp;amp;quot;, b[&amp;amp;quot;exp_mf&amp;amp;quot;]),
+                                           (&amp;amp;quot;수입위험물&amp;amp;quot;, b[&amp;amp;quot;imp_dg&amp;amp;quot;]), (&amp;amp;quot;수출위험물&amp;amp;quot;, b[&amp;amp;quot;exp_dg&amp;amp;quot;]))
+               if j[0] in (ERR, NONE)]
+        if not bad:
+            continue
+        hit = True
+        mark = &amp;amp;quot;⚠&amp;amp;quot; if any(j[0] == ERR for _, j in bad) else &amp;amp;quot;✗&amp;amp;quot;
+        vyg = b[&amp;amp;quot;vyg_out&amp;amp;quot;] or b[&amp;amp;quot;vyg_in&amp;amp;quot;] or &amp;amp;quot;&amp;amp;quot;
+        etb = (b[&amp;amp;quot;etb&amp;amp;quot;] or &amp;amp;quot;&amp;amp;quot;).replace(&amp;amp;quot;T&amp;amp;quot;, &amp;amp;quot; &amp;amp;quot;)[5:16]
+        detail = &amp;amp;quot; · &amp;amp;quot;.join(f&amp;amp;quot;{label} {j[0]}&amp;amp;quot; + (f&amp;amp;quot;({j[1]})&amp;amp;quot; if j[0] == ERR else &amp;amp;quot;&amp;amp;quot;)
+                            for label, j in bad)
+        print(f&amp;amp;quot;  {mark} {b['name'][:18]:18} {vyg:7} 입항 {etb}   {detail}&amp;amp;quot;)
+    if not hit:
+        print(&amp;amp;quot;  없음&amp;amp;quot;)
+    print()
+
+
+def write_web(board: list[dict], pull: dict) -&amp;amp;gt; None:
+    &amp;amp;quot;&amp;amp;quot;&amp;amp;quot;화면(index.html)이 읽을 자료를 data/board.js 로 떨군다.
+
+    브라우저는 파일을 직접 열어 읽지 못한다(file:// 제약). 그래서 json 이 아니라
+    js 로 쓴다 — index.html 이 &amp;amp;lt;script src&amp;amp;gt; 로 불러가면 그만이다.
+    표시 규칙은 전부 화면 쪽에 두고, 여기서는 판정 결과만 넘긴다.
+    &amp;amp;quot;&amp;amp;quot;&amp;amp;quot;
+    def j(t: tuple[str, str]) -&amp;amp;gt; dict:
+        return {&amp;amp;quot;s&amp;amp;quot;: t[0], &amp;amp;quot;d&amp;amp;quot;: t[1]}
+
+    payload = {
+        &amp;amp;quot;made_at&amp;amp;quot;: datetime.now().strftime(&amp;amp;quot;%Y-%m-%d %H:%M&amp;amp;quot;),
+        &amp;amp;quot;pulled_at&amp;amp;quot;: pull.get(&amp;amp;quot;pulled_at&amp;amp;quot;, &amp;amp;quot;&amp;amp;quot;),
+        &amp;amp;quot;klnet&amp;amp;quot;: pull.get(&amp;amp;quot;klnet&amp;amp;quot;, &amp;amp;quot;&amp;amp;quot;),
+        &amp;amp;quot;rows&amp;amp;quot;: [{&amp;amp;quot;name&amp;amp;quot;: b.get(&amp;amp;quot;name&amp;amp;quot;, &amp;amp;quot;&amp;amp;quot;), &amp;amp;quot;vsl&amp;amp;quot;: b.get(&amp;amp;quot;vsl&amp;amp;quot;, &amp;amp;quot;&amp;amp;quot;),
+                  &amp;amp;quot;svc_in&amp;amp;quot;: b.get(&amp;amp;quot;svc_in&amp;amp;quot;, &amp;amp;quot;&amp;amp;quot;), &amp;amp;quot;svc_out&amp;amp;quot;: b.get(&amp;amp;quot;svc_out&amp;amp;quot;, &amp;amp;quot;&amp;amp;quot;),
+                  &amp;amp;quot;opr&amp;amp;quot;: b.get(&amp;amp;quot;opr&amp;amp;quot;, &amp;amp;quot;&amp;amp;quot;),
+                  &amp;amp;quot;sign&amp;amp;quot;: b.get(&amp;amp;quot;sign&amp;amp;quot;, &amp;amp;quot;&amp;amp;quot;), &amp;amp;quot;seq&amp;amp;quot;: b.get(&amp;amp;quot;seq&amp;amp;quot;, &amp;amp;quot;&amp;amp;quot;),
+                  &amp;amp;quot;vyg_in&amp;amp;quot;: b.get(&amp;amp;quot;vyg_in&amp;amp;quot;, &amp;amp;quot;&amp;amp;quot;), &amp;amp;quot;vyg_out&amp;amp;quot;: b.get(&amp;amp;quot;vyg_out&amp;amp;quot;, &amp;amp;quot;&amp;amp;quot;),
+                  &amp;amp;quot;etb&amp;amp;quot;: b.get(&amp;amp;quot;etb&amp;amp;quot;, &amp;amp;quot;&amp;amp;quot;), &amp;amp;quot;etd&amp;amp;quot;: b.get(&amp;amp;quot;etd&amp;amp;quot;, &amp;amp;quot;&amp;amp;quot;),
+                  &amp;amp;quot;imp_mf&amp;amp;quot;: j(b[&amp;amp;quot;imp_mf&amp;amp;quot;]), &amp;amp;quot;exp_mf&amp;amp;quot;: j(b[&amp;amp;quot;exp_mf&amp;amp;quot;]),
+                  &amp;amp;quot;imp_dg&amp;amp;quot;: j(b[&amp;amp;quot;imp_dg&amp;amp;quot;]), &amp;amp;quot;exp_dg&amp;amp;quot;: j(b[&amp;amp;quot;exp_dg&amp;amp;quot;])}
+                 for b in board],
+    }
+    DATA.mkdir(exist_ok=True)
+    (DATA / &amp;amp;quot;board.js&amp;amp;quot;).write_text(
+        &amp;amp;quot;window.BOARD=&amp;amp;quot; + json.dumps(payload, ensure_ascii=False) + &amp;amp;quot;;&amp;amp;quot;, &amp;amp;quot;utf-8&amp;amp;quot;)
+
+
+if __name__ == &amp;amp;quot;__main__&amp;amp;quot;:
+    _board, _pull = build()
+    show(_board, _pull)
+    write_web(_board, _pull)
+&amp;lt;/pre&amp;gt;&amp;lt;/details&amp;gt;
+  &amp;lt;/div&amp;gt;
+  &amp;lt;div class=&amp;quot;item&amp;quot;&amp;gt;
+    &amp;lt;div class=&amp;quot;ihead&amp;quot;&amp;gt;
+      &amp;lt;span class=&amp;quot;kind k-code&amp;quot;&amp;gt;프로그램&amp;lt;/span&amp;gt;
+      &amp;lt;span class=&amp;quot;iname&amp;quot;&amp;gt;mail.py&amp;lt;/span&amp;gt;
+      &amp;lt;span class=&amp;quot;imeta&amp;quot;&amp;gt;6.5 KB · 2026-09-22&amp;lt;/span&amp;gt;
+    &amp;lt;/div&amp;gt;
+    &amp;lt;div class=&amp;quot;iwhat&amp;quot;&amp;gt;보낸편지함 제목을 훑어 마감리스트를 보냈는지 봅니다. 메일은 읽기만 하고 건드리지 않습니다.&amp;lt;/div&amp;gt;
+    &amp;lt;div class=&amp;quot;iwhen&amp;quot;&amp;gt;만드는 것: data\mail.json · data\mail.js&amp;lt;/div&amp;gt;
+    &amp;lt;details&amp;gt;&amp;lt;summary&amp;gt;안을 열어보기 &amp;lt;span class=&amp;quot;arw&amp;quot;&amp;gt;&amp;lt;/span&amp;gt;&amp;lt;/summary&amp;gt;&amp;lt;pre id=&amp;quot;f9&amp;quot;&amp;gt;# -*- coding: utf-8 -*-
+&amp;amp;quot;&amp;amp;quot;&amp;amp;quot;
+보낸 메일로 완료 확인 — 내가 보낸 메일이 곧 완료 기록이다.
+
+따로 체크할 것이 없다. 마감리스트를 보내면 그 제목에 선명과 항차가 남으므로,
+보낸편지함을 훑어 &amp;amp;quot;이 모선은 보냈다 / 아직이다&amp;amp;quot; 를 가려낸다.
+
+  모선별   수입마감리스트 · 수출마감리스트
+  주 1회   MRN 송부의 건 · 기선적 기반출 LIST(화요일)
+
+**해당 없는 것은 미완료로 잡지 않는다.** 양하만 모선에 수출마감리스트를 찾으면
+매주 빨간 줄이 뜨는데, 그건 안 한 게 아니라 할 일이 없는 것이다.
+체크리스트가 이미 양하만/적하만/타서비스를 가려 놓았으니 그대로 쓴다.
+
+메일을 읽기만 한다. 보내지도, 지우지도, 읽음 표시를 바꾸지도 않는다.
+&amp;amp;quot;&amp;amp;quot;&amp;amp;quot;
+from __future__ import annotations
+
+import json
+import re
+from datetime import datetime, timedelta
+from pathlib import Path
+
+DATA = Path(__file__).resolve().parent / &amp;amp;quot;data&amp;amp;quot;
+DAYS = 45                      # 보낸편지함을 며칠치까지 훑을지
+
+OK, NONE, NA = &amp;amp;quot;보냄&amp;amp;quot;, &amp;amp;quot;아직&amp;amp;quot;, &amp;amp;quot;해당없음&amp;amp;quot;
+MARK = {OK: &amp;amp;quot;○&amp;amp;quot;, NONE: &amp;amp;quot;✗&amp;amp;quot;, NA: &amp;amp;quot;–&amp;amp;quot;}
+
+# 모선별로 찾을 메일. (칸 이름, 제목에 들어가는 말, 어느 방향인지)
+PER_VESSEL = [
+    (&amp;amp;quot;수입리스트&amp;amp;quot;, &amp;amp;quot;수입마감리스트&amp;amp;quot;, &amp;amp;quot;in&amp;amp;quot;),
+    (&amp;amp;quot;수출리스트&amp;amp;quot;, &amp;amp;quot;수출마감리스트&amp;amp;quot;, &amp;amp;quot;out&amp;amp;quot;),
+]
+
+# 주 1회 하는 일. (이름, 제목에 들어가는 말, 언제까지)
+WEEKLY = [
+    (&amp;amp;quot;MRN 송부&amp;amp;quot;, &amp;amp;quot;MRN 송부의 건&amp;amp;quot;, &amp;amp;quot;금요일 오후 ~ 월요일 오전&amp;amp;quot;),
+    (&amp;amp;quot;기선적/기반출 LIST&amp;amp;quot;, &amp;amp;quot;기선적 기반출&amp;amp;quot;, &amp;amp;quot;화요일&amp;amp;quot;),
+]
+
+
+def sent_mails(days: int = DAYS) -&amp;amp;gt; list[dict]:
+    &amp;amp;quot;&amp;amp;quot;&amp;amp;quot;보낸편지함에서 최근 메일의 제목과 보낸 시각만 가져온다.&amp;amp;quot;&amp;amp;quot;&amp;amp;quot;
+    import win32com.client as win32
+    ol = win32.Dispatch(&amp;amp;quot;Outlook.Application&amp;amp;quot;)
+    items = ol.GetNamespace(&amp;amp;quot;MAPI&amp;amp;quot;).GetDefaultFolder(5).Items    # 5 = 보낸 편지함
+    items.Sort(&amp;amp;quot;[SentOn]&amp;amp;quot;, True)
+    cut = datetime.now() - timedelta(days=days)
+    out = []
+    for m in items:
+        try:
+            when = m.SentOn
+            subject = m.Subject or &amp;amp;quot;&amp;amp;quot;
+        except Exception:
+            continue
+        when = datetime(when.year, when.month, when.day, when.hour, when.minute)
+        if when &amp;amp;lt; cut:
+            break                       # 최신순이라 여기서 멈추면 된다
+        out.append({&amp;amp;quot;at&amp;amp;quot;: when, &amp;amp;quot;subject&amp;amp;quot;: subject})
+    return out
+
+
+def norm(s: str) -&amp;amp;gt; str:
+    &amp;amp;quot;&amp;amp;quot;&amp;amp;quot;제목 비교용. 공백과 대소문자 차이로 놓치지 않게.&amp;amp;quot;&amp;amp;quot;&amp;amp;quot;
+    return re.sub(r&amp;amp;quot;\s+&amp;amp;quot;, &amp;amp;quot;&amp;amp;quot;, (s or &amp;amp;quot;&amp;amp;quot;)).upper()
+
+
+def find(mails: list[dict], *must: str) -&amp;amp;gt; dict | None:
+    &amp;amp;quot;&amp;amp;quot;&amp;amp;quot;단어가 모두 들어간 가장 최근 메일. `RE:` `추가송부/` 가 붙어도 걸린다.&amp;amp;quot;&amp;amp;quot;&amp;amp;quot;
+    for m in mails:
+        s = norm(m[&amp;amp;quot;subject&amp;amp;quot;])
+        if all(norm(w) in s for w in must):
+            return m
+    return None
+
+
+def has_leg(vyg: str) -&amp;amp;gt; bool:
+    &amp;amp;quot;&amp;amp;quot;&amp;amp;quot;그 방향에 내가 할 일이 있나. '양하만' '-' 빈칸은 할 일이 없다는 뜻이다.&amp;amp;quot;&amp;amp;quot;&amp;amp;quot;
+    v = (vyg or &amp;amp;quot;&amp;amp;quot;).strip()
+    return bool(v) and v not in (&amp;amp;quot;양하만&amp;amp;quot;, &amp;amp;quot;적하만&amp;amp;quot;, &amp;amp;quot;-&amp;amp;quot;, &amp;amp;quot;수출X&amp;amp;quot;)
+
+
+def check(keys: dict, mails: list[dict]) -&amp;amp;gt; dict:
+    rows = []
+    for v in keys[&amp;amp;quot;rows&amp;amp;quot;]:
+        one = {&amp;amp;quot;vsl&amp;amp;quot;: v[&amp;amp;quot;vsl&amp;amp;quot;], &amp;amp;quot;name&amp;amp;quot;: v[&amp;amp;quot;name&amp;amp;quot;],
+               &amp;amp;quot;vyg_in&amp;amp;quot;: v[&amp;amp;quot;vyg_in&amp;amp;quot;], &amp;amp;quot;vyg_out&amp;amp;quot;: v[&amp;amp;quot;vyg_out&amp;amp;quot;], &amp;amp;quot;etb&amp;amp;quot;: v[&amp;amp;quot;etb&amp;amp;quot;]}
+        for label, word, side in PER_VESSEL:
+            vyg = v[&amp;amp;quot;vyg_in&amp;amp;quot;] if side == &amp;amp;quot;in&amp;amp;quot; else v[&amp;amp;quot;vyg_out&amp;amp;quot;]
+            if not has_leg(vyg):
+                one[label] = (NA, vyg or &amp;amp;quot;&amp;amp;quot;)
+                continue
+            hit = find(mails, v[&amp;amp;quot;name&amp;amp;quot;], vyg, word)
+            one[label] = ((OK, hit[&amp;amp;quot;at&amp;amp;quot;].strftime(&amp;amp;quot;%m-%d %H:%M&amp;amp;quot;)) if hit
+                          else (NONE, &amp;amp;quot;&amp;amp;quot;))
+        rows.append(one)
+
+    weekly = []
+    # 그 주에 한 것만 인정한다. 주 시작 며칠 전에 미리 보내는 경우가 있어 앞으로 4일 여유를 둔다.
+    start = datetime.strptime(keys[&amp;amp;quot;week&amp;amp;quot;][0], &amp;amp;quot;%Y-%m-%d&amp;amp;quot;) - timedelta(days=4)
+    for label, word, due in WEEKLY:
+        hit = find(mails, word)
+        if hit and hit[&amp;amp;quot;at&amp;amp;quot;] &amp;amp;gt;= start:
+            weekly.append({&amp;amp;quot;label&amp;amp;quot;: label, &amp;amp;quot;state&amp;amp;quot;: OK, &amp;amp;quot;due&amp;amp;quot;: due,
+                           &amp;amp;quot;at&amp;amp;quot;: hit[&amp;amp;quot;at&amp;amp;quot;].strftime(&amp;amp;quot;%m-%d %H:%M&amp;amp;quot;),
+                           &amp;amp;quot;subject&amp;amp;quot;: hit[&amp;amp;quot;subject&amp;amp;quot;]})
+        else:
+            weekly.append({&amp;amp;quot;label&amp;amp;quot;: label, &amp;amp;quot;state&amp;amp;quot;: NONE, &amp;amp;quot;due&amp;amp;quot;: due,
+                           &amp;amp;quot;at&amp;amp;quot;: hit[&amp;amp;quot;at&amp;amp;quot;].strftime(&amp;amp;quot;%m-%d %H:%M&amp;amp;quot;) if hit else &amp;amp;quot;&amp;amp;quot;,
+                           &amp;amp;quot;subject&amp;amp;quot;: (&amp;amp;quot;지난주: &amp;amp;quot; + hit[&amp;amp;quot;subject&amp;amp;quot;]) if hit else &amp;amp;quot;&amp;amp;quot;})
+    return {&amp;amp;quot;checked_at&amp;amp;quot;: datetime.now().strftime(&amp;amp;quot;%Y-%m-%d %H:%M&amp;amp;quot;),
+            &amp;amp;quot;week&amp;amp;quot;: keys[&amp;amp;quot;week&amp;amp;quot;], &amp;amp;quot;rows&amp;amp;quot;: rows, &amp;amp;quot;weekly&amp;amp;quot;: weekly}
+
+
+def show(res: dict) -&amp;amp;gt; None:
+    def cell(v):
+        return f&amp;amp;quot;{MARK[v[0]]}{v[0]}&amp;amp;quot;
+
+    print(f&amp;amp;quot;\n보낸 메일로 확인 · {res['checked_at']} · &amp;amp;quot;
+          f&amp;amp;quot;{res['week'][0]} ~ {res['week'][1]}\n&amp;amp;quot;)
+    print(f&amp;amp;quot;{'모선':19} {'수입항차':8} {'수출항차':8} {'수입리스트':12} {'수출리스트':12}&amp;amp;quot;)
+    print(&amp;amp;quot;-&amp;amp;quot; * 66)
+    for r in res[&amp;amp;quot;rows&amp;amp;quot;]:
+        print(f&amp;amp;quot;{r['name'][:19]:19} {r['vyg_in']:8} {r['vyg_out']:8} &amp;amp;quot;
+              f&amp;amp;quot;{cell(r['수입리스트']):12} {cell(r['수출리스트']):12}&amp;amp;quot;)
+
+    print(f&amp;amp;quot;\n[ 이번 주 할 일 ]&amp;amp;quot;)
+    for w in res[&amp;amp;quot;weekly&amp;amp;quot;]:
+        line = f&amp;amp;quot;  {MARK[w['state']]} {w['label']:18} ({w['due']})&amp;amp;quot;
+        if w[&amp;amp;quot;at&amp;amp;quot;]:
+            line += f&amp;amp;quot;   {w['at']}&amp;amp;quot;
+        print(line)
+        if w[&amp;amp;quot;state&amp;amp;quot;] == NONE and w[&amp;amp;quot;subject&amp;amp;quot;]:
+            print(f&amp;amp;quot;      최근: {w['subject'][:70]}&amp;amp;quot;)
+
+    todo = [(r[&amp;amp;quot;name&amp;amp;quot;], label) for r in res[&amp;amp;quot;rows&amp;amp;quot;]
+            for label in (&amp;amp;quot;수입리스트&amp;amp;quot;, &amp;amp;quot;수출리스트&amp;amp;quot;) if r[label][0] == NONE]
+    print(f&amp;amp;quot;\n[ 아직 안 보낸 것 {len(todo)}건 ]  ※ 마감 전이면 아직 안 해도 된다&amp;amp;quot;)
+    for name, label in todo:
+        print(f&amp;amp;quot;  · {name} — {label}&amp;amp;quot;)
+    if not todo:
+        print(&amp;amp;quot;  없음&amp;amp;quot;)
+
+
+def main() -&amp;amp;gt; None:
+    keys = json.loads((DATA / &amp;amp;quot;keys.json&amp;amp;quot;).read_text(&amp;amp;quot;utf-8&amp;amp;quot;))
+    try:
+        mails = sent_mails()
+    except Exception as e:
+        print(f&amp;amp;quot;  보낸편지함을 못 읽었습니다({e}). Outlook 이 켜져 있는지 보세요.&amp;amp;quot;)
+        return
+    print(f&amp;amp;quot;  보낸편지함 최근 {DAYS}일 · {len(mails)}통 확인&amp;amp;quot;)
+    res = check(keys, mails)
+    DATA.mkdir(exist_ok=True)
+    (DATA / &amp;amp;quot;mail.json&amp;amp;quot;).write_text(
+        json.dumps(res, ensure_ascii=False, indent=1), &amp;amp;quot;utf-8&amp;amp;quot;)
+    # 화면(index.html)용. 브라우저가 json 을 직접 못 읽어서 js 로도 같이 남긴다.
+    (DATA / &amp;amp;quot;mail.js&amp;amp;quot;).write_text(
+        &amp;amp;quot;window.MAIL=&amp;amp;quot; + json.dumps(res, ensure_ascii=False) + &amp;amp;quot;;&amp;amp;quot;, &amp;amp;quot;utf-8&amp;amp;quot;)
+    show(res)
+
+
+if __name__ == &amp;amp;quot;__main__&amp;amp;quot;:
+    main()
+&amp;lt;/pre&amp;gt;&amp;lt;/details&amp;gt;
+  &amp;lt;/div&amp;gt;
+  &amp;lt;div class=&amp;quot;item&amp;quot;&amp;gt;
+    &amp;lt;div class=&amp;quot;ihead&amp;quot;
+
+… (너무 길어 여기까지만 보여줍니다)</pre></details>
   </div></div><div class="grp"><h2>4 · 속에서 도는 것</h2><div class="gd">직접 누를 일은 없습니다. 실행.bat 이 차례로 부릅니다. 무엇이 무엇을 만드는지만 알아두면 됩니다.</div>
   <div class="item">
     <div class="ihead">
@@ -783,7 +3125,7 @@ render();
     </div>
     <div class="iwhat">체크리스트가 남긴 기록에서 조회에 필요한 것만 뽑습니다 — 모선 · 항차 · 호출부호 · 해수청번호.</div>
     <div class="iwhen">만드는 것: data\keys.json</div>
-    <details><summary>안을 열어보기 <span class="arw"></span></summary><pre id="f6"># -*- coding: utf-8 -*-
+    <details><summary>안을 열어보기 <span class="arw"></span></summary><pre id="f7"># -*- coding: utf-8 -*-
 &quot;&quot;&quot;
 조회 열쇠 모으기 — 체크리스트에서 PLISM 조회에 필요한 값만 뽑아 data/keys.json 으로 낸다.
 
@@ -922,11 +3264,11 @@ if __name__ == &quot;__main__&quot;:
     <div class="ihead">
       <span class="kind k-code">프로그램</span>
       <span class="iname">pull.js</span>
-      <span class="imeta">8.3 KB · 2026-09-22</span>
+      <span class="imeta">8.4 KB · 2026-09-22</span>
     </div>
     <div class="iwhat">크롬을 띄워 PLISM 에 들어가 적하목록·위험물 신고현황을 받아옵니다. 로그인은 사람이 합니다.</div>
     <div class="iwhen">만드는 것: data\plism.json</div>
-    <details><summary>안을 열어보기 <span class="arw"></span></summary><pre id="f7">// PLISM 조회 — 로그인된 창에서 신고현황을 받아 data/plism.json 으로 저장한다.
+    <details><summary>안을 열어보기 <span class="arw"></span></summary><pre id="f8">// PLISM 조회 — 로그인된 창에서 신고현황을 받아 data/plism.json 으로 저장한다.
 //
 // 로그인은 사람이 직접 한다. 창이 뜨면 한 번 로그인해 두면 되고,
 // 그 다음부터는 이 폴더에 세션이 남아 창만 잠깐 떴다 사라진다.
@@ -1107,6 +3449,7 @@ async function collect(page, keys) {
 
     got.pulled_at = new Date().toISOString().slice(0, 19);
     got.klnet = me.klnet;
+    got.who = me.name;          // 각자 로그인하므로, 누가 조회한 자료인지 남겨 둔다
     fs.writeFileSync(path.join(DATA, 'plism.json'), JSON.stringify(got, null, 1), 'utf8');
     console.log(`  조회 완료 — 수입 ${got.imp.length}건 · 수출 ${got.exp.length}건 · 위험물 ${got.dg.length}건`);
   } catch (e) {
@@ -1122,11 +3465,11 @@ async function collect(page, keys) {
     <div class="ihead">
       <span class="kind k-code">프로그램</span>
       <span class="iname">board.py</span>
-      <span class="imeta">7.9 KB · 2026-09-22</span>
+      <span class="imeta">8.6 KB · 2026-09-22</span>
     </div>
     <div class="iwhat">받아온 것을 판정합니다 — 승인 / 진행중 / 오류 / 미신고 / 타서비스.</div>
     <div class="iwhen">만드는 것: data\board.js</div>
-    <details><summary>안을 열어보기 <span class="arw"></span></summary><pre id="f8"># -*- coding: utf-8 -*-
+    <details><summary>안을 열어보기 <span class="arw"></span></summary><pre id="f9"># -*- coding: utf-8 -*-
 &quot;&quot;&quot;
 신고현황 보드 — 체크리스트를 기준으로 PLISM 신고현황 4칸을 채운다.
 
@@ -1224,6 +3567,13 @@ def judge_dg(rows: list[dict]) -&gt; tuple[str, str]:
 
 
 def build() -&gt; tuple[list[dict], dict]:
+    # 없는 파일을 그냥 읽으면 빨간 글씨가 쏟아져 뭐가 문제인지 알 수 없다.
+    # 무엇이 없고 무엇을 하면 되는지만 한 줄로 알린다.
+    for name, how in ((&quot;keys.json&quot;, &quot;실행.bat 을 돌리면 만들어집니다&quot;),
+                      (&quot;plism.json&quot;, &quot;PLISM 조회를 아직 안 했습니다. 'PLISM 로그인.bat' 으로 로그인한 뒤 실행.bat 을 돌려 주세요&quot;)):
+        if not (DATA / name).exists():
+            print(f&quot;\n  data\\{name} 이 없습니다 — {how}.\n&quot;)
+            raise SystemExit(2)
     keys = json.loads((DATA / &quot;keys.json&quot;).read_text(&quot;utf-8&quot;))
     pull = json.loads((DATA / &quot;plism.json&quot;).read_text(&quot;utf-8&quot;))
     imp, exp, dg = pull[&quot;imp&quot;], pull[&quot;exp&quot;], pull[&quot;dg&quot;]
@@ -1255,7 +3605,8 @@ def show(board: list[dict], pull: dict) -&gt; None:
         return f&quot;{MARK[j[0]]}{j[0]}&quot;
 
     print(f&quot;\n신고현황 · {datetime.now():%Y-%m-%d %H:%M} · 체크리스트 {len(board)}척 기준&quot;)
-    print(f&quot;조회: {pull.get('pulled_at','')} · PLISM {pull.get('klnet','')}\n&quot;)
+    who = pull.get(&quot;who&quot;) or &quot;&quot;
+    print(f&quot;조회: {pull.get('pulled_at','')} · PLISM {who + '님 ' if who else ''}[{pull.get('klnet','')}]\n&quot;)
     print(f&quot;{'모선':19} {'항차':7} {'호출부호':8} {'해수청':5} {'입항':12} &quot;
           f&quot;{'수입신고':10} {'수출신고':10} {'수입위험물':11} {'수출위험물':11}&quot;)
     print(&quot;-&quot; * 118)
@@ -1300,6 +3651,7 @@ def write_web(board: list[dict], pull: dict) -&gt; None:
         &quot;made_at&quot;: datetime.now().strftime(&quot;%Y-%m-%d %H:%M&quot;),
         &quot;pulled_at&quot;: pull.get(&quot;pulled_at&quot;, &quot;&quot;),
         &quot;klnet&quot;: pull.get(&quot;klnet&quot;, &quot;&quot;),
+        &quot;who&quot;: pull.get(&quot;who&quot;, &quot;&quot;),          # 누가 조회한 것인지
         &quot;rows&quot;: [{&quot;name&quot;: b.get(&quot;name&quot;, &quot;&quot;), &quot;vsl&quot;: b.get(&quot;vsl&quot;, &quot;&quot;),
                   &quot;svc_in&quot;: b.get(&quot;svc_in&quot;, &quot;&quot;), &quot;svc_out&quot;: b.get(&quot;svc_out&quot;, &quot;&quot;),
                   &quot;opr&quot;: b.get(&quot;opr&quot;, &quot;&quot;),
@@ -1329,7 +3681,7 @@ if __name__ == &quot;__main__&quot;:
     </div>
     <div class="iwhat">보낸편지함 제목을 훑어 마감리스트를 보냈는지 봅니다. 메일은 읽기만 하고 건드리지 않습니다.</div>
     <div class="iwhen">만드는 것: data\mail.json · data\mail.js</div>
-    <details><summary>안을 열어보기 <span class="arw"></span></summary><pre id="f9"># -*- coding: utf-8 -*-
+    <details><summary>안을 열어보기 <span class="arw"></span></summary><pre id="f10"># -*- coding: utf-8 -*-
 &quot;&quot;&quot;
 보낸 메일로 완료 확인 — 내가 보낸 메일이 곧 완료 기록이다.
 
@@ -1504,7 +3856,7 @@ if __name__ == &quot;__main__&quot;:
     </div>
     <div class="iwhat">11시·16시에 뜨는 알림창 자체입니다. 작업등록.ps1 이 이것을 등록합니다.</div>
     
-    <details><summary>안을 열어보기 <span class="arw"></span></summary><pre id="f10"># 신고현황 확인 알림 — 하루 두 번(11시·16시) 떠서, 누르면 바로 조회가 돈다.
+    <details><summary>안을 열어보기 <span class="arw"></span></summary><pre id="f11"># 신고현황 확인 알림 — 하루 두 번(11시·16시) 떠서, 누르면 바로 조회가 돈다.
 # 자동으로 조회하지 않는 이유: PLISM 은 로그인이 필요해서, 자리에 계실 때 돌리는 편이 확실하다.
 
 Add-Type -AssemblyName System.Windows.Forms
@@ -1560,7 +3912,7 @@ if ($form.ShowDialog() -eq [System.Windows.Forms.DialogResult]::OK) {
     </div>
     <div class="iwhat">이 도구 전체 설명입니다. 표시가 무슨 뜻인지, 문제가 생기면 어떻게 하는지가 적혀 있습니다.</div>
     
-    <details><summary>안을 열어보기 <span class="arw"></span></summary><pre id="f11"># 신고현황 확인
+    <details><summary>안을 열어보기 <span class="arw"></span></summary><pre id="f12"># 신고현황 확인
 
 체크리스트의 모선을 기준으로 PLISM 에서 **네 가지 신고**를 확인한다.
 
@@ -1672,7 +4024,7 @@ PLISM 로그인 없이 이것만 보고 싶으면 `메일확인만.bat` 을 더�
     </div>
     <div class="iwhat">PLISM 의 어느 주소에서 어떤 칸을 읽어오는지, 판정 근거가 무엇인지 적어둔 것입니다. PLISM 화면이 바뀌었을 때 봅니다.</div>
     
-    <details><summary>안을 열어보기 <span class="arw"></span></summary><pre id="f12"># PLISM 신고현황 자동조회 — 스펙
+    <details><summary>안을 열어보기 <span class="arw"></span></summary><pre id="f13"># PLISM 신고현황 자동조회 — 스펙
 
 2026-09-16 확인. 로그인한 브라우저에서 실제 주고받는 내용을 관찰해 정리했다.
 
@@ -1947,7 +4299,7 @@ PLISM만 보면 **미신고를 찾을 수 없다.** 신고한 것만 나오기 �
 
 `COASTAL SCHEDULE` 메일 본문이 **고정 폭 표**라 그대로 읽힌다.
 
-- 발신: `발신전용4 &lt;demo36@example.com&gt;` (Sinokor Line Operation Team)
+- 발신: `발신전용4 &lt;demo05@example.com&gt;` (Sinokor Line Operation Team)
 - 제목 예: `// 2510N HKG SKIP NOTICE // [KI1] M/V PORT KLANG VOYAGER 2509/2510 COASTAL SCHEDULE(10/22)`
 - 제목에서 서비스(`[KI1]`)와 선박명을 얻는다
 
@@ -1981,457 +4333,38 @@ SEQ VYG(B)  From    E.T.A             DAY  E.T.B             DAY  E.T.D         
 지금 만드는 것의 범위는 아니지만, 나중에 같은 방식으로 이어붙일 수 있다.
 </pre></details>
   </div></div><div class="grp"><h2>6 · data 폴더 — 자료가 쌓이는 곳</h2>
-  <div class="gd">프로그램들이 만든 결과가 여기 들어갑니다. 지워도 실행.bat 을 다시 돌리면 다시 생깁니다.</div><div class="item">
+  <div class="gd">프로그램들이 만든 결과가 여기 들어갑니다. 지워도 실행.bat 을 다시 돌리면 다시 생깁니다.<br>
+  <b>실제 업무자료라 이 안내에는 내용을 담지 않습니다</b> — 보시려면 파일을 직접 여세요.</div><div class="item">
+      <div class="ihead"><span class="kind k-code">자료</span>
+      <span class="iname">data\board.js</span>
+      <span class="imeta">5.7 KB · 2026-09-22</span></div>
+      <div class="iwhat">판정이 끝난 신고현황. board.py 가 만들고 화면이 읽습니다.</div>
+      
+    </div><div class="item">
       <div class="ihead"><span class="kind k-code">자료</span>
       <span class="iname">data\keys.json</span>
-      <span class="imeta">4.8 KB · 2026-09-19</span></div>
+      <span class="imeta">5.2 KB · 2026-09-22</span></div>
       <div class="iwhat">조회 열쇠 — 모선 · 항차 · 호출부호 · 해수청번호. keys.py 가 만듭니다.</div>
-      <details><summary>안을 열어보기 <span class="arw"></span></summary><pre>{
- &quot;snapshot&quot;: &quot;20260921.json&quot;,
- &quot;week&quot;: [
-  &quot;2026-09-21&quot;,
-  &quot;2026-09-28&quot;
- ],
- &quot;date_fr&quot;: &quot;20260921&quot;,
- &quot;date_to&quot;: &quot;20260927&quot;,
- &quot;signs&quot;: [
-  &quot;3E4723&quot;,
-  &quot;3FRF8&quot;,
-  &quot;5LLR7&quot;,
-  &quot;9V7821&quot;,
-  &quot;9V8000&quot;,
-  &quot;BKTC6&quot;,
-  &quot;BPIT5&quot;,
-  &quot;D5YE8&quot;,
-  &quot;D7CJ&quot;,
-  &quot;D7JF&quot;,
-  &quot;D7LP&quot;,
-  &quot;V7A6129&quot;
- ],
- &quot;rows&quot;: [
-  {
-   &quot;key&quot;: &quot;SWRG|2609S&quot;,
-   &quot;vsl&quot;: &quot;SWRG&quot;,
-   &quot;name&quot;: &quot;SAWASDEE RIGEL&quot;,
-   &quot;svc_in&quot;: &quot;PCI2&quot;,
-   &quot;svc_out&quot;: &quot;PCI2&quot;,
-   &quot;opr&quot;: &quot;SKR&quot;,
-   &quot;vyg_in&quot;: &quot;2608N&quot;,
-   &quot;vyg_out&quot;: &quot;2609S&quot;,
-   &quot;sign&quot;: &quot;V7A6129&quot;,
-   &quot;seq&quot;: &quot;&quot;,
-   &quot;etb&quot;: &quot;2026-09-21T04:30:00&quot;,
-   &quot;etd&quot;: &quot;2026-09-21T19:30:00&quot;,
-   &quot;doc&quot;: null,
-   &quot;imp_cell&quot;: &quot;&quot;,
-   &quot;exp_cell&quot;: &quot;&quot;
-  },
-  {
-   &quot;key&quot;: &quot;SHVY|2608S&quot;,
-   &quot;vsl&quot;: &quot;SHVY&quot;,
-   &quot;name&quot;: &quot;SHANGHAI VOYAGER&quot;,
-   &quot;svc_in&quot;: &quot;PCI&quot;,
-   &quot;svc_out&quot;: &quot;PCI&quot;,
-   &quot;opr&quot;: &quot;SKR&quot;,
-   &quot;vyg_in&quot;: &quot;2607N&quot;,
-   &quot;vyg_out&quot;: &quot;2608S&quot;,
-   &quot;sign&quot;: &quot;D7JF&quot;,
-   &quot;seq&quot;: &quot;008&quot;,
-   &quot;etb&quot;: &quot;2026-09-21T16:30:00&quot;,
-   &quot;etd&quot;: &quot;2026-09-22T04:00:00&quot;,
-   &quot;doc&quot;: &quot;2026-09-18T14:00:00&quot;,
-   &quot;imp_cell&quot;: &quot;26SNKO3450I&quot;,
-   &quot;exp_cell&quot;: &quot;26SNKO3462E&quot;
-  },
-  {
-   &quot;key&quot;: &quot;YTTR|2633W&quot;,
-   &quot;vsl&quot;: &quot;YTTR&quot;,
-   &quot;name&quot;: &quot;YANGTZE TRADER&quot;,
-   &quot;svc_in&quot;: &quot;NKX&quot;,
-   &quot;svc_out&quot;: &quot;NKX&quot;,
-   &quot;opr&quot;: &quot;SKR&quot;,
-   &quot;vyg_in&quot;: &quot;2632E&quot;,
-   &quot;vyg_out&quot;: &quot;2633W&quot;,
-   &quot;sign&quot;: &quot;BPIT5&quot;,
-   &quot;seq&quot;: &quot;034&quot;,
-   &quot;etb&quot;: &quot;2026-09-22T08:00:00&quot;,
-   &quot;etd&quot;: &quot;2026-09-22T17:00:00&quot;,
-   &quot;doc&quot;: &quot;2026-09-18T11:00:00&quot;,
-   &quot;imp_cell&quot;: &quot;26SNKO3451I&quot;,
-   &quot;exp_cell&quot;: &quot;26SNKO3463E&quot;
-  },
-  {
-   &quot;key&quot;: &quot;HAJN|2636W&quot;,
-   &quot;vsl&quot;: &quot;HAJN&quot;,
-   &quot;name&quot;: &quot;HEUNG-A JANICE&quot;,
-   &quot;svc_in&quot;: &quot;KBX&quot;,
-   &quot;svc_out&quot;: &quot;KBX&quot;,
-   &quot;opr&quot;: &quot;HAS&quot;,
-   &quot;vyg_in&quot;: &quot;2635E&quot;,
-   &quot;vyg_out&quot;: &quot;2636W&quot;,
-   &quot;sign&quot;: &quot;D7LP&quot;,
-   &quot;seq&quot;: &quot;036&quot;,
-   &quot;etb&quot;: &quot;2026-09-23T04:00:00&quot;,
-   &quot;etd&quot;: &quot;2026-09-23T16:00:00&quot;,
-   &quot;doc&quot;: &quot;2026-09-21T14:00:00&quot;,
-   &quot;imp_cell&quot;: &quot;26HASL1151I&quot;,
-   &quot;exp_cell&quot;: &quot;26HASL1165E&quot;
-  },
-  {
-   &quot;key&quot;: &quot;PCBJ|2620W&quot;,
-   &quot;vsl&quot;: &quot;PCBJ&quot;,
-   &quot;name&quot;: &quot;PACIFIC BEIJING&quot;,
-   &quot;svc_in&quot;: &quot;KXS1&quot;,
-   &quot;svc_out&quot;: &quot;KXS1&quot;,
-   &quot;opr&quot;: &quot;SKR&quot;,
-   &quot;vyg_in&quot;: &quot;2619E&quot;,
-   &quot;vyg_out&quot;: &quot;2620W&quot;,
-   &quot;sign&quot;: &quot;9V8000&quot;,
-   &quot;seq&quot;: &quot;012&quot;,
-   &quot;etb&quot;: &quot;2026-09-24T05:00:00&quot;,
-   &quot;etd&quot;: &quot;2026-09-24T13:00:00&quot;,
-   &quot;doc&quot;: &quot;2026-09-23T11:00:00&quot;,
-   &quot;imp_cell&quot;: &quot;26SNKO3464I&quot;,
-   &quot;exp_cell&quot;: &quot;26SNKO3456E&quot;
-  },
-  {
-   &quot;key&quot;: &quot;KMSH|2609S&quot;,
-   &quot;vsl&quot;: &quot;KMSH&quot;,
-   &quot;name&quot;: &quot;KMTC SHIMIZU&quot;,
-   &quot;svc_in&quot;: &quot;KI1&quot;,
-   &quot;svc_out&quot;: &quot;KI1&quot;,
-   &quot;opr&quot;: &quot;KMT&quot;,
-   &quot;vyg_in&quot;: &quot;2608N&quot;,
-   &quot;vyg_out&quot;: &quot;2609S&quot;,
-   &quot;sign&quot;: &quot;D5YE8&quot;,
-   &quot;seq&quot;: &quot;009&quot;,
-   &quot;etb&quot;: &quot;2026-09-24T21:30:00&quot;,
-   &quot;etd&quot;: &quot;2026-09-25T05:30:00&quot;,
-   &quot;doc&quot;: &quot;2026-09-23T13:00:00&quot;,
-   &quot;imp_cell&quot;: &quot;26KMTC3243I&quot;,
-   &quot;exp_cell&quot;: &quot;26KMTC3244E&quot;
-  },
-  {
-   &quot;key&quot;: &quot;YSVY|양하만&quot;,
-   &quot;vsl&quot;: &quot;YSVY&quot;,
-   &quot;name&quot;: &quot;YEOSU VOYAGER&quot;,
-   &quot;svc_in&quot;: &quot;PCI2&quot;,
-   &quot;svc_out&quot;: &quot;PCI2&quot;,
-   &quot;opr&quot;: &quot;SKR&quot;,
-   &quot;vyg_in&quot;: &quot;2607N&quot;,
-   &quot;vyg_out&quot;: &quot;양하만&quot;,
-   &quot;sign&quot;: &quot;3E4723&quot;,
-   &quot;seq&quot;: &quot;&quot;,
-   &quot;etb&quot;: &quot;2026-09-25T15:30:00&quot;,
-   &quot;etd&quot;: &quot;2026-09-26T15:30:00&quot;,
-   &quot;doc&quot;: null,
-   &quot;imp_cell&quot;: &quot;&quot;,
-   &quot;exp_cell&quot;: &quot;&quot;
-  },
-  {
-   &quot;key&quot;: &quot;SOH|양하만&quot;,
-   &quot;vsl&quot;: &quot;SOH&quot;,
-   &quot;name&quot;: &quot;SONGYUNHE&quot;,
-   &quot;svc_in&quot;: &quot;CKX3&quot;,
-   &quot;svc_out&quot;: &quot;CKX3&quot;,
-   &quot;opr&quot;: &quot;CHS&quot;,
-   &quot;vyg_in&quot;: &quot;032W&quot;,
-   &quot;vyg_out&quot;: &quot;양하만&quot;,
-   &quot;sign&quot;: &quot;3FRF8&quot;,
-   &quot;seq&quot;: &quot;&quot;,
-   &quot;etb&quot;: &quot;2026-09-25T16:00:00&quot;,
-   &quot;etd&quot;: &quot;2026-09-25T23:00:00&quot;,
-   &quot;doc&quot;: null,
-   &quot;imp_cell&quot;: &quot;&quot;,
-   &quot;exp_cell&quot;: &quot;&quot;
-  },
-  {
-   &quot;key&quot;: &quot;LCVY|2607W&quot;,
-   &quot;vsl&quot;: &quot;LCVY&quot;,
-   &quot;name&quot;: &quot;LAEM CHABANG VOYAGER&quot;,
-   &quot;svc_in&quot;: &quot;PCI2&quot;,
-   &quot;svc_out&quot;: &quot;ADHS&quot;,
-   &quot;opr&quot;: &quot;SKR&quot;,
-   &quot;vyg_in&quot;: &quot;2606N&quot;,
-   &quot;vyg_out&quot;: &quot;2607W&quot;,
-   &quot;sign&quot;: &quot;5LLR7&quot;,
-   &quot;seq&quot;: &quot;003&quot;,
-   &quot;etb&quot;: &quot;2026-09-26T10:30:00&quot;,
-   &quot;etd&quot;: &quot;2026-09-26T22:30:00&quot;,
-   &quot;doc&quot;: &quot;2026-09-23T14:00:00&quot;,
-   &quot;imp_cell&quot;: &quot;26SNKO3453I&quot;,
-   &quot;exp_cell&quot;: &quot;26SNKO3458E&quot;
-  },
-  {
-   &quot;key&quot;: &quot;EVVS|018S&quot;,
-   &quot;vsl&quot;: &quot;EVVS&quot;,
-   &quot;name&quot;: &quot;EVER VERSE&quot;,
-   &quot;svc_in&quot;: &quot;NSB&quot;,
-   &quot;svc_out&quot;: &quot;NSB&quot;,
-   &quot;opr&quot;: &quot;EMC&quot;,
-   &quot;vyg_in&quot;: &quot;017N&quot;,
-   &quot;vyg_out&quot;: &quot;018S&quot;,
-   &quot;sign&quot;: &quot;9V7821&quot;,
-   &quot;seq&quot;: &quot;008&quot;,
-   &quot;etb&quot;: &quot;2026-09-26T19:00:00&quot;,
-   &quot;etd&quot;: &quot;2026-09-27T09:00:00&quot;,
-   &quot;doc&quot;: &quot;2026-09-23T17:00:00&quot;,
-   &quot;imp_cell&quot;: &quot;&quot;,
-   &quot;exp_cell&quot;: &quot;&quot;
-  },
-  {
-   &quot;key&quot;: &quot;HYA|2634W&quot;,
-   &quot;vsl&quot;: &quot;HYA&quot;,
-   &quot;name&quot;: &quot;HE YANG&quot;,
-   &quot;svc_in&quot;: &quot;BNJ&quot;,
-   &quot;svc_out&quot;: &quot;BNJ&quot;,
-   &quot;opr&quot;: &quot;DYS&quot;,
-   &quot;vyg_in&quot;: &quot;2633E&quot;,
-   &quot;vyg_out&quot;: &quot;2634W&quot;,
-   &quot;sign&quot;: &quot;BKTC6&quot;,
-   &quot;seq&quot;: &quot;035&quot;,
-   &quot;etb&quot;: &quot;2026-09-27T05:30:00&quot;,
-   &quot;etd&quot;: &quot;2026-09-27T12:30:00&quot;,
-   &quot;doc&quot;: &quot;2026-09-23T14:00:00&quot;,
-   &quot;imp_cell&quot;: &quot;&quot;,
-   &quot;exp_cell&quot;: &quot;&quot;
-  },
-  {
-   &quot;key&quot;: &quot;HMVY|2609S&quot;,
-   &quot;vsl&quot;: &quot;HMVY&quot;,
-   &quot;name&quot;: &quot;HOCHIMINH VOYAGER&quot;,
-   &quot;svc_in&quot;: &quot;PCI2&quot;,
-   &quot;svc_out&quot;: &quot;PCI2&quot;,
-   &quot;opr&quot;: &quot;SKR&quot;,
-   &quot;vyg_in&quot;: &quot;2608N&quot;,
-   &quot;vyg_out&quot;: &quot;2609S&quot;,
-   &quot;sign&quot;: &quot;D7CJ&quot;,
-   &quot;seq&quot;: &quot;006&quot;,
-   &quot;etb&quot;: &quot;2026-09-27T08:00:00&quot;,
-   &quot;etd&quot;: &quot;2026-09-27T23:00:00&quot;,
-   &quot;doc&quot;: &quot;2026-09-25T14:00:00&quot;,
-   &quot;imp_cell&quot;: &quot;26SNKO3543I&quot;,
-   &quot;exp_cell&quot;: &quot;26SNKO3541E&quot;
-  }
- ]
-}</pre></details>
+      
     </div><div class="item">
       <div class="ihead"><span class="kind k-code">자료</span>
       <span class="iname">data\mail.js</span>
-      <span class="imeta">2.5 KB · 2026-09-22</span></div>
+      <span class="imeta">2.8 KB · 2026-09-22</span></div>
       <div class="iwhat">위와 같은 내용을 화면이 읽을 수 있게 한 벌 더 만든 것.</div>
-      <details><summary>안을 열어보기 <span class="arw"></span></summary><pre>window.MAIL={&quot;checked_at&quot;:&quot;2026-09-19 02:57&quot;,&quot;week&quot;:[&quot;2026-09-21&quot;,&quot;2026-09-28&quot;],&quot;rows&quot;:[{&quot;vsl&quot;:&quot;SWRG&quot;,&quot;name&quot;:&quot;SAWASDEE RIGEL&quot;,&quot;vyg_in&quot;:&quot;2608N&quot;,&quot;vyg_out&quot;:&quot;2609S&quot;,&quot;etb&quot;:&quot;2026-09-21T04:30:00&quot;,&quot;수입리스트&quot;:[&quot;보냄&quot;,&quot;09-18 19:07&quot;],&quot;수출리스트&quot;:[&quot;보냄&quot;,&quot;09-18 20:02&quot;]},{&quot;vsl&quot;:&quot;SHVY&quot;,&quot;name&quot;:&quot;SHANGHAI VOYAGER&quot;,&quot;vyg_in&quot;:&quot;2607N&quot;,&quot;vyg_out&quot;:&quot;2608S&quot;,&quot;etb&quot;:&quot;2026-09-21T16:30:00&quot;,&quot;수입리스트&quot;:[&quot;보냄&quot;,&quot;09-18 17:53&quot;],&quot;수출리스트&quot;:[&quot;보냄&quot;,&quot;09-18 19:57&quot;]},{&quot;vsl&quot;:&quot;YTTR&quot;,&quot;name&quot;:&quot;YANGTZE TRADER&quot;,&quot;vyg_in&quot;:&quot;2632E&quot;,&quot;vyg_out&quot;:&quot;2633W&quot;,&quot;etb&quot;:&quot;2026-09-22T08:00:00&quot;,&quot;수입리스트&quot;:[&quot;아직&quot;,&quot;&quot;],&quot;수출리스트&quot;:[&quot;아직&quot;,&quot;&quot;]},{&quot;vsl&quot;:&quot;HAJN&quot;,&quot;name&quot;:&quot;HEUNG-A JANICE&quot;,&quot;vyg_in&quot;:&quot;2635E&quot;,&quot;vyg_out&quot;:&quot;2636W&quot;,&quot;etb&quot;:&quot;2026-09-23T04:00:00&quot;,&quot;수입리스트&quot;:[&quot;아직&quot;,&quot;&quot;],&quot;수출리스트&quot;:[&quot;아직&quot;,&quot;&quot;]},{&quot;vsl&quot;:&quot;PCBJ&quot;,&quot;name&quot;:&quot;PACIFIC BEIJING&quot;,&quot;vyg_in&quot;:&quot;2619E&quot;,&quot;vyg_out&quot;:&quot;2620W&quot;,&quot;etb&quot;:&quot;2026-09-24T05:00:00&quot;,&quot;수입리스트&quot;:[&quot;아직&quot;,&quot;&quot;],&quot;수출리스트&quot;:[&quot;아직&quot;,&quot;&quot;]},{&quot;vsl&quot;:&quot;KMSH&quot;,&quot;name&quot;:&quot;KMTC SHIMIZU&quot;,&quot;vyg_in&quot;:&quot;2608N&quot;,&quot;vyg_out&quot;:&quot;2609S&quot;,&quot;etb&quot;:&quot;2026-09-24T21:30:00&quot;,&quot;수입리스트&quot;:[&quot;아직&quot;,&quot;&quot;],&quot;수출리스트&quot;:[&quot;아직&quot;,&quot;&quot;]},{&quot;vsl&quot;:&quot;YSVY&quot;,&quot;name&quot;:&quot;YEOSU VOYAGER&quot;,&quot;vyg_in&quot;:&quot;2607N&quot;,&quot;vyg_out&quot;:&quot;양하만&quot;,&quot;etb&quot;:&quot;2026-09-25T15:30:00&quot;,&quot;수입리스트&quot;:[&quot;아직&quot;,&quot;&quot;],&quot;수출리스트&quot;:[&quot;해당없음&quot;,&quot;양하만&quot;]},{&quot;vsl&quot;:&quot;SOH&quot;,&quot;name&quot;:&quot;SONGYUNHE&quot;,&quot;vyg_in&quot;:&quot;032W&quot;,&quot;vyg_out&quot;:&quot;양하만&quot;,&quot;etb&quot;:&quot;2026-09-25T16:00:00&quot;,&quot;수입리스트&quot;:[&quot;아직&quot;,&quot;&quot;],&quot;수출리스트&quot;:[&quot;해당없음&quot;,&quot;양하만&quot;]},{&quot;vsl&quot;:&quot;LCVY&quot;,&quot;name&quot;:&quot;LAEM CHABANG VOYAGER&quot;,&quot;vyg_in&quot;:&quot;2606N&quot;,&quot;vyg_out&quot;:&quot;2607W&quot;,&quot;etb&quot;:&quot;2026-09-26T10:30:00&quot;,&quot;수입리스트&quot;:[&quot;아직&quot;,&quot;&quot;],&quot;수출리스트&quot;:[&quot;아직&quot;,&quot;&quot;]},{&quot;vsl&quot;:&quot;EVVS&quot;,&quot;name&quot;:&quot;EVER VERSE&quot;,&quot;vyg_in&quot;:&quot;017N&quot;,&quot;vyg_out&quot;:&quot;018S&quot;,&quot;etb&quot;:&quot;2026-09-26T19:00:00&quot;,&quot;수입리스트&quot;:[&quot;아직&quot;,&quot;&quot;],&quot;수출리스트&quot;:[&quot;아직&quot;,&quot;&quot;]},{&quot;vsl&quot;:&quot;HYA&quot;,&quot;name&quot;:&quot;HE YANG&quot;,&quot;vyg_in&quot;:&quot;2633E&quot;,&quot;vyg_out&quot;:&quot;2634W&quot;,&quot;etb&quot;:&quot;2026-09-27T05:30:00&quot;,&quot;수입리스트&quot;:[&quot;아직&quot;,&quot;&quot;],&quot;수출리스트&quot;:[&quot;아직&quot;,&quot;&quot;]},{&quot;vsl&quot;:&quot;HMVY&quot;,&quot;name&quot;:&quot;HOCHIMINH VOYAGER&quot;,&quot;vyg_in&quot;:&quot;2608N&quot;,&quot;vyg_out&quot;:&quot;2609S&quot;,&quot;etb&quot;:&quot;2026-09-27T08:00:00&quot;,&quot;수입리스트&quot;:[&quot;아직&quot;,&quot;&quot;],&quot;수출리스트&quot;:[&quot;아직&quot;,&quot;&quot;]}],&quot;weekly&quot;:[{&quot;label&quot;:&quot;MRN 송부&quot;,&quot;state&quot;:&quot;보냄&quot;,&quot;due&quot;:&quot;금요일 오후 ~ 월요일 오전&quot;,&quot;at&quot;:&quot;09-18 16:39&quot;,&quot;subject&quot;:&quot;추가송부/ RE: 장금상선 운항모선 MRN 송부의 건 (2026.09.17~2026.09.30)&quot;},{&quot;label&quot;:&quot;기선적/기반출 LIST&quot;,&quot;state&quot;:&quot;아직&quot;,&quot;due&quot;:&quot;화요일&quot;,&quot;at&quot;:&quot;09-15 10:34&quot;,&quot;subject&quot;:&quot;지난주: 광양사무소 기선적 기반출 LIST(2026.09.08~2026.09.14)&quot;}]};</pre></details>
+      
     </div><div class="item">
       <div class="ihead"><span class="kind k-code">자료</span>
       <span class="iname">data\mail.json</span>
-      <span class="imeta">3.6 KB · 2026-09-19</span></div>
+      <span class="imeta">3.8 KB · 2026-09-22</span></div>
       <div class="iwhat">마감리스트 발송 확인 결과. mail.py 가 만듭니다.</div>
-      <details><summary>안을 열어보기 <span class="arw"></span></summary><pre>{
- &quot;checked_at&quot;: &quot;2026-09-19 02:57&quot;,
- &quot;week&quot;: [
-  &quot;2026-09-21&quot;,
-  &quot;2026-09-28&quot;
- ],
- &quot;rows&quot;: [
-  {
-   &quot;vsl&quot;: &quot;SWRG&quot;,
-   &quot;name&quot;: &quot;SAWASDEE RIGEL&quot;,
-   &quot;vyg_in&quot;: &quot;2608N&quot;,
-   &quot;vyg_out&quot;: &quot;2609S&quot;,
-   &quot;etb&quot;: &quot;2026-09-21T04:30:00&quot;,
-   &quot;수입리스트&quot;: [
-    &quot;보냄&quot;,
-    &quot;09-18 19:07&quot;
-   ],
-   &quot;수출리스트&quot;: [
-    &quot;보냄&quot;,
-    &quot;09-18 20:02&quot;
-   ]
-  },
-  {
-   &quot;vsl&quot;: &quot;SHVY&quot;,
-   &quot;name&quot;: &quot;SHANGHAI VOYAGER&quot;,
-   &quot;vyg_in&quot;: &quot;2607N&quot;,
-   &quot;vyg_out&quot;: &quot;2608S&quot;,
-   &quot;etb&quot;: &quot;2026-09-21T16:30:00&quot;,
-   &quot;수입리스트&quot;: [
-    &quot;보냄&quot;,
-    &quot;09-18 17:53&quot;
-   ],
-   &quot;수출리스트&quot;: [
-    &quot;보냄&quot;,
-    &quot;09-18 19:57&quot;
-   ]
-  },
-  {
-   &quot;vsl&quot;: &quot;YTTR&quot;,
-   &quot;name&quot;: &quot;YANGTZE TRADER&quot;,
-   &quot;vyg_in&quot;: &quot;2632E&quot;,
-   &quot;vyg_out&quot;: &quot;2633W&quot;,
-   &quot;etb&quot;: &quot;2026-09-22T08:00:00&quot;,
-   &quot;수입리스트&quot;: [
-    &quot;아직&quot;,
-    &quot;&quot;
-   ],
-   &quot;수출리스트&quot;: [
-    &quot;아직&quot;,
-    &quot;&quot;
-   ]
-  },
-  {
-   &quot;vsl&quot;: &quot;HAJN&quot;,
-   &quot;name&quot;: &quot;HEUNG-A JANICE&quot;,
-   &quot;vyg_in&quot;: &quot;2635E&quot;,
-   &quot;vyg_out&quot;: &quot;2636W&quot;,
-   &quot;etb&quot;: &quot;2026-09-23T04:00:00&quot;,
-   &quot;수입리스트&quot;: [
-    &quot;아직&quot;,
-    &quot;&quot;
-   ],
-   &quot;수출리스트&quot;: [
-    &quot;아직&quot;,
-    &quot;&quot;
-   ]
-  },
-  {
-   &quot;vsl&quot;: &quot;PCBJ&quot;,
-   &quot;name&quot;: &quot;PACIFIC BEIJING&quot;,
-   &quot;vyg_in&quot;: &quot;2619E&quot;,
-   &quot;vyg_out&quot;: &quot;2620W&quot;,
-   &quot;etb&quot;: &quot;2026-09-24T05:00:00&quot;,
-   &quot;수입리스트&quot;: [
-    &quot;아직&quot;,
-    &quot;&quot;
-   ],
-   &quot;수출리스트&quot;: [
-    &quot;아직&quot;,
-    &quot;&quot;
-   ]
-  },
-  {
-   &quot;vsl&quot;: &quot;KMSH&quot;,
-   &quot;name&quot;: &quot;KMTC SHIMIZU&quot;,
-   &quot;vyg_in&quot;: &quot;2608N&quot;,
-   &quot;vyg_out&quot;: &quot;2609S&quot;,
-   &quot;etb&quot;: &quot;2026-09-24T21:30:00&quot;,
-   &quot;수입리스트&quot;: [
-    &quot;아직&quot;,
-    &quot;&quot;
-   ],
-   &quot;수출리스트&quot;: [
-    &quot;아직&quot;,
-    &quot;&quot;
-   ]
-  },
-  {
-   &quot;vsl&quot;: &quot;YSVY&quot;,
-   &quot;name&quot;: &quot;YEOSU VOYAGER&quot;,
-   &quot;vyg_in&quot;: &quot;2607N&quot;,
-   &quot;vyg_out&quot;: &quot;양하만&quot;,
-   &quot;etb&quot;: &quot;2026-09-25T15:30:00&quot;,
-   &quot;수입리스트&quot;: [
-    &quot;아직&quot;,
-    &quot;&quot;
-   ],
-   &quot;수출리스트&quot;: [
-    &quot;해당없음&quot;,
-    &quot;양하만&quot;
-   ]
-  },
-  {
-   &quot;vsl&quot;: &quot;SOH&quot;,
-   &quot;name&quot;: &quot;SONGYUNHE&quot;,
-   &quot;vyg_in&quot;: &quot;032W&quot;,
-   &quot;vyg_out&quot;: &quot;양하만&quot;,
-   &quot;etb&quot;: &quot;2026-09-25T16:00:00&quot;,
-   &quot;수입리스트&quot;: [
-    &quot;아직&quot;,
-    &quot;&quot;
-   ],
-   &quot;수출리스트&quot;: [
-    &quot;해당없음&quot;,
-    &quot;양하만&quot;
-   ]
-  },
-  {
-   &quot;vsl&quot;: &quot;LCVY&quot;,
-   &quot;name&quot;: &quot;LAEM CHABANG VOYAGER&quot;,
-   &quot;vyg_in&quot;: &quot;2606N&quot;,
-   &quot;vyg_out&quot;: &quot;2607W&quot;,
-   &quot;etb&quot;: &quot;2026-09-26T10:30:00&quot;,
-   &quot;수입리스트&quot;: [
-    &quot;아직&quot;,
-    &quot;&quot;
-   ],
-   &quot;수출리스트&quot;: [
-    &quot;아직&quot;,
-    &quot;&quot;
-   ]
-  },
-  {
-   &quot;vsl&quot;: &quot;EVVS&quot;,
-   &quot;name&quot;: &quot;EVER VERSE&quot;,
-   &quot;vyg_in&quot;: &quot;017N&quot;,
-   &quot;vyg_out&quot;: &quot;018S&quot;,
-   &quot;etb&quot;: &quot;2026-09-26T19:00:00&quot;,
-   &quot;수입리스트&quot;: [
-    &quot;아직&quot;,
-    &quot;&quot;
-   ],
-   &quot;수출리스트&quot;: [
-    &quot;아직&quot;,
-    &quot;&quot;
-   ]
-  },
-  {
-   &quot;vsl&quot;: &quot;HYA&quot;,
-   &quot;name&quot;: &quot;HE YANG&quot;,
-   &quot;vyg_in&quot;: &quot;2633E&quot;,
-   &quot;vyg_out&quot;: &quot;2634W&quot;,
-   &quot;etb&quot;: &quot;2026-09-27T05:30:00&quot;,
-   &quot;수입리스트&quot;: [
-    &quot;아직&quot;,
-    &quot;&quot;
-   ],
-   &quot;수출리스트&quot;: [
-    &quot;아직&quot;,
-    &quot;&quot;
-   ]
-  },
-  {
-   &quot;vsl&quot;: &quot;HMVY&quot;,
-   &quot;name&quot;: &quot;HOCHIMINH VOYAGER&quot;,
-   &quot;vyg_in&quot;: &quot;2608N&quot;,
-   &quot;vyg_out&quot;: &quot;2609S&quot;,
-   &quot;etb&quot;: &quot;2026-09-27T08:00:00&quot;,
-   &quot;수입리스트&quot;: [
-    &quot;아직&quot;,
-    &quot;&quot;
-   ],
-   &quot;수출리스트&quot;: [
-    &quot;아직&quot;,
-    &quot;&quot;
-   ]
-  }
- ],
- &quot;weekly&quot;: [
-  {
-   &quot;label&quot;: &quot;MRN 송부&quot;,
-   &quot;state&quot;: &quot;보냄&quot;,
-   &quot;due&quot;: &quot;금요일 오후 ~ 월요일 오전&quot;,
-   &quot;at&quot;: &quot;09-18 16:39&quot;,
-   &quot;subject&quot;: &quot;추가송부/ RE: 장금상선 운항모선 MRN 송부의 건 (2026.09.17~2026.09.30)&quot;
-  },
-  {
-   &quot;label&quot;: &quot;기선적/기반출 LIST&quot;,
-   &quot;state&quot;: &quot;아직&quot;,
-   &quot;due&quot;: &quot;화요일&quot;,
-   &quot;at&quot;: &quot;09-15 10:34&quot;,
-   &quot;subject&quot;: &quot;지난주: 광양사무소 기선적 기반출 LIST(2026.09.08~2026.09.14)&quot;
-  }
- ]
-}</pre></details>
+      
+    </div><div class="item">
+      <div class="ihead"><span class="kind k-code">자료</span>
+      <span class="iname">data\plism.json</span>
+      <span class="imeta">56.7 KB · 2026-09-22</span></div>
+      <div class="iwhat">PLISM 에서 받아온 날것 그대로의 자료. pull.js 가 만듭니다.</div>
+      
     </div></div><div class="grp"><h2>7 · 신경 안 써도 되는 것</h2>
-<div class="gd">건드릴 일이 없는 것들입니다. 무엇인지만 알아두시면 됩니다.</div><div class="small"><table><tbody><tr><td>data</td><td>자료가 쌓이는 곳입니다. 위 프로그램들이 만든 결과가 들어갑니다.</td></tr><tr><td>__pycache__</td><td>파이썬이 스스로 만드는 임시 폴더입니다. 지워도 다시 생깁니다.</td></tr><tr><td>.크롬프로필</td><td>PLISM 로그인이 저장되는 곳입니다. 지우면 다시 로그인해야 합니다. <span style="color:#94a3b8">(지금은 없음)</span></td></tr><tr><td>.playwright-mcp</td><td>검사하느라 잠깐 생긴 폴더입니다. 지워도 됩니다. <span style="color:#94a3b8">(지금은 없음)</span></td></tr><tr><td>board.백업-20260922.py</td><td>2026-09-22 에 고치기 전 원본입니다. 문제가 없으면 지우셔도 됩니다. <span style="color:#94a3b8">· 6.5 KB · 2026-09-16</span></td></tr><tr><td>mail.백업-20260922.py</td><td>2026-09-22 에 고치기 전 원본입니다. 문제가 없으면 지우셔도 됩니다. <span style="color:#94a3b8">· 6.3 KB · 2026-09-19</span></td></tr><tr><td>pull.백업-20260922.js</td><td>2026-09-22 에 고치기 전 원본입니다. 문제가 없으면 지우셔도 됩니다. <span style="color:#94a3b8">· 7.5 KB · 2026-09-16</span></td></tr><tr><td>메일확인만.백업-20260922.bat</td><td>2026-09-22 에 고치기 전 원본입니다. 문제가 없으면 지우셔도 됩니다. <span style="color:#94a3b8">· 431 B · 2026-09-19</span></td></tr><tr><td>실행.백업-20260922.bat</td><td>2026-09-22 에 고치기 전 원본입니다. 문제가 없으면 지우셔도 됩니다. <span style="color:#94a3b8">· 764 B · 2026-09-19</span></td></tr></tbody></table></div></div><div class="foot">2026-09-22 12:38 기준으로 만든 안내입니다.<br>
+<div class="gd">건드릴 일이 없는 것들입니다. 무엇인지만 알아두시면 됩니다.</div><div class="small"><table><tbody><tr><td>data</td><td>자료가 쌓이는 곳입니다. 위 프로그램들이 만든 결과가 들어갑니다.</td></tr><tr><td>__pycache__</td><td>파이썬이 스스로 만드는 임시 폴더입니다. 지워도 다시 생깁니다.</td></tr><tr><td>.크롬프로필</td><td>PLISM 로그인이 저장되는 곳입니다. 지우면 다시 로그인해야 합니다. <span style="color:#94a3b8">(지금은 없음)</span></td></tr><tr><td>.playwright-mcp</td><td>검사하느라 잠깐 생긴 폴더입니다. 지워도 됩니다. <span style="color:#94a3b8">(지금은 없음)</span></td></tr><tr><td>board.백업-20260922.py</td><td>2026-09-22 에 고치기 전 원본입니다. 문제가 없으면 지우셔도 됩니다. <span style="color:#94a3b8">· 6.5 KB · 2026-09-16</span></td></tr><tr><td>mail.백업-20260922.py</td><td>2026-09-22 에 고치기 전 원본입니다. 문제가 없으면 지우셔도 됩니다. <span style="color:#94a3b8">· 6.3 KB · 2026-09-19</span></td></tr><tr><td>pull.백업-20260922.js</td><td>2026-09-22 에 고치기 전 원본입니다. 문제가 없으면 지우셔도 됩니다. <span style="color:#94a3b8">· 7.5 KB · 2026-09-16</span></td></tr><tr><td>메일확인만.백업-20260922.bat</td><td>2026-09-22 에 고치기 전 원본입니다. 문제가 없으면 지우셔도 됩니다. <span style="color:#94a3b8">· 431 B · 2026-09-19</span></td></tr><tr><td>실행.백업-20260922.bat</td><td>2026-09-22 에 고치기 전 원본입니다. 문제가 없으면 지우셔도 됩니다. <span style="color:#94a3b8">· 764 B · 2026-09-19</span></td></tr></tbody></table></div></div><div class="foot">2026-09-22 14:14 기준으로 만든 안내입니다.<br>
 파일이 바뀌면 내용도 달라지니, 많이 바뀌었으면 이 화면을 다시 만들어 달라고 하세요.</div>
 </div></body></html>
