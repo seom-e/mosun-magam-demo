@@ -1,0 +1,2437 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>신고현황 폴더 안내</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=Nunito:wght@600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f4f6fb;--card:#fff;--border:#e4eaf4;--blue:#2563eb;--blue-lt:#eff6ff;
+--navy:#0f2d5e;--green:#16a34a;--green-lt:#f0fdf4;--green-bd:#86efac;
+--red:#dc2626;--text:#0f172a;--sub:#64748b;--muted:#94a3b8;}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Noto Sans KR','Apple SD Gothic Neo',sans-serif;background:var(--bg);
+color:var(--text);font-size:15px;line-height:1.6;padding:0 0 40px}
+.wrap{max-width:980px;margin:0 auto;padding:0 16px}
+.hdr{background:linear-gradient(135deg,var(--navy),#1d4ed8);color:#fff;padding:20px 0;margin-bottom:16px}
+.hdr h1{font-size:20px;font-weight:700}
+.hdr p{font-size:14px;color:#c7d9f5;margin-top:4px}
+.big{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:16px;margin-bottom:12px}
+.big h2{font-size:16px;font-weight:700;margin-bottom:8px}
+.big p{font-size:15px;color:var(--sub)}
+.flow{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;align-items:center}
+.flow .s{background:var(--blue-lt);border:1px solid #bfdbfe;color:var(--blue);
+border-radius:8px;padding:8px 12px;font-size:14px;font-weight:500}
+.flow .a{color:var(--muted);font-size:14px}
+.grp{margin-bottom:16px}
+.grp > h2{font-size:17px;font-weight:700;margin:20px 0 4px}
+.grp > .gd{font-size:14px;color:var(--sub);margin-bottom:10px}
+.item{background:var(--card);border:1px solid var(--border);border-radius:8px;
+padding:16px;margin-bottom:12px}
+.ihead{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.iname{font-size:16px;font-weight:700;font-family:'Nunito','Noto Sans KR',monospace}
+.imeta{margin-left:auto;font-size:13px;color:var(--muted)}
+.kind{font-size:12px;font-weight:500;padding:2px 9px;border-radius:99px;white-space:nowrap}
+.k-run{background:var(--green-lt);color:var(--green);border:1px solid var(--green-bd)}
+.k-view{background:var(--blue-lt);color:var(--blue);border:1px solid #bfdbfe}
+.k-code{background:#f8fafc;color:var(--sub);border:1px solid var(--border)}
+.k-doc{background:#fffbea;color:#a16207;border:1px solid #f0d98c}
+.iwhat{font-size:15px;margin-top:8px}
+.iwhen{font-size:14px;color:var(--sub);margin-top:4px}
+details{margin-top:10px}
+summary{cursor:pointer;list-style:none;font-size:14px;color:var(--blue);
+border:1px solid var(--border);border-radius:8px;padding:7px 14px;display:inline-flex;gap:6px}
+summary::-webkit-details-marker{display:none}
+details[open] summary .arw::after{content:'닫기'}
+details:not([open]) summary .arw::after{content:'▾'}
+pre{background:#0f172a;color:#e2e8f0;border-radius:8px;padding:14px;margin-top:10px;
+overflow:auto;max-height:460px;font-size:13px;line-height:1.55;
+font-family:'Nunito',Consolas,monospace;white-space:pre-wrap;word-break:break-all}
+.small{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:16px}
+.small table{width:100%;border-collapse:collapse;font-size:14px}
+.small td{padding:8px;border-bottom:1px solid #f1f5f9;vertical-align:top}
+.small td:first-child{font-weight:700;white-space:nowrap;width:1%;
+font-family:'Nunito','Noto Sans KR',monospace}
+.foot{font-size:13px;color:var(--muted);margin-top:16px;text-align:center}
+</style>
+
+<!-- 발표용에만 들어가는 것. 실제 쓰는 쪽에는 없다. -->
+<script src="../발표용-띠.js"></script>
+</head>
+<body>
+<div class="hdr"><div class="wrap">
+  <h1>신고현황 폴더 안내</h1>
+  <p>이 폴더에 있는 것 전부를 하나씩 설명합니다 · 각 항목의 "안을 열어보기" 를 누르면 실제 내용이 보입니다</p>
+</div></div>
+<div class="wrap">
+
+<div class="big">
+  <h2>이 폴더가 하는 일</h2>
+  <p>체크리스트에 있는 모선을 기준으로, <b>PLISM 에 네 가지 신고가 됐는지</b> 확인합니다
+     (수입신고 · 수출신고 · 수입위험물 · 수출위험물).
+     그리고 <b>마감리스트를 보냈는지</b> 보낸편지함에서 같이 봅니다.</p>
+  <div class="flow">
+    <span class="s">체크리스트</span><span class="a">→</span>
+    <span class="s">keys.py</span><span class="a">→</span>
+    <span class="s">pull.js<br><small>PLISM 조회</small></span><span class="a">→</span>
+    <span class="s">board.py<br><small>판정</small></span><span class="a">→</span>
+    <span class="s">index.html<br><small>화면</small></span>
+  </div>
+</div>
+
+<div class="big">
+  <h2>모르겠으면 이것만</h2>
+  <p><b>처음이라면</b> — <b>PLISM 로그인.bat</b> 을 눌러 로그인해 두세요. 한 번만 하면 됩니다.<br>
+     <b>평소에는</b> — <b>실행.bat</b> 하나만 누르면 됩니다. 끝나면 화면이 저절로 열립니다.<br>
+     나머지 파일은 실행.bat 이 알아서 부르는 것들이라 직접 누를 일이 없습니다.</p>
+</div>
+<div class="grp"><h2>1 · 처음 한 번만</h2><div class="gd">설치하듯 한 번 해 두는 것들입니다. 해 두면 다시 안 해도 됩니다.</div>
+  <div class="item">
+    <div class="ihead">
+      <span class="kind k-run">누르는 것</span>
+      <span class="iname">PLISM 로그인.bat</span>
+      <span class="imeta">408 B · 2026-09-22</span>
+    </div>
+    <div class="iwhat">PLISM 로그인 창을 띄웁니다. 직접 로그인하면 이 폴더에 저장되고 창이 닫힙니다.</div>
+    <div class="iwhen">처음 한 번 · 로그인이 풀렸을 때</div>
+    <details><summary>안을 열어보기 <span class="arw"></span></summary><pre id="f1">﻿@echo off
+chcp 65001 &gt;nul
+cd /d &quot;%~dp0&quot;
+title PLISM 로그인
+
+echo.
+echo   PLISM 로그인 창을 띄웁니다.
+echo.
+echo   크롬 창이 뜨면 직접 로그인해 주세요.
+echo   로그인이 확인되면 창이 저절로 닫힙니다. (최대 10분 기다립니다)
+echo.
+echo   한 번 해 두면 다음부터는 실행.bat 이 알아서 돌아갑니다.
+echo.
+
+node pull.js --login
+
+echo.
+pause
+</pre></details>
+  </div>
+  <div class="item">
+    <div class="ihead">
+      <span class="kind k-code">한 번 실행</span>
+      <span class="iname">작업등록.ps1</span>
+      <span class="imeta">2.2 KB · 2026-09-16</span>
+    </div>
+    <div class="iwhat">매일 11시·16시에 &quot;확인하세요&quot; 알림이 뜨도록 윈도우에 등록합니다.</div>
+    <div class="iwhen">처음 한 번 (우클릭 → PowerShell에서 실행)</div>
+    <details><summary>안을 열어보기 <span class="arw"></span></summary><pre id="f2"># 신고현황 확인 알림 등록 — 매일 11:00 · 16:00
+# 사용법: 이 파일 우클릭 &gt; &quot;PowerShell에서 실행&quot;  (관리자 권한 필요 없음)
+
+$ErrorActionPreference = &quot;Stop&quot;
+$TaskName = &quot;신고현황_확인알림&quot;
+$Base     = Split-Path -Parent $MyInvocation.MyCommand.Path
+$Script   = Join-Path $Base &quot;알림.ps1&quot;
+
+if (-not (Test-Path $Script)) { throw &quot;알림.ps1 이 없습니다: $Script&quot; }
+
+$action = New-ScheduledTaskAction -Execute &quot;powershell.exe&quot; `
+    -Argument &quot;-NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File `&quot;$Script`&quot;&quot; `
+    -WorkingDirectory $Base
+
+# 매일 11시와 16시 — 알림만 뜨고, 조회는 [지금 확인] 을 눌렀을 때 돈다
+$t1 = New-ScheduledTaskTrigger -Daily -At 11:00am
+$t2 = New-ScheduledTaskTrigger -Daily -At 4:00pm
+
+$settings = New-ScheduledTaskSettingsSet `
+    -AllowStartIfOnBatteries `
+    -DontStopIfGoingOnBatteries `
+    -MultipleInstances IgnoreNew `
+    -ExecutionTimeLimit (New-TimeSpan -Hours 1)
+# 자리를 비운 사이 지나간 알림은 굳이 나중에 띄우지 않는다 (11시 알림이 3시에 뜨면 헷갈린다)
+$settings.StartWhenAvailable = $false
+
+$principal = New-ScheduledTaskPrincipal -UserId &quot;$env:USERDOMAIN\$env:USERNAME&quot; `
+    -LogonType Interactive -RunLevel Limited
+
+if (Get-ScheduledTask -TaskName $TaskName -ErrorAction SilentlyContinue) {
+    Unregister-ScheduledTask -TaskName $TaskName -Confirm:$false
+    Write-Host &quot;기존 알림을 지우고 다시 등록합니다.&quot; -ForegroundColor Yellow
+}
+
+Register-ScheduledTask -TaskName $TaskName -Action $action -Trigger @($t1, $t2) `
+    -Settings $settings -Principal $principal `
+    -Description &quot;매일 11시·16시 신고현황(적하목록·위험물) 확인 알림&quot; | Out-Null
+
+Write-Host &quot;&quot;
+Write-Host &quot;등록 완료: $TaskName  (매일 11:00 / 16:00)&quot; -ForegroundColor Green
+Get-ScheduledTask -TaskName $TaskName | Get-ScheduledTaskInfo |
+    Select-Object TaskName, NextRunTime, LastRunTime | Format-List
+Write-Host (&quot;지금 한 번 띄워보려면:  Start-ScheduledTask -TaskName '{0}'&quot; -f $TaskName)
+Write-Host (&quot;알림을 끄려면:          Unregister-ScheduledTask -TaskName '{0}' -Confirm:$$false&quot; -f $TaskName)
+Write-Host (&quot;시간을 바꾸려면 이 파일의 11:00am / 4:00pm 을 고치고 다시 실행하세요.&quot;)
+</pre></details>
+  </div></div><div class="grp"><h2>2 · 매일 누르는 것</h2><div class="gd">평소에 쓰는 건 사실상 이 둘뿐입니다.</div>
+  <div class="item">
+    <div class="ihead">
+      <span class="kind k-run">누르는 것</span>
+      <span class="iname">실행.bat</span>
+      <span class="imeta">851 B · 2026-09-22</span>
+    </div>
+    <div class="iwhat">처음부터 끝까지 다 돌립니다. 체크리스트에서 열쇠를 모으고 → PLISM 에 조회하고 → 판정하고 → 보낸 메일을 확인하고 → 화면을 엽니다.</div>
+    <div class="iwhen">매일. 알림이 뜨면 이것</div>
+    <details><summary>안을 열어보기 <span class="arw"></span></summary><pre id="f3">@echo off
+chcp 65001 &gt;nul
+cd /d &quot;%~dp0&quot;
+title 신고현황 확인
+
+set &quot;PY=C:\Users\SMLEE\AppData\Local\Python\bin\python.exe&quot;
+if not exist &quot;%PY%&quot; set &quot;PY=python&quot;
+
+echo.
+echo  [1/4] 체크리스트에서 조회 열쇠를 모으는 중...
+&quot;%PY%&quot; keys.py
+if errorlevel 1 goto :err
+
+echo.
+echo  [2/4] PLISM 조회 중... (창이 뜨면 로그인해 주세요)
+node pull.js
+if errorlevel 1 goto :err
+
+echo.
+echo  [3/4] 신고현황 정리
+&quot;%PY%&quot; board.py
+if errorlevel 1 goto :err
+
+echo.
+echo  [4/4] 보낸 메일로 마감리스트 발송 확인
+&quot;%PY%&quot; mail.py
+
+echo.
+pause
+exit /b 0
+
+:err
+echo.
+echo  문제가 생겨서 멈췄습니다. 위 내용을 그대로 복사해 두시면 고칠 수 있습니다.
+echo.
+echo.
+echo  화면으로 보기 - index.html 을 엽니다.
+start &quot;&quot; &quot;%~dp0index.html&quot;
+pause
+exit /b 1
+</pre></details>
+  </div>
+  <div class="item">
+    <div class="ihead">
+      <span class="kind k-run">누르는 것</span>
+      <span class="iname">메일확인만.bat</span>
+      <span class="imeta">518 B · 2026-09-22</span>
+    </div>
+    <div class="iwhat">PLISM 은 건너뛰고 보낸편지함만 봅니다. 로그인이 필요 없어 빠릅니다.</div>
+    <div class="iwhen">마감리스트 보냈는지만 볼 때</div>
+    <details><summary>안을 열어보기 <span class="arw"></span></summary><pre id="f4">@echo off
+chcp 65001 &gt;nul
+cd /d &quot;%~dp0&quot;
+title 보낸 메일로 확인
+
+set &quot;PY=C:\Users\SMLEE\AppData\Local\Python\bin\python.exe&quot;
+if not exist &quot;%PY%&quot; set &quot;PY=python&quot;
+
+echo.
+echo  체크리스트의 모선에 대해, 마감리스트를 보냈는지 보낸편지함에서 확인합니다.
+echo  (PLISM 조회는 하지 않습니다. 로그인할 필요 없습니다.)
+echo.
+&quot;%PY%&quot; keys.py
+&quot;%PY%&quot; mail.py
+echo.
+echo.
+echo  화면으로 보기 - index.html 을 엽니다.
+start &quot;&quot; &quot;%~dp0index.html&quot;
+pause
+</pre></details>
+  </div></div><div class="grp"><h2>3 · 결과를 보는 화면</h2><div class="gd">실행.bat 을 돌리면 저절로 열립니다. 따로 눌러서 열어도 됩니다.</div>
+  <div class="item">
+    <div class="ihead">
+      <span class="kind k-view">화면</span>
+      <span class="iname">index.html</span>
+      <span class="imeta">26.6 KB · 2026-09-22</span>
+    </div>
+    <div class="iwhat">신고현황 표와 마감리스트 발송 현황을 봅니다. data 폴더의 파일을 끌어다 놓아도 바로 표가 나옵니다.</div>
+    <div class="iwhen">결과를 볼 때</div>
+    <details><summary>안을 열어보기 <span class="arw"></span></summary><pre id="f5">&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;ko&quot;&gt;
+&lt;head&gt;
+&lt;meta charset=&quot;UTF-8&quot;&gt;
+&lt;meta name=&quot;viewport&quot; content=&quot;width=device-width,initial-scale=1&quot;&gt;
+&lt;title&gt;신고현황&lt;/title&gt;
+&lt;link rel=&quot;preconnect&quot; href=&quot;https://fonts.googleapis.com&quot;&gt;
+&lt;link rel=&quot;preconnect&quot; href=&quot;https://fonts.gstatic.com&quot; crossorigin&gt;
+&lt;link href=&quot;https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&amp;family=Nunito:wght@600;700;800&amp;display=swap&quot; rel=&quot;stylesheet&quot;&gt;
+&lt;script src=&quot;https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js&quot;&gt;&lt;/script&gt;
+&lt;style&gt;
+:root{
+  --bg:#f4f6fb; --card:#fff; --border:#e4eaf4;
+  --blue:#2563eb; --blue-lt:#eff6ff; --blue-mid:#bfdbfe;
+  --navy:#0f2d5e; --green:#16a34a; --green-lt:#f0fdf4; --green-bd:#86efac;
+  --red:#dc2626; --red-lt:#fff1f1;
+  --text:#0f172a; --sub:#64748b; --muted:#94a3b8;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Noto Sans KR','Apple SD Gothic Neo',sans-serif;background:var(--bg);
+     color:var(--text);font-size:15px;line-height:1.6;padding:0 0 40px}
+.wrap{max-width:1180px;margin:0 auto;padding:0 16px}
+
+.hdr{background:linear-gradient(135deg,var(--navy),#1d4ed8);color:#fff;padding:18px 0;margin-bottom:16px}
+.hdr .wrap{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.hdr h1{font-size:20px;font-weight:700}
+.hdr .meta{font-size:14px;color:#c7d9f5;margin-left:auto;text-align:right}
+.hdr .meta b{color:#fff;font-weight:500}
+
+.btn{display:inline-flex;align-items:center;gap:6px;padding:7px 15px;border-radius:8px;
+     border:1px solid var(--border);background:var(--card);color:var(--blue);
+     font-size:14px;font-weight:500;font-family:inherit;cursor:pointer;transition:all .12s}
+.btn:hover{background:var(--blue-lt)}
+.btn.primary{background:var(--navy);color:#fff;border-color:var(--navy)}
+.btn.primary:hover{background:#12386f}
+.btn.danger{background:var(--card);color:var(--red);border-color:#f3c7c7}
+.btn.danger:hover{background:var(--red-lt)}
+
+.card{background:var(--card);border:1px solid var(--border);border-radius:8px;
+      padding:16px;margin-bottom:12px}
+.card &gt; h2{font-size:16px;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.card &gt; h2 .cnt{font-size:14px;font-weight:500;color:var(--sub)}
+.note{font-size:14px;color:var(--sub)}
+
+/* ── 올리는 칸 ── */
+.drop{border:1.5px dashed #c7d7f0;border-radius:8px;padding:16px;background:#f8faff;
+      cursor:pointer;transition:all .15s;text-align:center}
+.drop:hover,.drop.over{background:var(--blue-lt);border-color:var(--blue)}
+.drop .big{font-size:15px;font-weight:500}
+.drop .sm{font-size:14px;color:var(--sub);margin-top:4px}
+.loaded{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:99px;
+      font-size:13px;background:var(--green-lt);color:var(--green);border:1px solid var(--green-bd)}
+.chip.miss{background:#f8fafc;color:var(--sub);border-color:var(--border)}
+
+.sum{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+.sum .box{flex:1 1 150px;background:var(--card);border:1px solid var(--border);
+          border-radius:8px;padding:16px}
+.sum .k{font-size:14px;color:var(--sub)}
+.sum .v{font-size:24px;font-weight:800;font-family:'Nunito',sans-serif;margin-top:2px}
+.sum .box.warn{border-color:#f3c7c7;background:var(--red-lt)}
+.sum .box.warn .v{color:var(--red)}
+.sum .box.good{border-color:var(--green-bd);background:var(--green-lt)}
+.sum .box.good .v{color:var(--green)}
+
+.alert{border-left:4px solid var(--red);background:var(--red-lt);border-radius:8px;
+       padding:12px 16px;margin-bottom:8px}
+.alert.wait{border-left-color:var(--sub);background:#f8fafc}
+.alert .ttl{font-weight:700;font-size:15px}
+.alert .sub{font-size:14px;color:var(--sub);margin-top:2px}
+.alert .det{font-size:14px;margin-top:4px}
+
+table{width:100%;border-collapse:collapse;font-size:14px}
+th{background:#f7f9fd;color:var(--sub);font-weight:500;text-align:left;
+   padding:10px 8px;border-bottom:2px solid var(--border);white-space:nowrap}
+td{padding:9px 8px;border-bottom:1px solid #f1f5f9;height:38px;vertical-align:middle}
+tbody tr:hover{background:#f7fbff}
+td.vsl{font-weight:700}
+td.num{text-align:right;font-family:'Nunito',monospace}
+.tb-wrap{overflow-x:auto}
+
+.st{display:inline-block;padding:2px 9px;border-radius:99px;font-size:13px;
+    font-weight:500;white-space:nowrap}
+.st.ok  {background:var(--green-lt);color:var(--green);border:1px solid var(--green-bd)}
+.st.work{background:var(--blue-lt); color:var(--blue); border:1px solid var(--blue-mid)}
+.st.err {background:var(--red-lt);  color:var(--red);  border:1px solid #f3c7c7}
+.st.none{background:#f8fafc;        color:var(--sub);  border:1px solid var(--border)}
+.st.na  {background:transparent;    color:var(--muted);border:1px solid transparent}
+.why{font-size:13px;color:var(--muted);display:block;margin-top:1px}
+
+details{margin-bottom:12px}
+details &gt; summary{background:var(--card);border:1px solid var(--border);border-radius:8px;
+  padding:14px 16px;font-size:16px;font-weight:700;cursor:pointer;list-style:none;
+  display:flex;align-items:center;gap:8px}
+details[open] &gt; summary{border-radius:8px 8px 0 0;border-bottom:none}
+details &gt; summary::-webkit-details-marker{display:none}
+details &gt; summary .cnt{font-size:14px;font-weight:500;color:var(--sub)}
+details &gt; summary .arw{margin-left:auto;color:var(--muted);font-size:13px;font-weight:500}
+details[open] &gt; summary .arw::after{content:'접기'}
+details:not([open]) &gt; summary .arw::after{content:'펼치기'}
+details .body{background:var(--card);border:1px solid var(--border);border-top:none;
+  border-radius:0 0 8px 8px;padding:0 16px 8px}
+
+.empty{padding:24px 16px;text-align:center;color:var(--sub);font-size:14px}
+.stale{background:#fffbea;border:1px solid #f0d98c;border-radius:8px;padding:12px 16px;
+       margin-bottom:12px;font-size:14px}
+.legend{font-size:13px;color:var(--muted);margin-top:8px}
+.legend b{color:var(--sub);font-weight:500}
+.log{font-size:13px;color:var(--sub);margin-top:10px;white-space:pre-wrap;
+     font-family:'Nunito',monospace;max-height:150px;overflow:auto}
+&lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+
+&lt;div class=&quot;hdr&quot;&gt;
+  &lt;div class=&quot;wrap&quot;&gt;
+    &lt;h1&gt;신고현황&lt;/h1&gt;
+    &lt;div class=&quot;meta&quot; id=&quot;meta&quot;&gt;&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;div class=&quot;wrap&quot;&gt;
+
+  &lt;!-- ══ 자료 올리기 ══ --&gt;
+  &lt;div class=&quot;card&quot;&gt;
+    &lt;h2&gt;자료 올리기 &lt;span class=&quot;cnt&quot;&gt;올린 것은 이 컴퓨터 밖으로 나가지 않습니다&lt;/span&gt;&lt;/h2&gt;
+    &lt;div class=&quot;drop&quot; id=&quot;drop&quot;&gt;
+      &lt;div class=&quot;big&quot;&gt;여기로 끌어다 놓거나, 눌러서 고르세요&lt;/div&gt;
+      &lt;div class=&quot;sm&quot;&gt;여러 개 한 번에 올려도 됩니다 · 파일 이름이 달라도 내용을 보고 알아서 가립니다&lt;/div&gt;
+      &lt;input type=&quot;file&quot; id=&quot;file&quot; multiple accept=&quot;.json,.js,.xls,.xlsx&quot; style=&quot;display:none&quot;&gt;
+    &lt;/div&gt;
+    &lt;div class=&quot;loaded&quot; id=&quot;loaded&quot;&gt;&lt;/div&gt;
+    &lt;div class=&quot;log&quot; id=&quot;log&quot;&gt;&lt;/div&gt;
+  &lt;/div&gt;
+
+  &lt;div id=&quot;app&quot;&gt;&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;!-- 배치파일로 돌렸으면 이 두 개가 자동으로 들어온다. 없으면 위에서 올리면 된다. --&gt;
+&lt;script src=&quot;data/board.js&quot; onerror=&quot;void 0&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;data/mail.js&quot;  onerror=&quot;void 0&quot;&gt;&lt;/script&gt;
+&lt;script&gt;
+'use strict';
+
+/* ════════════════════════════════════════════════════════════
+   판정 규칙 — board.py 와 같은 규칙이다.
+   한쪽만 고치면 화면과 검은 창의 답이 달라진다. 고칠 땐 둘 다 고친다.
+   (board.js 가 있으면 그쪽 판정을 그대로 쓰고 여기는 쓰지 않는다)
+   ════════════════════════════════════════════════════════════ */
+var OK='승인', WORK='진행중', ERR='오류', NONE='미신고', MINE='타서비스';
+
+function isMrn(cell){
+  var s = String(cell || '').trim().toUpperCase();
+  return (s.length &gt;= 10 &amp;&amp; /^\d\d/.test(s) &amp;&amp; (s.slice(-1) === 'I' || s.slice(-1) === 'E')) ? s : null;
+}
+function findRow(cell, name, vygs, rows){
+  var mrn = isMrn(cell), i;
+  if (mrn) for (i = 0; i &lt; rows.length; i++) if (rows[i].mrn === mrn) return [rows[i], ''];
+  var up = function(x){ return String(x || '').trim().toUpperCase(); };
+  var hit = rows.filter(function(r){
+    return up(r.vsl) === up(name) &amp;&amp; vygs.some(function(v){ return v &amp;&amp; up(r.vyg) === up(v); });
+  });
+  if (hit.length === 1) return [hit[0], mrn ? 'MRN 다름' : '체크리스트에 MRN 미기재'];
+  return [null, ''];
+}
+function judgeMf(cell, row, how){
+  if (!row) {
+    var memo = String(cell || '').trim();
+    if (memo &amp;&amp; !isMrn(memo)) return {s:MINE, d:memo};
+    return {s:NONE, d:'PLISM 에 없음'};
+  }
+  var tail = how ? ' (' + how + ')' : '';
+  if (row.err) return {s:ERR, d:'오류 B/L ' + row.err + '건' + tail};
+  var st = String(row.st || '').trim();
+  if (st === '승인') return {s:OK, d:'승인' + tail};
+  if (st) return {s:WORK, d:st + tail};
+  return {s:WORK, d:'상태 없음' + tail};
+}
+function judgeDg(rows){
+  if (!rows.length) return {s:NONE, d:'신고 없음'};
+  var latest = {};
+  rows.forEach(function(r){
+    (r.res || []).forEach(function(res){
+      var doc = res.doc, at = String(res.at || '');
+      if (doc &amp;&amp; (!(doc in latest) || at &gt; String(latest[doc].at || ''))) latest[doc] = res;
+    });
+  });
+  var docs = Object.keys(latest);
+  if (!docs.length) return {s:WORK, d:'전송됨 · 응답 대기'};
+  var bad = docs.filter(function(d){ return (latest[d].stat || '') !== '(정상처리)'; })
+                .map(function(d){ return (d + ' ' + (latest[d].code || '')).trim(); });
+  if (bad.length) return {s:ERR, d:bad.join(' / ')};
+  if (rows.some(function(r){ return r.wEq === 'N' || r.cEq === 'N'; }))
+    return {s:WORK, d:'정상처리 (중량·컨 수량 불일치)'};
+  return {s:OK, d:'정상처리 ' + docs.length + '종'};
+}
+
+/* ════════════════════════════════════════════════════════════
+   올린 자료 보관함
+   ════════════════════════════════════════════════════════════ */
+var DATA = {
+  board: window.BOARD || null,   // board.py 가 이미 판정해 둔 것
+  keys:  null,                   // keys.json — 모선 목록
+  plism: null,                   // plism.json — PLISM 조회 원자료
+  mail:  window.MAIL || null,    // mail.json — 마감리스트 발송
+  signs: null                    // 엑셀에서 읽은 호출부호 명부
+};
+var logLines = [];
+function say(s){ logLines.push(s); document.getElementById('log').textContent = logLines.join('\n'); }
+
+function esc(s){
+  return String(s == null ? '' : s)
+    .replace(/&amp;/g,'&amp;amp;').replace(/&lt;/g,'&amp;lt;').replace(/&gt;/g,'&amp;gt;').replace(/&quot;/g,'&amp;quot;');
+}
+
+/* ── 파일 가리기: 이름이 아니라 내용을 본다 ───────────────── */
+function takeJson(obj, fname){
+  if (obj &amp;&amp; obj.rows &amp;&amp; obj.rows.length &amp;&amp; ('imp_mf' in (obj.rows[0] || {}))) {
+    DATA.board = obj; return 'board (판정 끝난 신고현황)';
+  }
+  if (obj &amp;&amp; obj.imp &amp;&amp; obj.exp &amp;&amp; obj.dg) { DATA.plism = obj; return 'plism (PLISM 조회 원자료)'; }
+  if (obj &amp;&amp; obj.rows &amp;&amp; obj.rows.length &amp;&amp; ('수입리스트' in (obj.rows[0] || {}))) {
+    DATA.mail = obj; return 'mail (마감리스트 발송)';
+  }
+  if (obj &amp;&amp; obj.rows &amp;&amp; obj.rows.length &amp;&amp; ('vyg_in' in (obj.rows[0] || {}))) {
+    DATA.keys = obj; return 'keys (모선 목록 ' + obj.rows.length + '척)';
+  }
+  if (obj &amp;&amp; obj.rows &amp;&amp; !Array.isArray(obj.rows)) {          // 체크리스트 스냅샷
+    var arr = Object.keys(obj.rows).map(function(k){ var v = obj.rows[k]; v.key = k; return v; });
+    DATA.keys = {rows: arr, week: obj.week, snapshot: fname};
+    return '체크리스트 스냅샷 (' + arr.length + '척)';
+  }
+  return null;
+}
+function takeExcel(wb, fname){
+  /* 선박 파티큘러(선박|VesselName|Service|CallSign) 또는 체크리스트 AY:AZ 표 */
+  var map = DATA.signs || {}, n = 0;
+  wb.SheetNames.forEach(function(sn){
+    var rows = XLSX.utils.sheet_to_json(wb.Sheets[sn], {header:1, defval:''});
+    rows.forEach(function(r){
+      var code = String(r[0] || '').trim(), sign = String(r[3] || '').trim();
+      if (code &amp;&amp; /^[A-Z0-9]{4,10}$/i.test(sign) &amp;&amp; !map[code.toUpperCase()]) { map[code.toUpperCase()] = sign; n++; }
+      var c2 = String(r[50] || '').trim(), s2 = String(r[51] || '').trim();   /* AY / AZ */
+      if (c2 &amp;&amp; /^[A-Z0-9]{4,10}$/i.test(s2) &amp;&amp; !map[c2.toUpperCase()]) { map[c2.toUpperCase()] = s2; n++; }
+    });
+  });
+  DATA.signs = map;
+  return n ? '호출부호 명부 ' + n + '척' : null;
+}
+
+function readFiles(files){
+  var left = files.length;
+  if (!left) return;
+  Array.prototype.forEach.call(files, function(f){
+    var rd = new FileReader();
+    var isX = /\.(xls|xlsx)$/i.test(f.name);
+    rd.onload = function(e){
+      try {
+        var what = null;
+        if (isX) {
+          if (typeof XLSX === 'undefined') throw new Error('엑셀 읽는 부품을 못 불러왔습니다 (인터넷 확인)');
+          what = takeExcel(XLSX.read(e.target.result, {type:'binary'}), f.name);
+        } else {
+          var txt = e.target.result;
+          var m = String(txt).match(/^\s*window\.\w+\s*=\s*([\s\S]*?);?\s*$/);   /* board.js / mail.js */
+          what = takeJson(JSON.parse(m ? m[1] : txt), f.name);
+        }
+        say(what ? ('읽음  ' + f.name + '  →  ' + what)
+                 : ('모르는 형식  ' + f.name + ' — 건너뜁니다'));
+      } catch (err) {
+        say('못 읽음  ' + f.name + ' — ' + err.message);
+      }
+      if (--left === 0) render();
+    };
+    rd.onerror = function(){ say('못 읽음  ' + f.name); if (--left === 0) render(); };
+    if (isX) rd.readAsBinaryString(f); else rd.readAsText(f, 'utf-8');
+  });
+}
+
+/* ── 올리는 칸 동작 ─────────────────────────────────────── */
+var drop = document.getElementById('drop'), fileInput = document.getElementById('file');
+drop.onclick = function(){ fileInput.click(); };
+fileInput.onchange = function(){ readFiles(this.files); this.value = ''; };
+['dragenter','dragover'].forEach(function(ev){
+  drop.addEventListener(ev, function(e){ e.preventDefault(); drop.classList.add('over'); });
+});
+['dragleave','drop'].forEach(function(ev){
+  drop.addEventListener(ev, function(e){ e.preventDefault(); drop.classList.remove('over'); });
+});
+drop.addEventListener('drop', function(e){ readFiles(e.dataTransfer.files); });
+
+/* ════════════════════════════════════════════════════════════
+   화면 그리기
+   ════════════════════════════════════════════════════════════ */
+function etbText(iso){
+  if (!iso) return '—';
+  return String(iso).replace('T',' ').slice(5,16);       /* 09-21 04:30 */
+}
+function today(){
+  var d = new Date();
+  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+}
+var STYLE = {};
+STYLE[OK]={cls:'ok'}; STYLE[WORK]={cls:'work'}; STYLE[ERR]={cls:'err'};
+STYLE[NONE]={cls:'none'}; STYLE[MINE]={cls:'na'};
+STYLE['보냄']={cls:'ok'}; STYLE['아직']={cls:'none'}; STYLE['해당없음']={cls:'na'};
+function stTag(state, why, showWhy){
+  var st = STYLE[state] || {cls:'none'};
+  var h = '&lt;span class=&quot;st ' + st.cls + '&quot;&gt;' + esc(state || '—') + '&lt;/span&gt;';
+  if (showWhy &amp;&amp; why) h += '&lt;span class=&quot;why&quot;&gt;' + esc(why) + '&lt;/span&gt;';
+  return h;
+}
+
+/* keys + plism 을 합쳐 board 와 같은 모양으로 만든다 (board.js 가 없을 때만) */
+function buildBoard(){
+  if (DATA.board) return DATA.board;
+  if (!DATA.keys) return null;
+  var p = DATA.plism;
+  var rows = DATA.keys.rows.map(function(v){
+    var sign = (v.sign || v.call || '') || (DATA.signs &amp;&amp; DATA.signs[String(v.vsl||'').toUpperCase()]) || '';
+    var base = {name:v.name, vsl:v.vsl, svc_in:v.svc_in, svc_out:v.svc_out, opr:v.opr,
+                sign:sign, seq:(v.seq||''), vyg_in:v.vyg_in, vyg_out:v.vyg_out,
+                etb:v.etb, etd:v.etd};
+    if (!p) {                                   /* PLISM 자료가 없으면 판정하지 않는다 */
+      base.imp_mf = base.exp_mf = base.imp_dg = base.exp_dg = {s:'', d:''};
+      return base;
+    }
+    var seq = String(v.seq || '').trim();
+    function dgRows(flag){
+      return (p.dg || []).filter(function(r){
+        return r.cs === sign &amp;&amp; r.inflag === flag &amp;&amp;
+               (!seq || String(r.ser).replace(/^0+/,'') === seq.replace(/^0+/,''));
+      });
+    }
+    var a = findRow(v.imp_cell, v.name, [v.vyg_in, v.vyg_out], p.imp || []);
+    var b = findRow(v.exp_cell, v.name, [v.vyg_out, v.vyg_in], p.exp || []);
+    base.imp_mf = judgeMf(v.imp_cell, a[0], a[1]);
+    base.exp_mf = judgeMf(v.exp_cell, b[0], b[1]);
+    base.imp_dg = judgeDg(dgRows(1));
+    base.exp_dg = judgeDg(dgRows(2));
+    return base;
+  });
+  rows.sort(function(x,y){ return String(x.etb||'9999').localeCompare(String(y.etb||'9999')); });
+  return {rows:rows, made_at:'', pulled_at:(p &amp;&amp; p.pulled_at) || '', klnet:(p &amp;&amp; p.klnet) || '',
+          judged_here:!!p};
+}
+
+function render(){
+  var B = buildBoard(), M = DATA.mail, out = [];
+
+  /* 올린 것 표시 */
+  var chips = [
+    ['모선 목록',      DATA.keys || DATA.board],
+    ['PLISM 신고현황', DATA.board || DATA.plism],
+    ['마감리스트 발송', DATA.mail],
+    ['호출부호 명부',  DATA.signs]
+  ].map(function(c){
+    return '&lt;span class=&quot;chip' + (c[1] ? '' : ' miss') + '&quot;&gt;' + (c[1] ? '있음' : '없음') + ' · ' + c[0] + '&lt;/span&gt;';
+  }).join('');
+  document.getElementById('loaded').innerHTML = chips;
+
+  /* 머리말 */
+  var meta = [];
+  if (B &amp;&amp; B.pulled_at) meta.push('PLISM 조회 &lt;b&gt;' + esc(B.pulled_at) + '&lt;/b&gt;');
+  if (B &amp;&amp; B.klnet)     meta.push('계정 &lt;b&gt;' + esc(B.klnet) + '&lt;/b&gt;');
+  if (M &amp;&amp; M.checked_at) meta.push('메일 확인 &lt;b&gt;' + esc(M.checked_at) + '&lt;/b&gt;');
+  if (M &amp;&amp; M.week) meta.push('&lt;b&gt;' + esc(M.week[0]) + ' ~ ' + esc(M.week[1]) + '&lt;/b&gt;');
+  document.getElementById('meta').innerHTML = meta.length ? meta.join(' · ') : '올린 자료 없음';
+
+  /* 아무것도 없을 때 */
+  if (!B &amp;&amp; !M) {
+    out.push('&lt;div class=&quot;card&quot;&gt;&lt;h2&gt;아직 올린 자료가 없습니다&lt;/h2&gt;' +
+      '&lt;p class=&quot;note&quot;&gt;위 칸에 &lt;b&gt;data&lt;/b&gt; 폴더의 파일을 끌어다 놓으면 바로 표가 나옵니다. ' +
+      '받는 것은 이렇습니다.&lt;/p&gt;' +
+      '&lt;div class=&quot;tb-wrap&quot;&gt;&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;파일&lt;/th&gt;&lt;th&gt;채워지는 것&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;' +
+      '&lt;tr&gt;&lt;td class=&quot;vsl&quot;&gt;keys.json&lt;/td&gt;&lt;td&gt;모선 · 항차 · 호출부호 · 해수청&lt;/td&gt;&lt;/tr&gt;' +
+      '&lt;tr&gt;&lt;td class=&quot;vsl&quot;&gt;plism.json&lt;/td&gt;&lt;td&gt;신고 4칸 (이 화면에서 판정)&lt;/td&gt;&lt;/tr&gt;' +
+      '&lt;tr&gt;&lt;td class=&quot;vsl&quot;&gt;board.js&lt;/td&gt;&lt;td&gt;신고 4칸 (board.py 가 판정한 것 — 이게 있으면 우선)&lt;/td&gt;&lt;/tr&gt;' +
+      '&lt;tr&gt;&lt;td class=&quot;vsl&quot;&gt;mail.json&lt;/td&gt;&lt;td&gt;마감리스트 발송 · 이번 주 할 일&lt;/td&gt;&lt;/tr&gt;' +
+      '&lt;tr&gt;&lt;td class=&quot;vsl&quot;&gt;선박 파티큘러-콜사인정보.xls&lt;/td&gt;&lt;td&gt;비어 있는 호출부호 메우기&lt;/td&gt;&lt;/tr&gt;' +
+      '&lt;tr&gt;&lt;td class=&quot;vsl&quot;&gt;체크리스트 스냅샷 json&lt;/td&gt;&lt;td&gt;keys.json 이 없을 때 모선 목록&lt;/td&gt;&lt;/tr&gt;' +
+      '&lt;/tbody&gt;&lt;/table&gt;&lt;/div&gt;' +
+      '&lt;p class=&quot;note&quot; style=&quot;margin-top:12px&quot;&gt;실행.bat 을 돌리면 이 자료들이 ' +
+      '&lt;b&gt;신고현황\\data\\&lt;/b&gt; 에 생깁니다.&lt;/p&gt;&lt;/div&gt;');
+    document.getElementById('app').innerHTML = out.join('');
+    return;
+  }
+
+  /* 오래된 자료 경고 */
+  var stale = [];
+  if (B &amp;&amp; B.made_at &amp;&amp; String(B.made_at).slice(0,10) !== today())
+    stale.push('신고현황은 &lt;b&gt;' + esc(B.made_at) + '&lt;/b&gt; 에 만든 것');
+  if (M &amp;&amp; M.checked_at &amp;&amp; String(M.checked_at).slice(0,10) !== today())
+    stale.push('마감리스트 확인은 &lt;b&gt;' + esc(M.checked_at) + '&lt;/b&gt; 에 한 것');
+  if (stale.length)
+    out.push('&lt;div class=&quot;stale&quot;&gt;' + stale.join(' · ') + ' — &lt;b&gt;오늘 자료가 아닙니다.&lt;/b&gt;&lt;/div&gt;');
+
+  var hasJudge = B &amp;&amp; B.rows.length &amp;&amp; B.rows[0].imp_mf.s !== '';
+
+  /* 요약 */
+  var problems = [];
+  if (hasJudge) B.rows.forEach(function(r){
+    var bad = [['수입신고',r.imp_mf],['수출신고',r.exp_mf],['수입위험물',r.imp_dg],['수출위험물',r.exp_dg]]
+      .filter(function(p){ return p[1].s === ERR || p[1].s === NONE; });
+    if (bad.length) problems.push({row:r, bad:bad, hasErr:bad.some(function(p){ return p[1].s === ERR; })});
+  });
+  var notSent = [];
+  if (M) M.rows.forEach(function(r){
+    ['수입리스트','수출리스트'].forEach(function(k){
+      if (r[k] &amp;&amp; r[k][0] === '아직') notSent.push(r.name);
+    });
+  });
+  var s = '&lt;div class=&quot;sum&quot;&gt;';
+  if (B) s += '&lt;div class=&quot;box&quot;&gt;&lt;div class=&quot;k&quot;&gt;모선&lt;/div&gt;&lt;div class=&quot;v&quot;&gt;' + B.rows.length + '&lt;/div&gt;&lt;/div&gt;';
+  if (hasJudge) s += '&lt;div class=&quot;box ' + (problems.length?'warn':'good') + '&quot;&gt;&lt;div class=&quot;k&quot;&gt;미신고 · 오류&lt;/div&gt;&lt;div class=&quot;v&quot;&gt;' + problems.length + '&lt;/div&gt;&lt;/div&gt;';
+  if (M) {
+    s += '&lt;div class=&quot;box ' + (notSent.length?'warn':'good') + '&quot;&gt;&lt;div class=&quot;k&quot;&gt;아직 안 보낸 리스트&lt;/div&gt;&lt;div class=&quot;v&quot;&gt;' + notSent.length + '&lt;/div&gt;&lt;/div&gt;';
+    var left = M.weekly ? M.weekly.filter(function(w){ return w.state !== '보냄'; }).length : 0;
+    s += '&lt;div class=&quot;box ' + (left?'warn':'good') + '&quot;&gt;&lt;div class=&quot;k&quot;&gt;이번 주 남은 일&lt;/div&gt;&lt;div class=&quot;v&quot;&gt;' + left + '&lt;/div&gt;&lt;/div&gt;';
+  }
+  out.push(s + '&lt;/div&gt;');
+
+  /* 무엇이 모자란지 먼저 알린다 */
+  var need = [];
+  if (!B)             need.push('&lt;b&gt;모선 목록&lt;/b&gt;이 없습니다 — &lt;b&gt;keys.json&lt;/b&gt; 을 올리세요.');
+  else if (!hasJudge) need.push('&lt;b&gt;PLISM 신고현황&lt;/b&gt;이 없습니다 — &lt;b&gt;plism.json&lt;/b&gt; 또는 &lt;b&gt;board.js&lt;/b&gt; 를 올리면 4칸이 채워집니다.');
+  if (!M)             need.push('&lt;b&gt;마감리스트 발송&lt;/b&gt; 확인이 없습니다 — &lt;b&gt;mail.json&lt;/b&gt; 을 올리세요.');
+  if (need.length)
+    out.push('&lt;div class=&quot;card&quot;&gt;&lt;p class=&quot;note&quot;&gt;' + need.join('&lt;br&gt;') + '&lt;/p&gt;&lt;/div&gt;');
+
+  /* 먼저 볼 것 */
+  if (hasJudge) {
+    var a = '&lt;div class=&quot;card&quot;&gt;&lt;h2&gt;먼저 볼 것 &lt;span class=&quot;cnt&quot;&gt;미신고 · 오류&lt;/span&gt;&lt;/h2&gt;';
+    if (!problems.length) a += '&lt;div class=&quot;empty&quot;&gt;미신고도 오류도 없습니다.&lt;/div&gt;';
+    else {
+      a += '&lt;p class=&quot;note&quot; style=&quot;margin-bottom:10px&quot;&gt;마감 전이라 아직 안 한 것도 그대로 나옵니다. 판단은 직접 하세요.&lt;/p&gt;';
+      problems.forEach(function(p){
+        var r = p.row;
+        a += '&lt;div class=&quot;alert' + (p.hasErr?'':' wait') + '&quot;&gt;' +
+          '&lt;div class=&quot;ttl&quot;&gt;' + esc(r.name) + ' &lt;span style=&quot;font-weight:500;color:var(--sub)&quot;&gt;' + esc(r.vyg_out||r.vyg_in||'') + '&lt;/span&gt;&lt;/div&gt;' +
+          '&lt;div class=&quot;sub&quot;&gt;입항 ' + esc(etbText(r.etb)) +
+            (r.sign?' · 호출부호 ' + esc(r.sign):'') + (r.seq?' · 해수청 ' + esc(r.seq):'') + '&lt;/div&gt;' +
+          '&lt;div class=&quot;det&quot;&gt;' + p.bad.map(function(x){
+            return esc(x[0]) + ' ' + stTag(x[1].s,'',false) +
+              (x[1].s === ERR &amp;&amp; x[1].d ? ' &lt;span class=&quot;why&quot; style=&quot;display:inline&quot;&gt;' + esc(x[1].d) + '&lt;/span&gt;' : '');
+          }).join(' &amp;nbsp; ') + '&lt;/div&gt;&lt;/div&gt;';
+      });
+    }
+    out.push(a + '&lt;/div&gt;');
+  }
+
+  /* 신고현황 표 */
+  if (B) {
+    var t = '&lt;details open&gt;&lt;summary&gt;신고현황 &lt;span class=&quot;cnt&quot;&gt;' + B.rows.length + '척' +
+      (hasJudge ? (B.judged_here ? ' · 이 화면에서 판정' : '') : ' · PLISM 자료 없음') +
+      '&lt;/span&gt;&lt;span class=&quot;arw&quot;&gt;&lt;/span&gt;&lt;/summary&gt;&lt;div class=&quot;body&quot;&gt;&lt;div class=&quot;tb-wrap&quot;&gt;&lt;table&gt;' +
+      '&lt;thead&gt;&lt;tr&gt;&lt;th&gt;모선&lt;/th&gt;&lt;th&gt;항차&lt;/th&gt;&lt;th&gt;호출부호&lt;/th&gt;&lt;th&gt;해수청&lt;/th&gt;&lt;th&gt;입항&lt;/th&gt;' +
+      '&lt;th&gt;수입신고&lt;/th&gt;&lt;th&gt;수출신고&lt;/th&gt;&lt;th&gt;수입위험물&lt;/th&gt;&lt;th&gt;수출위험물&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;';
+    B.rows.forEach(function(r){
+      function c(j){ return j &amp;&amp; j.s ? stTag(j.s, j.d, true) : '&lt;span class=&quot;st na&quot;&gt;—&lt;/span&gt;'; }
+      t += '&lt;tr&gt;&lt;td class=&quot;vsl&quot;&gt;' + esc(r.name) + '&lt;/td&gt;' +
+        '&lt;td&gt;' + esc(r.vyg_out || r.vyg_in || '') + '&lt;/td&gt;' +
+        '&lt;td class=&quot;num&quot;&gt;' + esc(r.sign || '—') + '&lt;/td&gt;' +
+        '&lt;td class=&quot;num&quot;&gt;' + esc(r.seq || '—') + '&lt;/td&gt;' +
+        '&lt;td class=&quot;num&quot;&gt;' + esc(etbText(r.etb)) + '&lt;/td&gt;' +
+        '&lt;td&gt;' + c(r.imp_mf) + '&lt;/td&gt;&lt;td&gt;' + c(r.exp_mf) + '&lt;/td&gt;' +
+        '&lt;td&gt;' + c(r.imp_dg) + '&lt;/td&gt;&lt;td&gt;' + c(r.exp_dg) + '&lt;/td&gt;&lt;/tr&gt;';
+    });
+    t += '&lt;/tbody&gt;&lt;/table&gt;&lt;/div&gt;&lt;p class=&quot;legend&quot;&gt;&lt;b&gt;승인&lt;/b&gt; 끝남 · &lt;b&gt;진행중&lt;/b&gt; 선별마감·접수 단계 · ' +
+      '&lt;b&gt;오류&lt;/b&gt; 오류통보 옴 · &lt;b&gt;미신고&lt;/b&gt; PLISM 에 없음 · &lt;b&gt;타서비스&lt;/b&gt; 내 소관 아님' +
+      (hasJudge ? '' : ' · &lt;b&gt;—&lt;/b&gt; PLISM 자료를 아직 안 올림') + '&lt;/p&gt;&lt;/div&gt;&lt;/details&gt;';
+    out.push(t);
+  }
+
+  /* 마감리스트 발송 */
+  if (M) {
+    var m = '&lt;details open&gt;&lt;summary&gt;마감리스트 발송 &lt;span class=&quot;cnt&quot;&gt;' +
+      (notSent.length ? '아직 ' + notSent.length + '건' : '모두 보냄') + '&lt;/span&gt;&lt;span class=&quot;arw&quot;&gt;&lt;/span&gt;&lt;/summary&gt;' +
+      '&lt;div class=&quot;body&quot;&gt;&lt;div class=&quot;tb-wrap&quot;&gt;&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;모선&lt;/th&gt;&lt;th&gt;수입항차&lt;/th&gt;' +
+      '&lt;th&gt;수출항차&lt;/th&gt;&lt;th&gt;수입리스트&lt;/th&gt;&lt;th&gt;수출리스트&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;';
+    M.rows.forEach(function(r){
+      function cell(k){ var v = r[k] || ['','']; return stTag(v[0], v[0]==='보냄'?v[1]:'', true); }
+      m += '&lt;tr&gt;&lt;td class=&quot;vsl&quot;&gt;' + esc(r.name) + '&lt;/td&gt;&lt;td&gt;' + esc(r.vyg_in||'') + '&lt;/td&gt;' +
+        '&lt;td&gt;' + esc(r.vyg_out||'') + '&lt;/td&gt;&lt;td&gt;' + cell('수입리스트') + '&lt;/td&gt;' +
+        '&lt;td&gt;' + cell('수출리스트') + '&lt;/td&gt;&lt;/tr&gt;';
+    });
+    out.push(m + '&lt;/tbody&gt;&lt;/table&gt;&lt;/div&gt;&lt;p class=&quot;legend&quot;&gt;보낸편지함 제목으로 가려냅니다. ' +
+      '&lt;b&gt;해당없음&lt;/b&gt; 은 양하만·타서비스라 보낼 일이 없는 것입니다.&lt;/p&gt;&lt;/div&gt;&lt;/details&gt;');
+  }
+
+  /* 이번 주 할 일 */
+  if (M &amp;&amp; M.weekly &amp;&amp; M.weekly.length) {
+    var w = '&lt;div class=&quot;card&quot;&gt;&lt;h2&gt;이번 주 할 일&lt;/h2&gt;&lt;div class=&quot;tb-wrap&quot;&gt;&lt;table&gt;&lt;tbody&gt;';
+    M.weekly.forEach(function(x){
+      w += '&lt;tr&gt;&lt;td style=&quot;width:1%;white-space:nowrap&quot;&gt;' + stTag(x.state,'',false) + '&lt;/td&gt;' +
+        '&lt;td class=&quot;vsl&quot;&gt;' + esc(x.label) + '&lt;/td&gt;&lt;td class=&quot;note&quot;&gt;' + esc(x.due) + '&lt;/td&gt;' +
+        '&lt;td class=&quot;num&quot;&gt;' + esc(x.at||'') + '&lt;/td&gt;&lt;/tr&gt;';
+      if (x.state !== '보냄' &amp;&amp; x.subject)
+        w += '&lt;tr&gt;&lt;td&gt;&lt;/td&gt;&lt;td colspan=&quot;3&quot; class=&quot;why&quot;&gt;' + esc(x.subject) + '&lt;/td&gt;&lt;/tr&gt;';
+    });
+    out.push(w + '&lt;/tbody&gt;&lt;/table&gt;&lt;/div&gt;&lt;/div&gt;');
+  }
+
+
+
+  out.push('&lt;div style=&quot;margin-top:16px;display:flex;gap:8px;flex-wrap:wrap&quot;&gt;' +
+    '&lt;button class=&quot;btn&quot; onclick=&quot;document.querySelectorAll(\'details\').forEach(function(d){d.open=true})&quot;&gt;모두 펼치기&lt;/button&gt;' +
+    '&lt;button class=&quot;btn&quot; onclick=&quot;document.querySelectorAll(\'details\').forEach(function(d){d.open=false})&quot;&gt;모두 접기&lt;/button&gt;' +
+    '&lt;button class=&quot;btn danger&quot; onclick=&quot;location.reload()&quot;&gt;올린 것 비우기&lt;/button&gt;&lt;/div&gt;');
+
+  document.getElementById('app').innerHTML = out.join('');
+}
+
+render();
+&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</pre></details>
+  </div></div><div class="grp"><h2>4 · 속에서 도는 것</h2><div class="gd">직접 누를 일은 없습니다. 실행.bat 이 차례로 부릅니다. 무엇이 무엇을 만드는지만 알아두면 됩니다.</div>
+  <div class="item">
+    <div class="ihead">
+      <span class="kind k-code">프로그램</span>
+      <span class="iname">keys.py</span>
+      <span class="imeta">5.9 KB · 2026-09-19</span>
+    </div>
+    <div class="iwhat">체크리스트가 남긴 기록에서 조회에 필요한 것만 뽑습니다 — 모선 · 항차 · 호출부호 · 해수청번호.</div>
+    <div class="iwhen">만드는 것: data\keys.json</div>
+    <details><summary>안을 열어보기 <span class="arw"></span></summary><pre id="f6"># -*- coding: utf-8 -*-
+&quot;&quot;&quot;
+조회 열쇠 모으기 — 체크리스트에서 PLISM 조회에 필요한 값만 뽑아 data/keys.json 으로 낸다.
+
+  모선 · 항차 · 수입MRN · 수출MRN · 호출부호 · 해수청번호
+
+체크리스트를 만들면 조회 열쇠가 같이 만들어진다. 따로 입력할 것이 없다.
+&quot;&quot;&quot;
+from __future__ import annotations
+
+import json
+import re
+from pathlib import Path
+
+BASE = Path(__file__).resolve().parent.parent / &quot;체크리스트&quot;
+DATA = Path(__file__).resolve().parent / &quot;data&quot;
+
+
+def newest(pattern: str, where: Path) -&gt; Path:
+    hits = sorted(where.glob(pattern), key=lambda p: p.stat().st_mtime, reverse=True)
+    if not hits:
+        raise SystemExit(f&quot;파일을 찾지 못했습니다: {where}\\{pattern}&quot;)
+    return hits[0]
+
+
+def callsigns() -&gt; tuple[dict[str, str], dict[str, str]]:
+    &quot;&quot;&quot;선명코드 → 호출부호.
+
+    출처가 셋이다. 앞에 오는 것이 이긴다.
+      1) 선박 파티큘러 파일       — **DB**. 호출부호가 바뀌면 이 파일을 고친다
+      2) 체크리스트 `AY:AZ`      — 명부에 아직 없는 배를 메우는 보조
+      3) 마감관리 CALLSIGN_MAP   — 마지막 보루
+
+    서로 다른 값을 들고 있으면 돌려준다. 호출부호가 틀리면 엉뚱한 배의 위험물을 조회한다.
+    **다만 이번 주 모선만 알린다.** 표(36척)와 명부(3,900척)를 통째로 비교하면
+    이번 주와 상관없는 배까지 매주 경고가 떠서 금방 안 보게 된다.
+
+    반환: (호출부호표, {선박: '표값 ↔ 명부값'})
+    &quot;&quot;&quot;
+    table: dict[str, str] = {}
+    conflict: dict[str, str] = {}
+
+    def add(code: str, sign: str, src: str) -&gt; None:
+        code, sign = str(code).strip(), str(sign).strip()
+        if not code or not sign:
+            return
+        if code in table:
+            if table[code] != sign:
+                conflict.setdefault(code, f&quot;{table[code]} ↔ {sign}({src})&quot;)
+            return                                  # 먼저 넣은 쪽이 이긴다
+        table[code] = sign
+
+    # 명부가 DB 다. 바뀐 호출부호는 이 파일을 고쳐서 쓴다 — 고칠 곳이 한 군데여야 한다.
+    # `자료\` 로 옮겨졌지만 예전 자리(`체크리스트\`)도 같이 본다.
+    for part in (BASE.parent / &quot;자료&quot; / &quot;선박 파티큘러-콜사인정보.xls&quot;,
+                 BASE / &quot;선박 파티큘러-콜사인정보.xls&quot;):
+        if not part.exists():
+            continue
+        try:
+            import xlrd
+            ws = xlrd.open_workbook(part).sheet_by_index(0)
+            for r in range(1, ws.nrows):            # 선박 | Vessel Name | Service | Call Sign
+                add(ws.cell_value(r, 0), ws.cell_value(r, 3), &quot;파티큘러&quot;)
+            break
+        except Exception as e:
+            print(f&quot;  선박 파티큘러 파일을 못 읽었습니다({e}).&quot;)
+
+    # 명부에 아직 없는 배는 체크리스트 표로 메운다
+    try:
+        import openpyxl
+        ws = openpyxl.load_workbook(newest(&quot;체크리스트*.xlsx&quot;, BASE), data_only=True)[&quot;CK 2025&quot;]
+        for r in range(3, 78):                      # AY3:AZ77 — 선명 → 호출부호
+            add(ws.cell(r, 51).value or &quot;&quot;, ws.cell(r, 52).value or &quot;&quot;, &quot;체크리스트&quot;)
+    except Exception as e:
+        print(f&quot;  체크리스트 호출부호표를 못 읽었습니다({e}). 넘어갑니다.&quot;)
+
+    html = BASE / &quot;CBF&quot; / &quot;마감관리v4.34.html&quot;
+    if html.exists():
+        m = re.search(r&quot;var CALLSIGN_MAP\s*=\s*(\{.*?\});&quot;, html.read_text(&quot;utf-8&quot;, &quot;ignore&quot;), re.S)
+        if m:
+            for vsl, sign in json.loads(m.group(1)).items():
+                add(vsl, sign, &quot;마감관리&quot;)
+
+    return table, conflict
+
+
+def main() -&gt; None:
+    snap_path = newest(&quot;*.json&quot;, BASE / &quot;.체크리스트이력&quot;)
+    snap = json.loads(snap_path.read_text(&quot;utf-8&quot;))
+    signs, clash = callsigns()
+
+    rows = []
+    missing = []
+    for key, v in snap[&quot;rows&quot;].items():
+        # 체크리스트가 이미 명부와 표를 둘 다 보고 고른 값이다. 그게 있으면 그걸 쓴다.
+        sign = (v.get(&quot;call&quot;) or &quot;&quot;).strip() or signs.get(v[&quot;vsl&quot;])
+        if not sign:
+            missing.append(f&quot;{v['vsl']} ({v['name']})&quot;)
+        rows.append({
+            &quot;key&quot;: key, &quot;vsl&quot;: v[&quot;vsl&quot;], &quot;name&quot;: v[&quot;name&quot;],
+            &quot;svc_in&quot;: v[&quot;svc_in&quot;], &quot;svc_out&quot;: v[&quot;svc_out&quot;], &quot;opr&quot;: v[&quot;opr&quot;],
+            &quot;vyg_in&quot;: v[&quot;vyg_in&quot;], &quot;vyg_out&quot;: v[&quot;vyg_out&quot;],
+            &quot;sign&quot;: sign, &quot;seq&quot;: (v.get(&quot;seq&quot;) or &quot;&quot;).strip(),
+            &quot;etb&quot;: v[&quot;etb&quot;], &quot;etd&quot;: v[&quot;etd&quot;], &quot;doc&quot;: v[&quot;doc&quot;],
+            &quot;imp_cell&quot;: v[&quot;imp_cell&quot;], &quot;exp_cell&quot;: v[&quot;exp_cell&quot;],
+        })
+
+    # 조회 날짜 범위 — 체크리스트 주간의 앞뒤로 며칠 여유를 둔다
+    etbs = sorted(r[&quot;etb&quot;][:10].replace(&quot;-&quot;, &quot;&quot;) for r in rows if r[&quot;etb&quot;])
+    DATA.mkdir(exist_ok=True)
+    (DATA / &quot;keys.json&quot;).write_text(json.dumps({
+        &quot;snapshot&quot;: snap_path.name,
+        &quot;week&quot;: snap.get(&quot;week&quot;),
+        &quot;date_fr&quot;: etbs[0] if etbs else &quot;&quot;,
+        &quot;date_to&quot;: etbs[-1] if etbs else &quot;&quot;,
+        &quot;signs&quot;: sorted({r[&quot;sign&quot;] for r in rows if r[&quot;sign&quot;]}),
+        &quot;rows&quot;: rows,
+    }, ensure_ascii=False, indent=1), &quot;utf-8&quot;)
+
+    print(f&quot;  기준 체크리스트: {snap_path.name} · {len(rows)}척&quot;)
+    print(f&quot;  조회 범위: {etbs[0] if etbs else '?'} ~ {etbs[-1] if etbs else '?'}&quot;)
+    if missing:
+        print(f&quot;  ⚠ 호출부호를 못 찾은 배: {', '.join(missing)} — 위험물 조회에서 빠집니다&quot;)
+
+    # 이번 주 모선 중에서만 알린다. 상관없는 배까지 매주 뜨면 금방 안 보게 된다.
+    hit = [(r[&quot;vsl&quot;], clash[r[&quot;vsl&quot;]]) for r in rows if r[&quot;vsl&quot;] in clash]
+    for vsl, how in hit:
+        print(f&quot;  ⚠ {vsl} 호출부호가 출처마다 다릅니다 — {how}&quot;)
+        print(f&quot;      명부 값을 씁니다. 틀렸으면 선박 파티큘러 파일을 고쳐주세요.&quot;)
+
+
+if __name__ == &quot;__main__&quot;:
+    main()
+</pre></details>
+  </div>
+  <div class="item">
+    <div class="ihead">
+      <span class="kind k-code">프로그램</span>
+      <span class="iname">pull.js</span>
+      <span class="imeta">8.3 KB · 2026-09-22</span>
+    </div>
+    <div class="iwhat">크롬을 띄워 PLISM 에 들어가 적하목록·위험물 신고현황을 받아옵니다. 로그인은 사람이 합니다.</div>
+    <div class="iwhen">만드는 것: data\plism.json</div>
+    <details><summary>안을 열어보기 <span class="arw"></span></summary><pre id="f7">// PLISM 조회 — 로그인된 창에서 신고현황을 받아 data/plism.json 으로 저장한다.
+//
+// 로그인은 사람이 직접 한다. 창이 뜨면 한 번 로그인해 두면 되고,
+// 그 다음부터는 이 폴더에 세션이 남아 창만 잠깐 떴다 사라진다.
+
+const fs = require('fs');
+const path = require('path');
+
+const HERE = __dirname;
+const DATA = path.join(HERE, 'data');
+const PROFILE = path.join(HERE, '.크롬프로필');
+const HOME = 'https://www.plism.com/uat/uia/plism3Sub.do?menu_no=11';
+const 로그인대기_분 = 10;
+
+// --login : 로그인만 해 두고 끝내는 모드. 조회는 하지 않는다.
+//   로그인이 이 폴더(.크롬프로필)에 남으므로, 한 번 해 두면 실행.bat 이 알아서 돌아간다.
+const LOGIN_ONLY = process.argv.includes('--login');
+
+// playwright 를 찾는다. 설치 위치가 환경마다 달라서 후보를 차례로 본다.
+function loadPlaywright() {
+  const home = process.env.LOCALAPPDATA || '';
+  const cands = [
+    'playwright',
+    path.join(HERE, 'node_modules', 'playwright'),
+    ...fs.existsSync(path.join(home, 'npm-cache', '_npx'))
+      ? fs.readdirSync(path.join(home, 'npm-cache', '_npx'))
+          .map(d =&gt; path.join(home, 'npm-cache', '_npx', d, 'node_modules', 'playwright'))
+      : [],
+  ];
+  for (const c of cands) {
+    try { return require(c); } catch (_) { /* 다음 후보 */ }
+  }
+  console.error('\n  playwright 를 찾지 못했습니다.');
+  console.error('  이 폴더에서 한 번만 실행해 주세요:  npm install playwright\n');
+  process.exit(3);
+}
+
+// 페이지 안에서 도는 조회. 같은 사이트 안이라 로그인 상태가 그대로 쓰인다.
+async function collect(page, keys) {
+  return page.evaluate(async ({ dateFr, dateTo, signs, klnet }) =&gt; {
+    const post = async (url, body) =&gt; {
+      const r = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json; charset=&quot;UTF-8&quot;', 'Accept': 'application/json' },
+        body: JSON.stringify(body), credentials: 'include',
+      });
+      if (!r.ok) throw new Error(`${url} → ${r.status}`);
+      return r.json();
+    };
+
+    const wide = (d, days) =&gt; {           // 앞뒤로 며칠 넉넉히 본다
+      const t = new Date(`${d.slice(0,4)}-${d.slice(4,6)}-${d.slice(6,8)}T00:00:00`);
+      t.setDate(t.getDate() + days);
+      return t.toISOString().slice(0, 10).replace(/-/g, '');
+    };
+    const fr = wide(dateFr, -3), to = wide(dateTo, 3);
+
+    const imp = await post('/plism3/iks/cms/mng/selectKmcsImpMrnList.do', { reqMap: {
+      mrn: '', customs_line_code: '', arv_date_fr: fr, arv_date_to: to,
+      pod: '', status_mng: '', pageIndex: 1, pageRowCount: 300,
+      sKlnetId: klnet, customs_code: '062', vessel_name: '', chkSV: '',
+      customs_send_yn: '', mrn_co_yn: '', pol: '' } });
+
+    const exp = await post('/plism3/oks/cms/mng/selectKmcsExpMrnList.do', { reqMap: {
+      mrn: '', customs_line_code: '', etd_date_fr: fr, etd_date_to: to,
+      pol: '', pageIndex: 1, pageRowCount: 300,
+      sKlnetId: klnet, customs_code: '062', vessel_name: '', chkSV: '',
+      customs_send_yn: '', mrn_co_yn: '', pod: '' } });
+
+    // 위험물 — 622 여수청, 호출부호 기준. 수입(1)·수출(2) 을 따로 본다.
+    //
+    // 체크리스트 호출부호표에 없는 배가 있다(오늘은 PACIFIC BEIJING). 그대로 두면 그 배는
+    // 위험물을 영영 확인하지 못한다. 적하목록 조회 결과에 호출부호가 같이 오므로 그걸로 메운다.
+    const found = [...new Set([...(imp.result || []), ...(exp.result || [])]
+      .map(r =&gt; r.call_sign).filter(Boolean))];
+    const all = [...new Set([...signs, ...found])];
+
+    const year = String(new Date().getFullYear());
+    const dg = [];
+    for (const cs of all) {
+      for (const inflag of [1, 2]) {
+        const list = await post('/plism3/dgs/lim/DgLineMngList.do', { mngKey: {
+          sch_gubun: '', sch_harbor_code: '', sch_in_flag: String(inflag),
+          sch_arv_year: year, sch_arv_ser_no: '',
+          sch_presenting_date1: wide(dateFr, -45), sch_presenting_date2: wide(dateTo, 3),
+          pageRowCount: 50, pageIndex: 1,
+          sch_prt_at_code: '622', sch_prt_at_code_name: '여수청',
+          sch_call_sign: cs, sch_person_in_charge: '', sch_vessel_name: '' } });
+
+        for (const row of (list.resultList || [])) {
+          const res = await post('/plism3/dgs/lim/DgCombineResList.do', { reqKey: {
+            prt_at_code: '622', call_sign: row.call_sign, arv_year: row.arv_year,
+            arv_ser_no: row.arv_ser_no, in_flag: row.in_flag } });
+          dg.push({
+            cs, inflag, vsl: row.vessel_name, ser: row.arv_ser_no,
+            st: row.status_name, send: row.send_status, cntr: row.cntr_num,
+            wEq: row.weight_equal_yn, cEq: row.cntr_equal_yn, remark: row.remark,
+            res: (res.resultList || []).map(x =&gt; ({
+              doc: x.docnm, stat: x.freetxt2, code: x.errmsg, at: x.genrestm })),
+          });
+        }
+      }
+    }
+
+    const pick = r =&gt; ({ mrn: r.mrn, vsl: r.vessel_name, vyg: r.voyage_no, cs: r.call_sign,
+      st: r.status_cus, err: r.err_bl_cnt, bl: r.bl_cls_yn, line: r.customs_line_code });
+
+    return {
+      range: [fr, to],
+      imp: (imp.result || []).map(r =&gt; ({ ...pick(r), arv: r.arv_date,
+        agd: r.status_cusagd, a: r.tot_cusagd_mbl, b: r.tot_cms_imp_mbl })),
+      exp: (exp.result || []).map(r =&gt; ({ ...pick(r), dpt: r.dpt_date })),
+      dg,
+    };
+  }, keys);
+}
+
+(async () =&gt; {
+  // 로그인만 할 때는 조회를 안 하므로 keys.json 이 없어도 된다.
+  const keysPath = path.join(DATA, 'keys.json');
+  if (!LOGIN_ONLY &amp;&amp; !fs.existsSync(keysPath)) {
+    console.error('  data/keys.json 이 없습니다. 실행.bat 으로 돌려 주세요.');
+    process.exit(2);
+  }
+  const keys = fs.existsSync(keysPath)
+    ? JSON.parse(fs.readFileSync(keysPath, 'utf8')) : null;
+  const { chromium } = loadPlaywright();
+
+  const ctx = await chromium.launchPersistentContext(PROFILE, {
+    channel: 'chrome', headless: false, viewport: null,
+    args: ['--start-maximized'],
+  });
+  const page = ctx.pages()[0] || await ctx.newPage();
+
+  try {
+    await page.goto(HOME, { waitUntil: 'domcontentloaded', timeout: 60000 });
+
+    // 로그인 확인 — 화면 어딘가에 `○○○님 [SNKOC010_장금상선]` 이 보이면 된 것이다.
+    const who = async () =&gt; {
+      for (const f of page.frames()) {
+        try {
+          const t = await f.evaluate(() =&gt; document.body ? document.body.innerText : '');
+          const m = t.match(/([가-힣]{2,4})님\s*\[([A-Z0-9]+)_/);
+          if (m) return { name: m[1], klnet: m[2] };
+        } catch (_) { /* 프레임이 아직 안 뜬 것 */ }
+      }
+      return null;
+    };
+
+    let me = await who();
+    const 이미로그인 = !!me;
+    if (!me) {
+      console.log('\n  PLISM 에 로그인해 주세요. 창을 띄워 두었습니다.');
+      console.log(`  (로그인하면 자동으로 이어집니다 · 최대 ${로그인대기_분}분 기다립니다)\n`);
+      const until = Date.now() + 로그인대기_분 * 60000;
+      while (!me &amp;&amp; Date.now() &lt; until) {
+        await page.waitForTimeout(3000);
+        me = await who();
+      }
+    }
+    if (!me) {
+      console.error('  로그인을 확인하지 못했습니다. 다시 실행해 주세요.');
+      process.exit(4);
+    }
+    console.log(`  로그인 확인: ${me.name}님 [${me.klnet}]`);
+
+    if (LOGIN_ONLY) {
+      console.log(이미로그인
+        ? '\n  이미 로그인되어 있었습니다. 그대로 쓰시면 됩니다.'
+        : '\n  로그인이 이 폴더에 저장되었습니다.');
+      console.log('  이제 실행.bat 을 돌리면 창이 잠깐 떴다 사라지며 조회까지 끝납니다.\n');
+      return;                         // 조회는 하지 않는다
+    }
+
+    const got = await collect(page, {
+      dateFr: keys.date_fr, dateTo: keys.date_to,
+      signs: keys.signs, klnet: me.klnet,
+    });
+
+    got.pulled_at = new Date().toISOString().slice(0, 19);
+    got.klnet = me.klnet;
+    fs.writeFileSync(path.join(DATA, 'plism.json'), JSON.stringify(got, null, 1), 'utf8');
+    console.log(`  조회 완료 — 수입 ${got.imp.length}건 · 수출 ${got.exp.length}건 · 위험물 ${got.dg.length}건`);
+  } catch (e) {
+    console.error(`  조회 중 문제가 생겼습니다: ${e.message}`);
+    process.exit(1);
+  } finally {
+    await ctx.close();
+  }
+})();
+</pre></details>
+  </div>
+  <div class="item">
+    <div class="ihead">
+      <span class="kind k-code">프로그램</span>
+      <span class="iname">board.py</span>
+      <span class="imeta">7.9 KB · 2026-09-22</span>
+    </div>
+    <div class="iwhat">받아온 것을 판정합니다 — 승인 / 진행중 / 오류 / 미신고 / 타서비스.</div>
+    <div class="iwhen">만드는 것: data\board.js</div>
+    <details><summary>안을 열어보기 <span class="arw"></span></summary><pre id="f8"># -*- coding: utf-8 -*-
+&quot;&quot;&quot;
+신고현황 보드 — 체크리스트를 기준으로 PLISM 신고현황 4칸을 채운다.
+
+  수입신고 / 수출신고 / 수입위험물 / 수출위험물
+
+체크리스트가 모수(母數)다. PLISM 에 없으면 미신고로 잡힌다.
+걸러내지 않는다 — 아직 마감 전이라 안 된 것도 그대로 미신고로 보여주고, 판단은 사람이 한다.
+프로그램이 &quot;괜찮을 것&quot;이라고 숨기는 쪽이 더 위험하다.
+&quot;&quot;&quot;
+from __future__ import annotations
+
+import json
+from datetime import datetime
+from pathlib import Path
+
+DATA = Path(__file__).resolve().parent / &quot;data&quot;
+
+OK, WORK, ERR, NONE, MINE = &quot;승인&quot;, &quot;진행중&quot;, &quot;오류&quot;, &quot;미신고&quot;, &quot;타서비스&quot;
+MARK = {OK: &quot;○&quot;, WORK: &quot;△&quot;, ERR: &quot;✗&quot;, NONE: &quot;✗&quot;, MINE: &quot;–&quot;}
+
+
+def _mrn(cell: str) -&gt; str | None:
+    &quot;&quot;&quot;체크리스트 MRN 칸에서 진짜 MRN 만 꺼낸다. `BSS1 IN` 같은 메모는 아직 미발급.&quot;&quot;&quot;
+    s = (cell or &quot;&quot;).strip().upper()
+    if len(s) &gt;= 10 and s[:2].isdigit() and s[-1] in &quot;IE&quot;:
+        return s
+    return None
+
+
+def find_row(cell: str, name: str, vygs: list[str], rows: list[dict]) -&gt; tuple[dict | None, str]:
+    &quot;&quot;&quot;PLISM 결과에서 이 모선의 줄을 찾는다.
+
+    MRN 으로 먼저 찾고, 없으면 선명+항차로 찾는다.
+    체크리스트 MRN 칸이 비어 있어도(아직 안 옮겨 적었어도) 신고는 되어 있을 수 있기 때문이다.
+    &quot;&quot;&quot;
+    mrn = _mrn(cell)
+    if mrn:
+        for r in rows:
+            if r[&quot;mrn&quot;] == mrn:
+                return r, &quot;&quot;
+    hit = [r for r in rows
+           if (r[&quot;vsl&quot;] or &quot;&quot;).strip().upper() == (name or &quot;&quot;).strip().upper()
+           and any(v and (r[&quot;vyg&quot;] or &quot;&quot;).strip().upper() == v.strip().upper() for v in vygs)]
+    if len(hit) == 1:
+        return hit[0], (&quot;MRN 다름&quot; if mrn else &quot;체크리스트에 MRN 미기재&quot;)
+    return None, &quot;&quot;
+
+
+def judge_mf(cell: str, row: dict | None, how: str = &quot;&quot;) -&gt; tuple[str, str]:
+    &quot;&quot;&quot;적하목록(수입·수출) 한 칸을 판정한다. 돌려주는 값은 (판정, 설명).&quot;&quot;&quot;
+    if row is None:
+        memo = (cell or &quot;&quot;).strip()
+        if memo and not _mrn(memo):
+            return MINE, memo            # `BSS1 IN` — 그 방향은 타 서비스 소속이다
+        return NONE, &quot;PLISM 에 없음&quot;
+    tail = f&quot; ({how})&quot; if how else &quot;&quot;
+    if row.get(&quot;err&quot;):
+        return ERR, f&quot;오류 B/L {row['err']}건{tail}&quot;
+    status = (row.get(&quot;st&quot;) or &quot;&quot;).strip()
+    if status == &quot;승인&quot;:
+        return OK, &quot;승인&quot; + tail
+    if status:
+        return WORK, status + tail       # 선별마감 · 1차 접수 · 2차 접수 …
+    return WORK, &quot;상태 없음&quot; + tail
+
+
+def judge_dg(rows: list[dict]) -&gt; tuple[str, str]:
+    &quot;&quot;&quot;위험물 한 칸을 판정한다.
+
+    한 모선에 응답이 여러 줄 쌓인다 — 문서 종류별로 가장 최근 것만 본다.
+    그러지 않으면 이미 고친 어제 오류가 오늘도 계속 뜬다.
+    &quot;&quot;&quot;
+    if not rows:
+        return NONE, &quot;신고 없음&quot;
+
+    latest: dict[str, dict] = {}
+    for r in rows:
+        for res in r.get(&quot;res&quot;) or []:
+            doc, at = res.get(&quot;doc&quot;), str(res.get(&quot;at&quot;) or &quot;&quot;)
+            if doc and (doc not in latest or at &gt; str(latest[doc].get(&quot;at&quot;) or &quot;&quot;)):
+                latest[doc] = res
+
+    if not latest:
+        return WORK, &quot;전송됨 · 응답 대기&quot;
+
+    bad = [f&quot;{d} {r.get('code') or ''}&quot;.strip()
+           for d, r in latest.items() if (r.get(&quot;stat&quot;) or &quot;&quot;) != &quot;(정상처리)&quot;]
+    if bad:
+        return ERR, &quot; / &quot;.join(bad)
+
+    if any(r.get(&quot;wEq&quot;) == &quot;N&quot; or r.get(&quot;cEq&quot;) == &quot;N&quot; for r in rows):
+        return WORK, &quot;정상처리 (중량·컨 수량 불일치)&quot;
+
+    return OK, f&quot;정상처리 {len(latest)}종&quot;
+
+
+def build() -&gt; tuple[list[dict], dict]:
+    keys = json.loads((DATA / &quot;keys.json&quot;).read_text(&quot;utf-8&quot;))
+    pull = json.loads((DATA / &quot;plism.json&quot;).read_text(&quot;utf-8&quot;))
+    imp, exp, dg = pull[&quot;imp&quot;], pull[&quot;exp&quot;], pull[&quot;dg&quot;]
+
+    board = []
+    for v in keys[&quot;rows&quot;]:
+        sign, seq = v[&quot;sign&quot;], (v[&quot;seq&quot;] or &quot;&quot;).strip()
+
+        def dg_rows(in_flag: int) -&gt; list[dict]:
+            return [r for r in dg
+                    if r[&quot;cs&quot;] == sign and r[&quot;inflag&quot;] == in_flag
+                    and (not seq or str(r[&quot;ser&quot;]).lstrip(&quot;0&quot;) == seq.lstrip(&quot;0&quot;))]
+
+        imp_row, imp_how = find_row(v[&quot;imp_cell&quot;], v[&quot;name&quot;], [v[&quot;vyg_in&quot;], v[&quot;vyg_out&quot;]], imp)
+        exp_row, exp_how = find_row(v[&quot;exp_cell&quot;], v[&quot;name&quot;], [v[&quot;vyg_out&quot;], v[&quot;vyg_in&quot;]], exp)
+
+        board.append({**v,
+                      &quot;imp_mf&quot;: judge_mf(v[&quot;imp_cell&quot;], imp_row, imp_how),
+                      &quot;exp_mf&quot;: judge_mf(v[&quot;exp_cell&quot;], exp_row, exp_how),
+                      &quot;imp_dg&quot;: judge_dg(dg_rows(1)),
+                      &quot;exp_dg&quot;: judge_dg(dg_rows(2))})
+
+    board.sort(key=lambda b: b[&quot;etb&quot;] or &quot;9999&quot;)     # 입항 빠른 순 — 급한 것이 위로
+    return board, pull
+
+
+def show(board: list[dict], pull: dict) -&gt; None:
+    def cell(j):
+        return f&quot;{MARK[j[0]]}{j[0]}&quot;
+
+    print(f&quot;\n신고현황 · {datetime.now():%Y-%m-%d %H:%M} · 체크리스트 {len(board)}척 기준&quot;)
+    print(f&quot;조회: {pull.get('pulled_at','')} · PLISM {pull.get('klnet','')}\n&quot;)
+    print(f&quot;{'모선':19} {'항차':7} {'호출부호':8} {'해수청':5} {'입항':12} &quot;
+          f&quot;{'수입신고':10} {'수출신고':10} {'수입위험물':11} {'수출위험물':11}&quot;)
+    print(&quot;-&quot; * 118)
+    for b in board:
+        vyg = b[&quot;vyg_out&quot;] or b[&quot;vyg_in&quot;] or &quot;&quot;
+        etb = (b[&quot;etb&quot;] or &quot;&quot;).replace(&quot;T&quot;, &quot; &quot;)[5:16]
+        print(f&quot;{b['name'][:19]:19} {vyg:7} {(b['sign'] or '?'):8} {(b['seq'] or '-'):5} {etb:12} &quot;
+              f&quot;{cell(b['imp_mf']):10} {cell(b['exp_mf']):10} &quot;
+              f&quot;{cell(b['imp_dg']):11} {cell(b['exp_dg']):11}&quot;)
+
+    print(&quot;\n[ 미신고 · 오류 ]  ※ 마감 전이라 아직 안 한 것도 그대로 나온다&quot;)
+    hit = False
+    for b in board:
+        bad = [(label, j) for label, j in ((&quot;수입신고&quot;, b[&quot;imp_mf&quot;]), (&quot;수출신고&quot;, b[&quot;exp_mf&quot;]),
+                                           (&quot;수입위험물&quot;, b[&quot;imp_dg&quot;]), (&quot;수출위험물&quot;, b[&quot;exp_dg&quot;]))
+               if j[0] in (ERR, NONE)]
+        if not bad:
+            continue
+        hit = True
+        mark = &quot;⚠&quot; if any(j[0] == ERR for _, j in bad) else &quot;✗&quot;
+        vyg = b[&quot;vyg_out&quot;] or b[&quot;vyg_in&quot;] or &quot;&quot;
+        etb = (b[&quot;etb&quot;] or &quot;&quot;).replace(&quot;T&quot;, &quot; &quot;)[5:16]
+        detail = &quot; · &quot;.join(f&quot;{label} {j[0]}&quot; + (f&quot;({j[1]})&quot; if j[0] == ERR else &quot;&quot;)
+                            for label, j in bad)
+        print(f&quot;  {mark} {b['name'][:18]:18} {vyg:7} 입항 {etb}   {detail}&quot;)
+    if not hit:
+        print(&quot;  없음&quot;)
+    print()
+
+
+def write_web(board: list[dict], pull: dict) -&gt; None:
+    &quot;&quot;&quot;화면(index.html)이 읽을 자료를 data/board.js 로 떨군다.
+
+    브라우저는 파일을 직접 열어 읽지 못한다(file:// 제약). 그래서 json 이 아니라
+    js 로 쓴다 — index.html 이 &lt;script src&gt; 로 불러가면 그만이다.
+    표시 규칙은 전부 화면 쪽에 두고, 여기서는 판정 결과만 넘긴다.
+    &quot;&quot;&quot;
+    def j(t: tuple[str, str]) -&gt; dict:
+        return {&quot;s&quot;: t[0], &quot;d&quot;: t[1]}
+
+    payload = {
+        &quot;made_at&quot;: datetime.now().strftime(&quot;%Y-%m-%d %H:%M&quot;),
+        &quot;pulled_at&quot;: pull.get(&quot;pulled_at&quot;, &quot;&quot;),
+        &quot;klnet&quot;: pull.get(&quot;klnet&quot;, &quot;&quot;),
+        &quot;rows&quot;: [{&quot;name&quot;: b.get(&quot;name&quot;, &quot;&quot;), &quot;vsl&quot;: b.get(&quot;vsl&quot;, &quot;&quot;),
+                  &quot;svc_in&quot;: b.get(&quot;svc_in&quot;, &quot;&quot;), &quot;svc_out&quot;: b.get(&quot;svc_out&quot;, &quot;&quot;),
+                  &quot;opr&quot;: b.get(&quot;opr&quot;, &quot;&quot;),
+                  &quot;sign&quot;: b.get(&quot;sign&quot;, &quot;&quot;), &quot;seq&quot;: b.get(&quot;seq&quot;, &quot;&quot;),
+                  &quot;vyg_in&quot;: b.get(&quot;vyg_in&quot;, &quot;&quot;), &quot;vyg_out&quot;: b.get(&quot;vyg_out&quot;, &quot;&quot;),
+                  &quot;etb&quot;: b.get(&quot;etb&quot;, &quot;&quot;), &quot;etd&quot;: b.get(&quot;etd&quot;, &quot;&quot;),
+                  &quot;imp_mf&quot;: j(b[&quot;imp_mf&quot;]), &quot;exp_mf&quot;: j(b[&quot;exp_mf&quot;]),
+                  &quot;imp_dg&quot;: j(b[&quot;imp_dg&quot;]), &quot;exp_dg&quot;: j(b[&quot;exp_dg&quot;])}
+                 for b in board],
+    }
+    DATA.mkdir(exist_ok=True)
+    (DATA / &quot;board.js&quot;).write_text(
+        &quot;window.BOARD=&quot; + json.dumps(payload, ensure_ascii=False) + &quot;;&quot;, &quot;utf-8&quot;)
+
+
+if __name__ == &quot;__main__&quot;:
+    _board, _pull = build()
+    show(_board, _pull)
+    write_web(_board, _pull)
+</pre></details>
+  </div>
+  <div class="item">
+    <div class="ihead">
+      <span class="kind k-code">프로그램</span>
+      <span class="iname">mail.py</span>
+      <span class="imeta">6.5 KB · 2026-09-22</span>
+    </div>
+    <div class="iwhat">보낸편지함 제목을 훑어 마감리스트를 보냈는지 봅니다. 메일은 읽기만 하고 건드리지 않습니다.</div>
+    <div class="iwhen">만드는 것: data\mail.json · data\mail.js</div>
+    <details><summary>안을 열어보기 <span class="arw"></span></summary><pre id="f9"># -*- coding: utf-8 -*-
+&quot;&quot;&quot;
+보낸 메일로 완료 확인 — 내가 보낸 메일이 곧 완료 기록이다.
+
+따로 체크할 것이 없다. 마감리스트를 보내면 그 제목에 선명과 항차가 남으므로,
+보낸편지함을 훑어 &quot;이 모선은 보냈다 / 아직이다&quot; 를 가려낸다.
+
+  모선별   수입마감리스트 · 수출마감리스트
+  주 1회   MRN 송부의 건 · 기선적 기반출 LIST(화요일)
+
+**해당 없는 것은 미완료로 잡지 않는다.** 양하만 모선에 수출마감리스트를 찾으면
+매주 빨간 줄이 뜨는데, 그건 안 한 게 아니라 할 일이 없는 것이다.
+체크리스트가 이미 양하만/적하만/타서비스를 가려 놓았으니 그대로 쓴다.
+
+메일을 읽기만 한다. 보내지도, 지우지도, 읽음 표시를 바꾸지도 않는다.
+&quot;&quot;&quot;
+from __future__ import annotations
+
+import json
+import re
+from datetime import datetime, timedelta
+from pathlib import Path
+
+DATA = Path(__file__).resolve().parent / &quot;data&quot;
+DAYS = 45                      # 보낸편지함을 며칠치까지 훑을지
+
+OK, NONE, NA = &quot;보냄&quot;, &quot;아직&quot;, &quot;해당없음&quot;
+MARK = {OK: &quot;○&quot;, NONE: &quot;✗&quot;, NA: &quot;–&quot;}
+
+# 모선별로 찾을 메일. (칸 이름, 제목에 들어가는 말, 어느 방향인지)
+PER_VESSEL = [
+    (&quot;수입리스트&quot;, &quot;수입마감리스트&quot;, &quot;in&quot;),
+    (&quot;수출리스트&quot;, &quot;수출마감리스트&quot;, &quot;out&quot;),
+]
+
+# 주 1회 하는 일. (이름, 제목에 들어가는 말, 언제까지)
+WEEKLY = [
+    (&quot;MRN 송부&quot;, &quot;MRN 송부의 건&quot;, &quot;금요일 오후 ~ 월요일 오전&quot;),
+    (&quot;기선적/기반출 LIST&quot;, &quot;기선적 기반출&quot;, &quot;화요일&quot;),
+]
+
+
+def sent_mails(days: int = DAYS) -&gt; list[dict]:
+    &quot;&quot;&quot;보낸편지함에서 최근 메일의 제목과 보낸 시각만 가져온다.&quot;&quot;&quot;
+    import win32com.client as win32
+    ol = win32.Dispatch(&quot;Outlook.Application&quot;)
+    items = ol.GetNamespace(&quot;MAPI&quot;).GetDefaultFolder(5).Items    # 5 = 보낸 편지함
+    items.Sort(&quot;[SentOn]&quot;, True)
+    cut = datetime.now() - timedelta(days=days)
+    out = []
+    for m in items:
+        try:
+            when = m.SentOn
+            subject = m.Subject or &quot;&quot;
+        except Exception:
+            continue
+        when = datetime(when.year, when.month, when.day, when.hour, when.minute)
+        if when &lt; cut:
+            break                       # 최신순이라 여기서 멈추면 된다
+        out.append({&quot;at&quot;: when, &quot;subject&quot;: subject})
+    return out
+
+
+def norm(s: str) -&gt; str:
+    &quot;&quot;&quot;제목 비교용. 공백과 대소문자 차이로 놓치지 않게.&quot;&quot;&quot;
+    return re.sub(r&quot;\s+&quot;, &quot;&quot;, (s or &quot;&quot;)).upper()
+
+
+def find(mails: list[dict], *must: str) -&gt; dict | None:
+    &quot;&quot;&quot;단어가 모두 들어간 가장 최근 메일. `RE:` `추가송부/` 가 붙어도 걸린다.&quot;&quot;&quot;
+    for m in mails:
+        s = norm(m[&quot;subject&quot;])
+        if all(norm(w) in s for w in must):
+            return m
+    return None
+
+
+def has_leg(vyg: str) -&gt; bool:
+    &quot;&quot;&quot;그 방향에 내가 할 일이 있나. '양하만' '-' 빈칸은 할 일이 없다는 뜻이다.&quot;&quot;&quot;
+    v = (vyg or &quot;&quot;).strip()
+    return bool(v) and v not in (&quot;양하만&quot;, &quot;적하만&quot;, &quot;-&quot;, &quot;수출X&quot;)
+
+
+def check(keys: dict, mails: list[dict]) -&gt; dict:
+    rows = []
+    for v in keys[&quot;rows&quot;]:
+        one = {&quot;vsl&quot;: v[&quot;vsl&quot;], &quot;name&quot;: v[&quot;name&quot;],
+               &quot;vyg_in&quot;: v[&quot;vyg_in&quot;], &quot;vyg_out&quot;: v[&quot;vyg_out&quot;], &quot;etb&quot;: v[&quot;etb&quot;]}
+        for label, word, side in PER_VESSEL:
+            vyg = v[&quot;vyg_in&quot;] if side == &quot;in&quot; else v[&quot;vyg_out&quot;]
+            if not has_leg(vyg):
+                one[label] = (NA, vyg or &quot;&quot;)
+                continue
+            hit = find(mails, v[&quot;name&quot;], vyg, word)
+            one[label] = ((OK, hit[&quot;at&quot;].strftime(&quot;%m-%d %H:%M&quot;)) if hit
+                          else (NONE, &quot;&quot;))
+        rows.append(one)
+
+    weekly = []
+    # 그 주에 한 것만 인정한다. 주 시작 며칠 전에 미리 보내는 경우가 있어 앞으로 4일 여유를 둔다.
+    start = datetime.strptime(keys[&quot;week&quot;][0], &quot;%Y-%m-%d&quot;) - timedelta(days=4)
+    for label, word, due in WEEKLY:
+        hit = find(mails, word)
+        if hit and hit[&quot;at&quot;] &gt;= start:
+            weekly.append({&quot;label&quot;: label, &quot;state&quot;: OK, &quot;due&quot;: due,
+                           &quot;at&quot;: hit[&quot;at&quot;].strftime(&quot;%m-%d %H:%M&quot;),
+                           &quot;subject&quot;: hit[&quot;subject&quot;]})
+        else:
+            weekly.append({&quot;label&quot;: label, &quot;state&quot;: NONE, &quot;due&quot;: due,
+                           &quot;at&quot;: hit[&quot;at&quot;].strftime(&quot;%m-%d %H:%M&quot;) if hit else &quot;&quot;,
+                           &quot;subject&quot;: (&quot;지난주: &quot; + hit[&quot;subject&quot;]) if hit else &quot;&quot;})
+    return {&quot;checked_at&quot;: datetime.now().strftime(&quot;%Y-%m-%d %H:%M&quot;),
+            &quot;week&quot;: keys[&quot;week&quot;], &quot;rows&quot;: rows, &quot;weekly&quot;: weekly}
+
+
+def show(res: dict) -&gt; None:
+    def cell(v):
+        return f&quot;{MARK[v[0]]}{v[0]}&quot;
+
+    print(f&quot;\n보낸 메일로 확인 · {res['checked_at']} · &quot;
+          f&quot;{res['week'][0]} ~ {res['week'][1]}\n&quot;)
+    print(f&quot;{'모선':19} {'수입항차':8} {'수출항차':8} {'수입리스트':12} {'수출리스트':12}&quot;)
+    print(&quot;-&quot; * 66)
+    for r in res[&quot;rows&quot;]:
+        print(f&quot;{r['name'][:19]:19} {r['vyg_in']:8} {r['vyg_out']:8} &quot;
+              f&quot;{cell(r['수입리스트']):12} {cell(r['수출리스트']):12}&quot;)
+
+    print(f&quot;\n[ 이번 주 할 일 ]&quot;)
+    for w in res[&quot;weekly&quot;]:
+        line = f&quot;  {MARK[w['state']]} {w['label']:18} ({w['due']})&quot;
+        if w[&quot;at&quot;]:
+            line += f&quot;   {w['at']}&quot;
+        print(line)
+        if w[&quot;state&quot;] == NONE and w[&quot;subject&quot;]:
+            print(f&quot;      최근: {w['subject'][:70]}&quot;)
+
+    todo = [(r[&quot;name&quot;], label) for r in res[&quot;rows&quot;]
+            for label in (&quot;수입리스트&quot;, &quot;수출리스트&quot;) if r[label][0] == NONE]
+    print(f&quot;\n[ 아직 안 보낸 것 {len(todo)}건 ]  ※ 마감 전이면 아직 안 해도 된다&quot;)
+    for name, label in todo:
+        print(f&quot;  · {name} — {label}&quot;)
+    if not todo:
+        print(&quot;  없음&quot;)
+
+
+def main() -&gt; None:
+    keys = json.loads((DATA / &quot;keys.json&quot;).read_text(&quot;utf-8&quot;))
+    try:
+        mails = sent_mails()
+    except Exception as e:
+        print(f&quot;  보낸편지함을 못 읽었습니다({e}). Outlook 이 켜져 있는지 보세요.&quot;)
+        return
+    print(f&quot;  보낸편지함 최근 {DAYS}일 · {len(mails)}통 확인&quot;)
+    res = check(keys, mails)
+    DATA.mkdir(exist_ok=True)
+    (DATA / &quot;mail.json&quot;).write_text(
+        json.dumps(res, ensure_ascii=False, indent=1), &quot;utf-8&quot;)
+    # 화면(index.html)용. 브라우저가 json 을 직접 못 읽어서 js 로도 같이 남긴다.
+    (DATA / &quot;mail.js&quot;).write_text(
+        &quot;window.MAIL=&quot; + json.dumps(res, ensure_ascii=False) + &quot;;&quot;, &quot;utf-8&quot;)
+    show(res)
+
+
+if __name__ == &quot;__main__&quot;:
+    main()
+</pre></details>
+  </div>
+  <div class="item">
+    <div class="ihead">
+      <span class="kind k-code">프로그램</span>
+      <span class="iname">알림.ps1</span>
+      <span class="imeta">2.0 KB · 2026-09-16</span>
+    </div>
+    <div class="iwhat">11시·16시에 뜨는 알림창 자체입니다. 작업등록.ps1 이 이것을 등록합니다.</div>
+    
+    <details><summary>안을 열어보기 <span class="arw"></span></summary><pre id="f10"># 신고현황 확인 알림 — 하루 두 번(11시·16시) 떠서, 누르면 바로 조회가 돈다.
+# 자동으로 조회하지 않는 이유: PLISM 은 로그인이 필요해서, 자리에 계실 때 돌리는 편이 확실하다.
+
+Add-Type -AssemblyName System.Windows.Forms
+Add-Type -AssemblyName System.Drawing
+
+$Base = Split-Path -Parent $MyInvocation.MyCommand.Path
+$Bat  = Join-Path $Base &quot;실행.bat&quot;
+
+$form = New-Object System.Windows.Forms.Form
+$form.Text            = &quot;신고현황 확인&quot;
+$form.Size            = New-Object System.Drawing.Size(420, 210)
+$form.StartPosition   = &quot;CenterScreen&quot;
+$form.FormBorderStyle = &quot;FixedDialog&quot;
+$form.MaximizeBox     = $false
+$form.MinimizeBox     = $false
+$form.TopMost         = $true
+
+$label = New-Object System.Windows.Forms.Label
+$label.Location  = New-Object System.Drawing.Point(24, 24)
+$label.Size      = New-Object System.Drawing.Size(360, 70)
+$label.Font      = New-Object System.Drawing.Font(&quot;맑은 고딕&quot;, 11)
+$label.Text      = &quot;지금 신고현황을 확인할 시간입니다.`r`n`r`n수입·수출 적하목록과 위험물 신고를 PLISM에서 조회합니다.&quot;
+$form.Controls.Add($label)
+
+$run = New-Object System.Windows.Forms.Button
+$run.Location = New-Object System.Drawing.Point(150, 115)
+$run.Size     = New-Object System.Drawing.Size(110, 36)
+$run.Font     = New-Object System.Drawing.Font(&quot;맑은 고딕&quot;, 10)
+$run.Text     = &quot;지금 확인&quot;
+$run.DialogResult = [System.Windows.Forms.DialogResult]::OK
+$form.Controls.Add($run)
+$form.AcceptButton = $run
+
+$later = New-Object System.Windows.Forms.Button
+$later.Location = New-Object System.Drawing.Point(270, 115)
+$later.Size     = New-Object System.Drawing.Size(110, 36)
+$later.Font     = New-Object System.Drawing.Font(&quot;맑은 고딕&quot;, 10)
+$later.Text     = &quot;나중에&quot;
+$later.DialogResult = [System.Windows.Forms.DialogResult]::Cancel
+$form.Controls.Add($later)
+$form.CancelButton = $later
+
+if ($form.ShowDialog() -eq [System.Windows.Forms.DialogResult]::OK) {
+    Start-Process -FilePath $Bat -WorkingDirectory $Base
+}
+</pre></details>
+  </div></div><div class="grp"><h2>5 · 읽는 글</h2>
+  <div class="item">
+    <div class="ihead">
+      <span class="kind k-doc">설명문</span>
+      <span class="iname">README.md</span>
+      <span class="imeta">4.7 KB · 2026-09-19</span>
+    </div>
+    <div class="iwhat">이 도구 전체 설명입니다. 표시가 무슨 뜻인지, 문제가 생기면 어떻게 하는지가 적혀 있습니다.</div>
+    
+    <details><summary>안을 열어보기 <span class="arw"></span></summary><pre id="f11"># 신고현황 확인
+
+체크리스트의 모선을 기준으로 PLISM 에서 **네 가지 신고**를 확인한다.
+
+```
+수입신고 (062 적하목록·하선)   수출신고 (062 적하목록)
+수입위험물 (622)               수출위험물 (622)
+```
+
+## 처음 한 번만
+
+1. `작업등록.ps1` 우클릭 → **PowerShell에서 실행** (관리자 권한 필요 없음)
+   → 매일 **11시·16시**에 확인 알림이 뜬다
+2. `실행.bat` 더블클릭 → 크롬 창이 뜨면 **PLISM 에 로그인**
+   → 이 폴더에 로그인이 남아서, 다음부터는 창이 잠깐 떴다 사라진다
+
+## 매일
+
+알림창이 뜨면 **[지금 확인]** 을 누른다. 그러면 조회가 돌고 표가 나온다.
+
+자동으로 돌리지 않는 이유는 PLISM 이 로그인을 요구해서다.
+자리에 계실 때 직접 돌리는 편이 확실하고, 조회가 조용히 실패하는 일도 없다.
+
+## 나오는 것
+
+```
+모선                 항차     호출부호    해수청  입항          수입신고   수출신고   수입위험물  수출위험물
+PACIFIC BEIJING    2619W   9V8000    011   09-17 00:00  –타서비스  ○승인    ○승인    ✗미신고
+SAWASDEE SHANGHAI  2634E   V7A5455   034   09-17 09:30  △진행중   –타서비스  ○승인    ○승인
+```
+
+| 표시 | 뜻 |
+|---|---|
+| `○승인` | 끝남 |
+| `△진행중` | 선별마감 · 1차/2차 접수 — 아직 승인 전 |
+| `✗오류` | 오류통보 옴. 어떤 서류가 왜 틀렸는지 같이 나온다 |
+| `✗미신고` | PLISM 에 없음 |
+| `–타서비스` | 체크리스트에 `BSS1 IN` 처럼 적힌 것 — 그 방향은 내 소관이 아니다 |
+
+**마감 전이라 아직 안 한 것도 그대로 `미신고` 로 나온다.** 걸러내지 않는다 —
+프로그램이 &quot;아직 괜찮을 것&quot;이라고 숨기는 쪽이 더 위험해서다. 판단은 보시고 하시면 된다.
+
+## 보낸 메일로 완료 확인
+
+PLISM 4가지 말고, **내가 보낸 메일이 곧 완료 기록**이다. 따로 체크할 것이 없다.
+
+```
+모선                  수입항차   수출항차   수입리스트   수출리스트
+SAWASDEE RIGEL      2608N   2609S   ○보냄      ○보냄
+YEOSU VOYAGER       2607N   양하만    ✗아직      –해당없음
+
+[ 이번 주 할 일 ]
+  ○ MRN 송부             (금요일 오후 ~ 월요일 오전)   09-18 16:39
+  ✗ 기선적/기반출 LIST     (화요일)
+```
+
+마감리스트를 보내면 제목에 선명과 항차가 남는다. 그걸로 가려낸다.
+
+```
+[PCI2-장금 광양] SAWASDEE RIGEL 2609S 수출마감리스트 (TTL:92/260 : 352 VAN/…)
+```
+
+`RE:` 나 `추가송부/` 가 앞에 붙어도 걸린다.
+
+**해당 없는 것은 미완료로 잡지 않는다.** 양하만 모선에 수출마감리스트를 찾으면 매주 빨간 줄이
+뜨는데, 그건 안 한 게 아니라 할 일이 없는 것이다. 체크리스트가 이미 양하만·적하만·타서비스를
+가려 놓았으므로 그대로 쓴다.
+
+메일은 **읽기만** 한다. 보내지도, 지우지도, 읽음 표시를 바꾸지도 않는다.
+
+PLISM 로그인 없이 이것만 보고 싶으면 `메일확인만.bat` 을 더블클릭한다.
+
+## 파일
+
+| 파일 | 하는 일 |
+|---|---|
+| `실행.bat` | 아래 셋을 차례로 돌린다 |
+| `keys.py` | 체크리스트에서 조회 열쇠(MRN·호출부호·해수청번호)를 뽑는다 |
+| `pull.js` | PLISM 에 조회해 `data/plism.json` 으로 받아온다 |
+| `board.py` | 받아온 것을 판정해 표로 보여준다 |
+| `mail.py` | 보낸편지함을 훑어 마감리스트 발송 여부를 본다 |
+| `메일확인만.bat` | PLISM 없이 위 확인만 돌린다 |
+| `알림.ps1` | 11시·16시에 뜨는 알림창 |
+| `작업등록.ps1` | 그 알림을 윈도우에 등록한다 |
+
+조회(`pull.js`)와 판정(`board.py`)이 나뉘어 있다. PLISM 화면이 바뀌면 `pull.js` 만 고치면 되고,
+판정 기준을 바꾸고 싶으면 `board.py` 만 고치면 된다.
+
+조회하는 주소와 칸 이름, 판정 근거는 `..\PLISM연계_스펙.md` 에 정리되어 있다.
+
+## 시간을 바꾸려면
+
+`작업등록.ps1` 의 `11:00am` / `4:00pm` 을 고치고 다시 실행한다.
+
+알림을 끄려면: `Unregister-ScheduledTask -TaskName 신고현황_확인알림 -Confirm:$false`
+
+## 문제가 생기면
+
+- **크롬 창이 뜬 채 멈춤** → 로그인해 주면 이어진다 (최대 10분 기다린다)
+- **`playwright 를 찾지 못했습니다`** → 이 폴더에서 `npm install playwright` 한 번
+- **호출부호를 못 찾은 배가 있다고 나옴** → 체크리스트 `AY:AZ` 표에 그 배를 추가하면 된다.
+  없어도 적하목록 조회에서 호출부호를 주워오므로 위험물 확인은 대개 된다
+</pre></details>
+  </div>
+  <div class="item">
+    <div class="ihead">
+      <span class="kind k-doc">설명문</span>
+      <span class="iname">PLISM연계_스펙.md</span>
+      <span class="imeta">14.5 KB · 2026-09-16</span>
+    </div>
+    <div class="iwhat">PLISM 의 어느 주소에서 어떤 칸을 읽어오는지, 판정 근거가 무엇인지 적어둔 것입니다. PLISM 화면이 바뀌었을 때 봅니다.</div>
+    
+    <details><summary>안을 열어보기 <span class="arw"></span></summary><pre id="f12"># PLISM 신고현황 자동조회 — 스펙
+
+2026-09-16 확인. 로그인한 브라우저에서 실제 주고받는 내용을 관찰해 정리했다.
+
+## 로그인
+
+- 사이트: `https://www.plism.com/uat/uia/plism3Sub.do?menu_no=11`
+- 아이디/비밀번호 방식 (`loginCryptoProcess.do`). 공동인증서 아님
+- **로그인은 사람이 직접 한다.** 프로그램은 로그인된 브라우저 창을 그대로 물려받아 조회만 한다
+  (Playwright 사용자 프로필을 고정해두면 세션이 남아 매번 로그인하지 않아도 된다.
+   세션이 끊기면 창을 띄워 로그인을 기다린다)
+- 로그인되면 화면 우상단에 `홍길동님 [SNKOC010_장금상선]`. `SNKOC010` 이 조회 파라미터 `sKlnetId`
+
+## 세 갈래 조회
+
+주고받는 형식은 전부 JSON POST다. 화면을 클릭해 표를 읽는 방식이 아니라
+**데이터를 직접 받아온다** — 빠르고, 화면 디자인이 바뀌어도 잘 안 깨진다.
+
+### 1. 062 수입 적하목록 (MRN 기반)
+
+```
+POST /plism3/iks/cms/mng/selectKmcsImpMrnList.do
+{&quot;reqMap&quot;:{&quot;mrn&quot;:&quot;&quot;,&quot;customs_line_code&quot;:&quot;&quot;,&quot;arv_date_fr&quot;:&quot;20260916&quot;,&quot;arv_date_to&quot;:&quot;20260917&quot;,
+           &quot;pod&quot;:&quot;&quot;,&quot;status_mng&quot;:&quot;&quot;,&quot;pageIndex&quot;:1,&quot;pageRowCount&quot;:10,
+           &quot;sKlnetId&quot;:&quot;SNKOC010&quot;,&quot;customs_code&quot;:&quot;062&quot;,&quot;vessel_name&quot;:&quot;&quot;, ...}}
+```
+
+응답 `result[]` 주요 칸:
+
+| 칸 | 예시 | 뜻 |
+|---|---|---|
+| `mrn` | `26SNKO3455I` | 수입 MRN — **체크리스트 AG열과 같은 값** |
+| `vessel_name` / `voyage_no` | `SAWASDEE SHANGHAI` / `2634E` | 선명 / 항차 |
+| `call_sign` | `V7A5455` | 호출부호 |
+| `arv_date` | `20260917` | 입항일 |
+| `customs` | `062(D9)` | 신고세관 |
+| `status_cus` | `선별마감` | **적하목록 신고 상태** |
+| `err_bl_cnt` | `0` | **오류 B/L 건수** — 0 이 아니면 조치 필요 |
+| `bl_cls_yn` | `마감` | B/L 마감 여부 |
+| `status_cusagd` | `승인` | **하선신고 상태로 보임 (확인 필요)** |
+| `unloading_party_cus` | `0XX-XXX-XXXX` | 하선장소 |
+| `sail_yn` / `sail_reg_yn` | `Y` / `Y` | 출항 관련 |
+| `tot_cusagd_mbl` / `tot_cms_imp_mbl` | `38` / `38` | 건수 대조 — 두 값이 다르면 빠진 게 있다 |
+
+MRN 하나를 더 파고들 때:
+
+```
+POST /iks/cms/mng/selectSubmitInfo.do   {&quot;reqMap&quot;:{&quot;mrn&quot;:&quot;26SNKO3455I&quot;,&quot;customs_line_code&quot;:&quot;SNKO&quot;}}
+```
+
+응답에 `resultMrn`(신고 머리정보) · `resultSubmitInfo`(건수·오류 집계) ·
+`resultSubmitHis`(제출 이력) · `resultKmcsSend`(전송 내역) 가 함께 온다.
+`err_mbl_cnt` `err_hbl_cnt` `cust_err_mbl_cnt` `mismatch_cnt` 로 오류 종류를 구분할 수 있다.
+
+### 2. 062 수출 적하목록 (MRN 기반)
+
+```
+POST /plism3/oks/cms/mng/selectKmcsExpMrnList.do
+{&quot;reqMap&quot;:{&quot;etd_date_fr&quot;:&quot;20260915&quot;,&quot;etd_date_to&quot;:&quot;20260917&quot;,&quot;pol&quot;:&quot;&quot;,
+           &quot;sKlnetId&quot;:&quot;SNKOC010&quot;,&quot;customs_code&quot;:&quot;062&quot;, ...}}
+```
+
+수입과 같은 모양. 날짜 칸만 `etd_date_fr/to`(출항일), 항구는 `pol`.
+`status_cus` 에 `승인`, `err_bl_cnt` 로 오류 건수.
+상세는 `POST /oks/cms/mng/selectSubmitInfo.do`.
+
+### 3. 622 위험물 (호출부호 기반)
+
+**목록** — 신고한 건이 있는지
+
+```
+POST /plism3/dgs/lim/DgLineMngList.do
+{&quot;mngKey&quot;:{&quot;sch_prt_at_code&quot;:&quot;622&quot;,&quot;sch_prt_at_code_name&quot;:&quot;여수청&quot;,
+           &quot;sch_call_sign&quot;:&quot;9V8000&quot;,&quot;sch_arv_year&quot;:&quot;2026&quot;,&quot;sch_arv_ser_no&quot;:&quot;&quot;,
+           &quot;sch_presenting_date1&quot;:&quot;20260901&quot;,&quot;sch_presenting_date2&quot;:&quot;20260916&quot;,
+           &quot;pageRowCount&quot;:15,&quot;pageIndex&quot;:1, ...}}
+```
+
+응답 `resultList[]`: `call_sign` `vessel_name` `arv_year` `arv_ser_no`(해수청 번호 `011`)
+`status_name`(추가 등) `send_status` `cntr_num` `weight` `weight_equal_yn` `cntr_equal_yn`
+`remark`(담당자 이름·연락처가 들어 있다: `이영희 0XX-XXX-XXXX`)
+
+**결과** — 승인인지 오류인지
+
+```
+POST /plism3/dgs/lim/DgCombineResList.do
+{&quot;reqKey&quot;:{&quot;prt_at_code&quot;:&quot;622&quot;,&quot;call_sign&quot;:&quot;9V8000&quot;,&quot;arv_year&quot;:&quot;2026&quot;,
+           &quot;arv_ser_no&quot;:&quot;011&quot;,&quot;in_flag&quot;:1}}
+```
+
+응답 `resultList[]`:
+
+| 칸 | 예시 |
+|---|---|
+| `docnm` | `위험물일람표` / `위험물반입신고서` |
+| `freetxt2` | `(정상처리)` ← 여기가 승인/오류 판정 |
+| `errmsg` | `MSG-18001` |
+| `restxt` | `... 위험물 일람표신고 자료가입력 되었음.` |
+| `genrestm` | `2026-09-15 15:37:24` |
+
+관련 화면: `DgLineMngBanipSearch.do`(반입), `DgLineMngIcMfList.do`, `DgLineMngBanipResSearch.do`
+
+## 체크리스트와 어떻게 맞물리는가
+
+조회에 필요한 열쇠 세 가지가 **이미 전부 체크리스트 쪽에 있다.**
+
+| 조회 열쇠 | 지금 어디 있나 |
+|---|---|
+| 수입 MRN | 체크리스트 `AG` 열 = `.체크리스트이력\*.json` 의 `imp_cell` |
+| 수출 MRN | 체크리스트 `AH` 열 = `exp_cell` |
+| 호출부호 | 체크리스트 `Z` 열, `마감관리v4.34.html` 의 `CALLSIGN_MAP`, `선박 파티큘러-콜사인정보.xls` |
+| 해수청 번호 | 체크리스트 `J`·`AD` 열 = `seq` → DG 조회의 `arv_ser_no` |
+
+실제로 맞는지 대조해 확인했다 (2026-09-16 기준):
+
+| 체크리스트 | PLISM 조회 결과 |
+|---|---|
+| `PCBJ 2619W` 수출MRN `26SNKO3459E`, 해수청 `011` | 수출목록 `26SNKO3459E` / `PACIFIC BEIJING 2619W` / `승인` · DG `9V8000 2026-011` `(정상처리)` |
+| `SWSH 2634E` 수입MRN `26SNKO3455I` | 수입목록 `26SNKO3455I` / `SAWASDEE SHANGHAI 2634E` / `선별마감` |
+
+즉 **체크리스트를 만들면 그것이 그대로 조회 열쇠 꾸러미가 된다.**
+따로 입력할 것이 없다.
+
+## 하루 한 바퀴
+
+```
+스케줄 확인  →  체크리스트 작성  →  (MRN·호출부호 확보)  →  신고  →  신고 확인
+   vessel-checklist 스킬          체크리스트가 열쇠        PLISM      ← 이 문서
+```
+
+마지막 '신고 확인' 칸이 지금까지 사람 눈으로 하던 자리다.
+`마감관리v4.34.html` 에 이미 `plism_imp_status` / `plism_exp_status`
+(`제출전`/`1차오류`/`승인`) 칸이 있는데 지금은 손으로 고른다 — 여기에 자동 수집 결과를 넣는다.
+
+## 남은 확인거리
+
+- `status_cusagd` 가 정말 하선신고 상태인지 (하선신고 전용 화면이 따로 있는지)
+- `status_cus` 가 가질 수 있는 값 전체 (`선별마감` `승인` 외에 `1차 접수` `2차 접수` `제출전` 등)
+- 오류가 실제로 난 건을 하나 봐야 오류 표시가 어떻게 오는지 확정된다
+
+## 판정 규칙 — 체크리스트가 기준이다
+
+PLISM만 보면 **미신고를 찾을 수 없다.** 신고한 것만 나오기 때문이다.
+그래서 **체크리스트의 모선 목록을 모수(母數)로 두고**, 거기에 PLISM 조회 결과를 붙인다.
+붙지 않고 남은 줄이 곧 미신고다. (5/28 메일의 `조회 미매칭` 이 이 자리였다)
+
+각 모선의 수입/수출/위험물 세 칸을 이렇게 판정한다.
+
+| 판정 | 조건 | 표시 |
+|---|---|---|
+| **미신고** | 체크리스트에 MRN이 적혀 있는데 PLISM 목록에 그 MRN이 없음 | 🔴 조치 |
+| **대기** | MRN 칸이 아직 메모(`BSS1 IN`)이거나 비어 있음 — 아직 발급 전 | ⚪ 대상 아님 |
+| **오류** | `err_bl_cnt &gt; 0` · 상세의 `cust_err_mbl_cnt`·`mismatch_cnt &gt; 0` | 🔴 조치 |
+| **선별마감** | `status_cus = 선별마감` | 🟡 진행 |
+| **진행중** | `status_cus` 가 접수 단계 값 | 🟡 진행 |
+| **승인** | `status_cus = 승인` | 🟢 완료 |
+| **건수 불일치** | `tot_cusagd_mbl ≠ tot_cms_imp_mbl` | 🟡 확인 |
+
+위험물(622)은 호출부호+해수청번호로 조회해:
+
+| 판정 | 조건 |
+|---|---|
+| **미신고** | 체크리스트에 DG 있는 모선인데 `DgLineMngList` 결과가 비어 있음 |
+| **오류** | `DgCombineResList` 의 `freetxt2` 가 `(정상처리)` 가 아님 |
+| **승인** | `freetxt2 = (정상처리)` |
+| **수량 불일치** | `weight_equal_yn` 또는 `cntr_equal_yn` 가 `N` |
+
+미신고·오류만 추려 알림 메일로 보내고, 전체 판정은 화면에 표로 남긴다.
+
+## 오류 판정 — 확정 (2026-09-16)
+
+`selectSubmitInfo.do` 응답의 `resultSubmitHis[]` 가 **제출 차수별 이력**이다.
+화면의 '오류통보 수신일시' 가 여기 `error_date` 다.
+
+| 칸 | 오늘 값 | 뜻 |
+|---|---|---|
+| `status_cus` | `S1` / `S2` | **제출 차수** — S1=1차, S2=2차 |
+| `send_date` | `20XX-XXX-XXXX` | 제출(송신) 일시 |
+| `res_date` | `20XX-XXX-XXXX` | 접수 통보 일시 |
+| `error_date` | `None` | **오류통보 수신일시 — 값이 있으면 그 차수는 오류** |
+| `end_date` | `20XX-XXX-XXXX` | 마감(완료) 일시 |
+
+오늘은 오류 건이 없어 전부 `None` 인 것을 확인했다. 오류가 나면 여기에 날짜·시각이 찍힌다.
+
+이것으로 5/28 메일의 상태 표현이 어디서 나왔는지가 풀린다:
+
+| 메일 표현 | 실제 근거 |
+|---|---|
+| `1차 접수` | `S1` 이 있고 `error_date` 없음 |
+| `1차 오류` | `S1` 의 `error_date` 에 값 있음 |
+| `2차 접수` | `S2` 가 있음 |
+| `선별마감` | 목록의 `status_cus = 선별마감` |
+| `제출전` | 이력이 비어 있음 |
+| `조회 미매칭` | 체크리스트에 있는 MRN이 PLISM 목록에 없음 |
+
+→ 오류 판정은 **목록의 `err_bl_cnt` 로 1차 감지, 상세의 `error_date` 로 확정**한다.
+   오류가 언제 통보됐는지까지 알 수 있으므로 &quot;몇 시간째 방치된 오류&quot; 도 잡아낼 수 있다.
+
+## 622 위험물 판정 — 확정
+
+화면의 **응답상태 / 응답내용** 두 칸만 보면 된다. `DgCombineResList.do` 응답에서:
+
+| 화면 | 칸 | 예시 |
+|---|---|---|
+| 문서 | `docnm` | `위험물일람표` / `위험물반입신고서` |
+| **응답상태** | `freetxt2` | `(정상처리)` ← 여기가 승인/오류 판정 |
+| **응답내용** | `restxt` | `... 위험물 일람표신고 자료가입력 되었음.` (오류면 사유가 여기 들어온다) |
+| 응답코드 | `errmsg` | `MSG-18001` |
+| 응답일시 | `genrestm` | `2026-09-15 15:37:24` |
+
+주의: **한 모선에 여러 줄이 온다.** 문서 종류(일람표·반입신고서)별로, 그리고 입력·수정할
+때마다 한 줄씩 쌓인다 (오늘 PCBJ = 3줄). 그러므로 판정은
+**문서 종류별로 `genrestm` 이 가장 최근인 줄 하나씩**을 보고 한다.
+그 최신 줄의 `freetxt2` 가 `(정상처리)` 가 아니면 오류, 내용은 `restxt` 를 그대로 보여준다.
+
+## 신고 마감시한 규칙
+
+미결 판정의 기준. **수입과 수출의 근거리 지역 목록이 다르다** — 이걸 헷갈리면 안 된다.
+
+### 수입 (적하목록)
+
+| 조건 | 마감 |
+|---|---|
+| 전출항지가 **근거리** | 입항 전까지 |
+| 그 외 (원거리) | **입항 24시간 전** |
+
+근거리(수입): `KR CN JP RU TW HK`
+
+### 수출 (적하목록)
+
+| 조건 | 마감 |
+|---|---|
+| 차항지가 **근거리** | 선박 적재 전 · **출항 30분 전 최종마감** |
+| 그 외 (원거리) | **적재 24시간 전** |
+
+근거리(수출): `CN TW HK JP RU PH VN KH(캄보디아) TH ID(인도네시아) MY SG`
+
+→ 수출 근거리는 동남아까지 포함해 훨씬 넓다. 수입 근거리에만 `KR` 이 있다.
+
+### 서비스별 예외
+
+| 서비스 | 수입 | 수출 |
+|---|---|---|
+| **KI1** | 전출항 `SUB-HKG-광양1ST`. 보통은 HKG(근거리)에서 오지만 **HKG 를 자주 스킵**한다. IDSUB(인도네시아)에서 바로 오면 **원거리 → 24시간 전** | 근거리 → **출항 30분 전** |
+| **SIS2** | `MYPKL/부산`, 원거리. 참조표 유의사항에도 `(원거리)/입출항 24H전 신고` 라고 적혀 있다 | **INNSA · INMUN(인도)** 행이 있어 **24시간 전** |
+
+한 서비스 안에서도 수입은 원거리, 수출은 근거리일 수 있다. 반드시 방향별로 따로 판정한다.
+
+### 전출항지·차항지는 어디서 오나
+
+체크리스트 참조표 `AK4:AU25` 의 `AO`(전출항) · `AP`(차항지) 에 서비스별로 적혀 있다.
+
+| 서비스 | 전출항(AO) | 차항지(AP) |
+|---|---|---|
+| KI1 | `SUB-HKG-광양1ST` | 울산 |
+| SIS2 | `MYPKL/부산` | 광양 |
+| NSB | `MNN-광양1ST` | 부산 |
+| KXS1 | `TSN/부산/울산` | 광양 |
+| FEM | `SHA/부산/울산` | 광양 |
+| KBX | `청도-부산-울산(스킵多)` | 광양 |
+| NKX · BNJ | `ZJG/부산` | 광양 |
+| PCI | `SHA/부산` | 광양 |
+| PCI2 | `부산-광양` | SHA |
+
+**한계**: 이건 서비스의 평상시 경로다. 실제 그 항차의 전출항지는 스킵 여부에 따라 달라진다
+(KI1 이 대표적이고, KBX 도 참조표에 `스킵多` 라고 적혀 있다).
+
+→ **애매하면 이른 쪽(24시간 전)을 기준으로 잡는다.** 늦게 알려 놓치는 것보다,
+   일찍 알려 여유가 생기는 편이 안전하다. 표에는 `24H전(스킵시)` 처럼 근거를 같이 적어
+   왜 그 시각이 나왔는지 보이게 한다.
+
+## 스킵 메일 — 전출항지를 여기서 얻는다
+
+`COASTAL SCHEDULE` 메일 본문이 **고정 폭 표**라 그대로 읽힌다.
+
+- 발신: `발신전용4 &lt;demo36@example.com&gt;` (Sinokor Line Operation Team)
+- 제목 예: `// 2510N HKG SKIP NOTICE // [KI1] M/V PORT KLANG VOYAGER 2509/2510 COASTAL SCHEDULE(10/22)`
+- 제목에서 서비스(`[KI1]`)와 선박명을 얻는다
+
+본문:
+
+```
+SEQ VYG(B)  From    E.T.A             DAY  E.T.B             DAY  E.T.D             DAY  DLY(A)
+08  2509N  IDSUB  2025-10-22 06:00  Wed  2025-10-22 08:00  Wed  2025-10-23 08:00  Thu  434:00
+09  2509N  HKHKG  SKIP
+01  2510S  KRKAN  2025-10-30 19:00  Thu  2025-10-30 20:30  Thu  2025-10-31 04:30  Fri  340:00
+```
+
+**전출항지 구하는 법**: `KRKAN`(광양) 줄을 찾고, 거기서 위로 올라가며
+`SKIP` 이 아닌 첫 항구를 취한다. 위 예에서는 `HKHKG` 가 SKIP 이므로 → **`IDSUB`**.
+`ID` 는 수입 근거리 목록에 없으므로 → **원거리 → 입항 24시간 전**.
+
+이 표에는 전체 기항 순서가 다 들어 있으므로 **KI1 뿐 아니라 모든 서비스의 전출항지**를
+같은 방법으로 얻을 수 있다. 차항지(광양 다음 줄)도 같이 나온다.
+
+주의:
+- 한 메일에 여러 항차(`2509N` `2510S` `2510N`)가 섞여 있다. 우리 항차와 맞는 줄을 골라야 한다
+- `*2509S KRUSN DELAYED DUE TO BERTH CONGESTION` 처럼 표 아래에 지연 사유가 붙는다
+- 이 메일을 **놓치는 것**이 지금의 실제 문제다. 자동으로 읽어 체크리스트에 반영하면 해결된다
+
+## 참고 — 별개 업무의 흔적
+
+`광양 모선 신고현황 2026-07-09 0841 (13척).msg` (박대리 발신) 은 **다른 도구**의 산출물이다.
+해수부·관세청·출입국·검역소 4개 기관의 **선박 입출항 신고** 현황이고,
+조회처가 `https://mciq24.plism.com/` 로 이 문서가 다루는 적하목록·위험물과는 별개다.
+상태 표현: `입항 최초` `출항 변경` `평형수 최초` `시설허가 미신고` `입선원 최종` 등.
+지금 만드는 것의 범위는 아니지만, 나중에 같은 방식으로 이어붙일 수 있다.
+</pre></details>
+  </div></div><div class="grp"><h2>6 · data 폴더 — 자료가 쌓이는 곳</h2>
+  <div class="gd">프로그램들이 만든 결과가 여기 들어갑니다. 지워도 실행.bat 을 다시 돌리면 다시 생깁니다.</div><div class="item">
+      <div class="ihead"><span class="kind k-code">자료</span>
+      <span class="iname">data\keys.json</span>
+      <span class="imeta">4.8 KB · 2026-09-19</span></div>
+      <div class="iwhat">조회 열쇠 — 모선 · 항차 · 호출부호 · 해수청번호. keys.py 가 만듭니다.</div>
+      <details><summary>안을 열어보기 <span class="arw"></span></summary><pre>{
+ &quot;snapshot&quot;: &quot;20260921.json&quot;,
+ &quot;week&quot;: [
+  &quot;2026-09-21&quot;,
+  &quot;2026-09-28&quot;
+ ],
+ &quot;date_fr&quot;: &quot;20260921&quot;,
+ &quot;date_to&quot;: &quot;20260927&quot;,
+ &quot;signs&quot;: [
+  &quot;3E4723&quot;,
+  &quot;3FRF8&quot;,
+  &quot;5LLR7&quot;,
+  &quot;9V7821&quot;,
+  &quot;9V8000&quot;,
+  &quot;BKTC6&quot;,
+  &quot;BPIT5&quot;,
+  &quot;D5YE8&quot;,
+  &quot;D7CJ&quot;,
+  &quot;D7JF&quot;,
+  &quot;D7LP&quot;,
+  &quot;V7A6129&quot;
+ ],
+ &quot;rows&quot;: [
+  {
+   &quot;key&quot;: &quot;SWRG|2609S&quot;,
+   &quot;vsl&quot;: &quot;SWRG&quot;,
+   &quot;name&quot;: &quot;SAWASDEE RIGEL&quot;,
+   &quot;svc_in&quot;: &quot;PCI2&quot;,
+   &quot;svc_out&quot;: &quot;PCI2&quot;,
+   &quot;opr&quot;: &quot;SKR&quot;,
+   &quot;vyg_in&quot;: &quot;2608N&quot;,
+   &quot;vyg_out&quot;: &quot;2609S&quot;,
+   &quot;sign&quot;: &quot;V7A6129&quot;,
+   &quot;seq&quot;: &quot;&quot;,
+   &quot;etb&quot;: &quot;2026-09-21T04:30:00&quot;,
+   &quot;etd&quot;: &quot;2026-09-21T19:30:00&quot;,
+   &quot;doc&quot;: null,
+   &quot;imp_cell&quot;: &quot;&quot;,
+   &quot;exp_cell&quot;: &quot;&quot;
+  },
+  {
+   &quot;key&quot;: &quot;SHVY|2608S&quot;,
+   &quot;vsl&quot;: &quot;SHVY&quot;,
+   &quot;name&quot;: &quot;SHANGHAI VOYAGER&quot;,
+   &quot;svc_in&quot;: &quot;PCI&quot;,
+   &quot;svc_out&quot;: &quot;PCI&quot;,
+   &quot;opr&quot;: &quot;SKR&quot;,
+   &quot;vyg_in&quot;: &quot;2607N&quot;,
+   &quot;vyg_out&quot;: &quot;2608S&quot;,
+   &quot;sign&quot;: &quot;D7JF&quot;,
+   &quot;seq&quot;: &quot;008&quot;,
+   &quot;etb&quot;: &quot;2026-09-21T16:30:00&quot;,
+   &quot;etd&quot;: &quot;2026-09-22T04:00:00&quot;,
+   &quot;doc&quot;: &quot;2026-09-18T14:00:00&quot;,
+   &quot;imp_cell&quot;: &quot;26SNKO3450I&quot;,
+   &quot;exp_cell&quot;: &quot;26SNKO3462E&quot;
+  },
+  {
+   &quot;key&quot;: &quot;YTTR|2633W&quot;,
+   &quot;vsl&quot;: &quot;YTTR&quot;,
+   &quot;name&quot;: &quot;YANGTZE TRADER&quot;,
+   &quot;svc_in&quot;: &quot;NKX&quot;,
+   &quot;svc_out&quot;: &quot;NKX&quot;,
+   &quot;opr&quot;: &quot;SKR&quot;,
+   &quot;vyg_in&quot;: &quot;2632E&quot;,
+   &quot;vyg_out&quot;: &quot;2633W&quot;,
+   &quot;sign&quot;: &quot;BPIT5&quot;,
+   &quot;seq&quot;: &quot;034&quot;,
+   &quot;etb&quot;: &quot;2026-09-22T08:00:00&quot;,
+   &quot;etd&quot;: &quot;2026-09-22T17:00:00&quot;,
+   &quot;doc&quot;: &quot;2026-09-18T11:00:00&quot;,
+   &quot;imp_cell&quot;: &quot;26SNKO3451I&quot;,
+   &quot;exp_cell&quot;: &quot;26SNKO3463E&quot;
+  },
+  {
+   &quot;key&quot;: &quot;HAJN|2636W&quot;,
+   &quot;vsl&quot;: &quot;HAJN&quot;,
+   &quot;name&quot;: &quot;HEUNG-A JANICE&quot;,
+   &quot;svc_in&quot;: &quot;KBX&quot;,
+   &quot;svc_out&quot;: &quot;KBX&quot;,
+   &quot;opr&quot;: &quot;HAS&quot;,
+   &quot;vyg_in&quot;: &quot;2635E&quot;,
+   &quot;vyg_out&quot;: &quot;2636W&quot;,
+   &quot;sign&quot;: &quot;D7LP&quot;,
+   &quot;seq&quot;: &quot;036&quot;,
+   &quot;etb&quot;: &quot;2026-09-23T04:00:00&quot;,
+   &quot;etd&quot;: &quot;2026-09-23T16:00:00&quot;,
+   &quot;doc&quot;: &quot;2026-09-21T14:00:00&quot;,
+   &quot;imp_cell&quot;: &quot;26HASL1151I&quot;,
+   &quot;exp_cell&quot;: &quot;26HASL1165E&quot;
+  },
+  {
+   &quot;key&quot;: &quot;PCBJ|2620W&quot;,
+   &quot;vsl&quot;: &quot;PCBJ&quot;,
+   &quot;name&quot;: &quot;PACIFIC BEIJING&quot;,
+   &quot;svc_in&quot;: &quot;KXS1&quot;,
+   &quot;svc_out&quot;: &quot;KXS1&quot;,
+   &quot;opr&quot;: &quot;SKR&quot;,
+   &quot;vyg_in&quot;: &quot;2619E&quot;,
+   &quot;vyg_out&quot;: &quot;2620W&quot;,
+   &quot;sign&quot;: &quot;9V8000&quot;,
+   &quot;seq&quot;: &quot;012&quot;,
+   &quot;etb&quot;: &quot;2026-09-24T05:00:00&quot;,
+   &quot;etd&quot;: &quot;2026-09-24T13:00:00&quot;,
+   &quot;doc&quot;: &quot;2026-09-23T11:00:00&quot;,
+   &quot;imp_cell&quot;: &quot;26SNKO3464I&quot;,
+   &quot;exp_cell&quot;: &quot;26SNKO3456E&quot;
+  },
+  {
+   &quot;key&quot;: &quot;KMSH|2609S&quot;,
+   &quot;vsl&quot;: &quot;KMSH&quot;,
+   &quot;name&quot;: &quot;KMTC SHIMIZU&quot;,
+   &quot;svc_in&quot;: &quot;KI1&quot;,
+   &quot;svc_out&quot;: &quot;KI1&quot;,
+   &quot;opr&quot;: &quot;KMT&quot;,
+   &quot;vyg_in&quot;: &quot;2608N&quot;,
+   &quot;vyg_out&quot;: &quot;2609S&quot;,
+   &quot;sign&quot;: &quot;D5YE8&quot;,
+   &quot;seq&quot;: &quot;009&quot;,
+   &quot;etb&quot;: &quot;2026-09-24T21:30:00&quot;,
+   &quot;etd&quot;: &quot;2026-09-25T05:30:00&quot;,
+   &quot;doc&quot;: &quot;2026-09-23T13:00:00&quot;,
+   &quot;imp_cell&quot;: &quot;26KMTC3243I&quot;,
+   &quot;exp_cell&quot;: &quot;26KMTC3244E&quot;
+  },
+  {
+   &quot;key&quot;: &quot;YSVY|양하만&quot;,
+   &quot;vsl&quot;: &quot;YSVY&quot;,
+   &quot;name&quot;: &quot;YEOSU VOYAGER&quot;,
+   &quot;svc_in&quot;: &quot;PCI2&quot;,
+   &quot;svc_out&quot;: &quot;PCI2&quot;,
+   &quot;opr&quot;: &quot;SKR&quot;,
+   &quot;vyg_in&quot;: &quot;2607N&quot;,
+   &quot;vyg_out&quot;: &quot;양하만&quot;,
+   &quot;sign&quot;: &quot;3E4723&quot;,
+   &quot;seq&quot;: &quot;&quot;,
+   &quot;etb&quot;: &quot;2026-09-25T15:30:00&quot;,
+   &quot;etd&quot;: &quot;2026-09-26T15:30:00&quot;,
+   &quot;doc&quot;: null,
+   &quot;imp_cell&quot;: &quot;&quot;,
+   &quot;exp_cell&quot;: &quot;&quot;
+  },
+  {
+   &quot;key&quot;: &quot;SOH|양하만&quot;,
+   &quot;vsl&quot;: &quot;SOH&quot;,
+   &quot;name&quot;: &quot;SONGYUNHE&quot;,
+   &quot;svc_in&quot;: &quot;CKX3&quot;,
+   &quot;svc_out&quot;: &quot;CKX3&quot;,
+   &quot;opr&quot;: &quot;CHS&quot;,
+   &quot;vyg_in&quot;: &quot;032W&quot;,
+   &quot;vyg_out&quot;: &quot;양하만&quot;,
+   &quot;sign&quot;: &quot;3FRF8&quot;,
+   &quot;seq&quot;: &quot;&quot;,
+   &quot;etb&quot;: &quot;2026-09-25T16:00:00&quot;,
+   &quot;etd&quot;: &quot;2026-09-25T23:00:00&quot;,
+   &quot;doc&quot;: null,
+   &quot;imp_cell&quot;: &quot;&quot;,
+   &quot;exp_cell&quot;: &quot;&quot;
+  },
+  {
+   &quot;key&quot;: &quot;LCVY|2607W&quot;,
+   &quot;vsl&quot;: &quot;LCVY&quot;,
+   &quot;name&quot;: &quot;LAEM CHABANG VOYAGER&quot;,
+   &quot;svc_in&quot;: &quot;PCI2&quot;,
+   &quot;svc_out&quot;: &quot;ADHS&quot;,
+   &quot;opr&quot;: &quot;SKR&quot;,
+   &quot;vyg_in&quot;: &quot;2606N&quot;,
+   &quot;vyg_out&quot;: &quot;2607W&quot;,
+   &quot;sign&quot;: &quot;5LLR7&quot;,
+   &quot;seq&quot;: &quot;003&quot;,
+   &quot;etb&quot;: &quot;2026-09-26T10:30:00&quot;,
+   &quot;etd&quot;: &quot;2026-09-26T22:30:00&quot;,
+   &quot;doc&quot;: &quot;2026-09-23T14:00:00&quot;,
+   &quot;imp_cell&quot;: &quot;26SNKO3453I&quot;,
+   &quot;exp_cell&quot;: &quot;26SNKO3458E&quot;
+  },
+  {
+   &quot;key&quot;: &quot;EVVS|018S&quot;,
+   &quot;vsl&quot;: &quot;EVVS&quot;,
+   &quot;name&quot;: &quot;EVER VERSE&quot;,
+   &quot;svc_in&quot;: &quot;NSB&quot;,
+   &quot;svc_out&quot;: &quot;NSB&quot;,
+   &quot;opr&quot;: &quot;EMC&quot;,
+   &quot;vyg_in&quot;: &quot;017N&quot;,
+   &quot;vyg_out&quot;: &quot;018S&quot;,
+   &quot;sign&quot;: &quot;9V7821&quot;,
+   &quot;seq&quot;: &quot;008&quot;,
+   &quot;etb&quot;: &quot;2026-09-26T19:00:00&quot;,
+   &quot;etd&quot;: &quot;2026-09-27T09:00:00&quot;,
+   &quot;doc&quot;: &quot;2026-09-23T17:00:00&quot;,
+   &quot;imp_cell&quot;: &quot;&quot;,
+   &quot;exp_cell&quot;: &quot;&quot;
+  },
+  {
+   &quot;key&quot;: &quot;HYA|2634W&quot;,
+   &quot;vsl&quot;: &quot;HYA&quot;,
+   &quot;name&quot;: &quot;HE YANG&quot;,
+   &quot;svc_in&quot;: &quot;BNJ&quot;,
+   &quot;svc_out&quot;: &quot;BNJ&quot;,
+   &quot;opr&quot;: &quot;DYS&quot;,
+   &quot;vyg_in&quot;: &quot;2633E&quot;,
+   &quot;vyg_out&quot;: &quot;2634W&quot;,
+   &quot;sign&quot;: &quot;BKTC6&quot;,
+   &quot;seq&quot;: &quot;035&quot;,
+   &quot;etb&quot;: &quot;2026-09-27T05:30:00&quot;,
+   &quot;etd&quot;: &quot;2026-09-27T12:30:00&quot;,
+   &quot;doc&quot;: &quot;2026-09-23T14:00:00&quot;,
+   &quot;imp_cell&quot;: &quot;&quot;,
+   &quot;exp_cell&quot;: &quot;&quot;
+  },
+  {
+   &quot;key&quot;: &quot;HMVY|2609S&quot;,
+   &quot;vsl&quot;: &quot;HMVY&quot;,
+   &quot;name&quot;: &quot;HOCHIMINH VOYAGER&quot;,
+   &quot;svc_in&quot;: &quot;PCI2&quot;,
+   &quot;svc_out&quot;: &quot;PCI2&quot;,
+   &quot;opr&quot;: &quot;SKR&quot;,
+   &quot;vyg_in&quot;: &quot;2608N&quot;,
+   &quot;vyg_out&quot;: &quot;2609S&quot;,
+   &quot;sign&quot;: &quot;D7CJ&quot;,
+   &quot;seq&quot;: &quot;006&quot;,
+   &quot;etb&quot;: &quot;2026-09-27T08:00:00&quot;,
+   &quot;etd&quot;: &quot;2026-09-27T23:00:00&quot;,
+   &quot;doc&quot;: &quot;2026-09-25T14:00:00&quot;,
+   &quot;imp_cell&quot;: &quot;26SNKO3543I&quot;,
+   &quot;exp_cell&quot;: &quot;26SNKO3541E&quot;
+  }
+ ]
+}</pre></details>
+    </div><div class="item">
+      <div class="ihead"><span class="kind k-code">자료</span>
+      <span class="iname">data\mail.js</span>
+      <span class="imeta">2.5 KB · 2026-09-22</span></div>
+      <div class="iwhat">위와 같은 내용을 화면이 읽을 수 있게 한 벌 더 만든 것.</div>
+      <details><summary>안을 열어보기 <span class="arw"></span></summary><pre>window.MAIL={&quot;checked_at&quot;:&quot;2026-09-19 02:57&quot;,&quot;week&quot;:[&quot;2026-09-21&quot;,&quot;2026-09-28&quot;],&quot;rows&quot;:[{&quot;vsl&quot;:&quot;SWRG&quot;,&quot;name&quot;:&quot;SAWASDEE RIGEL&quot;,&quot;vyg_in&quot;:&quot;2608N&quot;,&quot;vyg_out&quot;:&quot;2609S&quot;,&quot;etb&quot;:&quot;2026-09-21T04:30:00&quot;,&quot;수입리스트&quot;:[&quot;보냄&quot;,&quot;09-18 19:07&quot;],&quot;수출리스트&quot;:[&quot;보냄&quot;,&quot;09-18 20:02&quot;]},{&quot;vsl&quot;:&quot;SHVY&quot;,&quot;name&quot;:&quot;SHANGHAI VOYAGER&quot;,&quot;vyg_in&quot;:&quot;2607N&quot;,&quot;vyg_out&quot;:&quot;2608S&quot;,&quot;etb&quot;:&quot;2026-09-21T16:30:00&quot;,&quot;수입리스트&quot;:[&quot;보냄&quot;,&quot;09-18 17:53&quot;],&quot;수출리스트&quot;:[&quot;보냄&quot;,&quot;09-18 19:57&quot;]},{&quot;vsl&quot;:&quot;YTTR&quot;,&quot;name&quot;:&quot;YANGTZE TRADER&quot;,&quot;vyg_in&quot;:&quot;2632E&quot;,&quot;vyg_out&quot;:&quot;2633W&quot;,&quot;etb&quot;:&quot;2026-09-22T08:00:00&quot;,&quot;수입리스트&quot;:[&quot;아직&quot;,&quot;&quot;],&quot;수출리스트&quot;:[&quot;아직&quot;,&quot;&quot;]},{&quot;vsl&quot;:&quot;HAJN&quot;,&quot;name&quot;:&quot;HEUNG-A JANICE&quot;,&quot;vyg_in&quot;:&quot;2635E&quot;,&quot;vyg_out&quot;:&quot;2636W&quot;,&quot;etb&quot;:&quot;2026-09-23T04:00:00&quot;,&quot;수입리스트&quot;:[&quot;아직&quot;,&quot;&quot;],&quot;수출리스트&quot;:[&quot;아직&quot;,&quot;&quot;]},{&quot;vsl&quot;:&quot;PCBJ&quot;,&quot;name&quot;:&quot;PACIFIC BEIJING&quot;,&quot;vyg_in&quot;:&quot;2619E&quot;,&quot;vyg_out&quot;:&quot;2620W&quot;,&quot;etb&quot;:&quot;2026-09-24T05:00:00&quot;,&quot;수입리스트&quot;:[&quot;아직&quot;,&quot;&quot;],&quot;수출리스트&quot;:[&quot;아직&quot;,&quot;&quot;]},{&quot;vsl&quot;:&quot;KMSH&quot;,&quot;name&quot;:&quot;KMTC SHIMIZU&quot;,&quot;vyg_in&quot;:&quot;2608N&quot;,&quot;vyg_out&quot;:&quot;2609S&quot;,&quot;etb&quot;:&quot;2026-09-24T21:30:00&quot;,&quot;수입리스트&quot;:[&quot;아직&quot;,&quot;&quot;],&quot;수출리스트&quot;:[&quot;아직&quot;,&quot;&quot;]},{&quot;vsl&quot;:&quot;YSVY&quot;,&quot;name&quot;:&quot;YEOSU VOYAGER&quot;,&quot;vyg_in&quot;:&quot;2607N&quot;,&quot;vyg_out&quot;:&quot;양하만&quot;,&quot;etb&quot;:&quot;2026-09-25T15:30:00&quot;,&quot;수입리스트&quot;:[&quot;아직&quot;,&quot;&quot;],&quot;수출리스트&quot;:[&quot;해당없음&quot;,&quot;양하만&quot;]},{&quot;vsl&quot;:&quot;SOH&quot;,&quot;name&quot;:&quot;SONGYUNHE&quot;,&quot;vyg_in&quot;:&quot;032W&quot;,&quot;vyg_out&quot;:&quot;양하만&quot;,&quot;etb&quot;:&quot;2026-09-25T16:00:00&quot;,&quot;수입리스트&quot;:[&quot;아직&quot;,&quot;&quot;],&quot;수출리스트&quot;:[&quot;해당없음&quot;,&quot;양하만&quot;]},{&quot;vsl&quot;:&quot;LCVY&quot;,&quot;name&quot;:&quot;LAEM CHABANG VOYAGER&quot;,&quot;vyg_in&quot;:&quot;2606N&quot;,&quot;vyg_out&quot;:&quot;2607W&quot;,&quot;etb&quot;:&quot;2026-09-26T10:30:00&quot;,&quot;수입리스트&quot;:[&quot;아직&quot;,&quot;&quot;],&quot;수출리스트&quot;:[&quot;아직&quot;,&quot;&quot;]},{&quot;vsl&quot;:&quot;EVVS&quot;,&quot;name&quot;:&quot;EVER VERSE&quot;,&quot;vyg_in&quot;:&quot;017N&quot;,&quot;vyg_out&quot;:&quot;018S&quot;,&quot;etb&quot;:&quot;2026-09-26T19:00:00&quot;,&quot;수입리스트&quot;:[&quot;아직&quot;,&quot;&quot;],&quot;수출리스트&quot;:[&quot;아직&quot;,&quot;&quot;]},{&quot;vsl&quot;:&quot;HYA&quot;,&quot;name&quot;:&quot;HE YANG&quot;,&quot;vyg_in&quot;:&quot;2633E&quot;,&quot;vyg_out&quot;:&quot;2634W&quot;,&quot;etb&quot;:&quot;2026-09-27T05:30:00&quot;,&quot;수입리스트&quot;:[&quot;아직&quot;,&quot;&quot;],&quot;수출리스트&quot;:[&quot;아직&quot;,&quot;&quot;]},{&quot;vsl&quot;:&quot;HMVY&quot;,&quot;name&quot;:&quot;HOCHIMINH VOYAGER&quot;,&quot;vyg_in&quot;:&quot;2608N&quot;,&quot;vyg_out&quot;:&quot;2609S&quot;,&quot;etb&quot;:&quot;2026-09-27T08:00:00&quot;,&quot;수입리스트&quot;:[&quot;아직&quot;,&quot;&quot;],&quot;수출리스트&quot;:[&quot;아직&quot;,&quot;&quot;]}],&quot;weekly&quot;:[{&quot;label&quot;:&quot;MRN 송부&quot;,&quot;state&quot;:&quot;보냄&quot;,&quot;due&quot;:&quot;금요일 오후 ~ 월요일 오전&quot;,&quot;at&quot;:&quot;09-18 16:39&quot;,&quot;subject&quot;:&quot;추가송부/ RE: 장금상선 운항모선 MRN 송부의 건 (2026.09.17~2026.09.30)&quot;},{&quot;label&quot;:&quot;기선적/기반출 LIST&quot;,&quot;state&quot;:&quot;아직&quot;,&quot;due&quot;:&quot;화요일&quot;,&quot;at&quot;:&quot;09-15 10:34&quot;,&quot;subject&quot;:&quot;지난주: 광양사무소 기선적 기반출 LIST(2026.09.08~2026.09.14)&quot;}]};</pre></details>
+    </div><div class="item">
+      <div class="ihead"><span class="kind k-code">자료</span>
+      <span class="iname">data\mail.json</span>
+      <span class="imeta">3.6 KB · 2026-09-19</span></div>
+      <div class="iwhat">마감리스트 발송 확인 결과. mail.py 가 만듭니다.</div>
+      <details><summary>안을 열어보기 <span class="arw"></span></summary><pre>{
+ &quot;checked_at&quot;: &quot;2026-09-19 02:57&quot;,
+ &quot;week&quot;: [
+  &quot;2026-09-21&quot;,
+  &quot;2026-09-28&quot;
+ ],
+ &quot;rows&quot;: [
+  {
+   &quot;vsl&quot;: &quot;SWRG&quot;,
+   &quot;name&quot;: &quot;SAWASDEE RIGEL&quot;,
+   &quot;vyg_in&quot;: &quot;2608N&quot;,
+   &quot;vyg_out&quot;: &quot;2609S&quot;,
+   &quot;etb&quot;: &quot;2026-09-21T04:30:00&quot;,
+   &quot;수입리스트&quot;: [
+    &quot;보냄&quot;,
+    &quot;09-18 19:07&quot;
+   ],
+   &quot;수출리스트&quot;: [
+    &quot;보냄&quot;,
+    &quot;09-18 20:02&quot;
+   ]
+  },
+  {
+   &quot;vsl&quot;: &quot;SHVY&quot;,
+   &quot;name&quot;: &quot;SHANGHAI VOYAGER&quot;,
+   &quot;vyg_in&quot;: &quot;2607N&quot;,
+   &quot;vyg_out&quot;: &quot;2608S&quot;,
+   &quot;etb&quot;: &quot;2026-09-21T16:30:00&quot;,
+   &quot;수입리스트&quot;: [
+    &quot;보냄&quot;,
+    &quot;09-18 17:53&quot;
+   ],
+   &quot;수출리스트&quot;: [
+    &quot;보냄&quot;,
+    &quot;09-18 19:57&quot;
+   ]
+  },
+  {
+   &quot;vsl&quot;: &quot;YTTR&quot;,
+   &quot;name&quot;: &quot;YANGTZE TRADER&quot;,
+   &quot;vyg_in&quot;: &quot;2632E&quot;,
+   &quot;vyg_out&quot;: &quot;2633W&quot;,
+   &quot;etb&quot;: &quot;2026-09-22T08:00:00&quot;,
+   &quot;수입리스트&quot;: [
+    &quot;아직&quot;,
+    &quot;&quot;
+   ],
+   &quot;수출리스트&quot;: [
+    &quot;아직&quot;,
+    &quot;&quot;
+   ]
+  },
+  {
+   &quot;vsl&quot;: &quot;HAJN&quot;,
+   &quot;name&quot;: &quot;HEUNG-A JANICE&quot;,
+   &quot;vyg_in&quot;: &quot;2635E&quot;,
+   &quot;vyg_out&quot;: &quot;2636W&quot;,
+   &quot;etb&quot;: &quot;2026-09-23T04:00:00&quot;,
+   &quot;수입리스트&quot;: [
+    &quot;아직&quot;,
+    &quot;&quot;
+   ],
+   &quot;수출리스트&quot;: [
+    &quot;아직&quot;,
+    &quot;&quot;
+   ]
+  },
+  {
+   &quot;vsl&quot;: &quot;PCBJ&quot;,
+   &quot;name&quot;: &quot;PACIFIC BEIJING&quot;,
+   &quot;vyg_in&quot;: &quot;2619E&quot;,
+   &quot;vyg_out&quot;: &quot;2620W&quot;,
+   &quot;etb&quot;: &quot;2026-09-24T05:00:00&quot;,
+   &quot;수입리스트&quot;: [
+    &quot;아직&quot;,
+    &quot;&quot;
+   ],
+   &quot;수출리스트&quot;: [
+    &quot;아직&quot;,
+    &quot;&quot;
+   ]
+  },
+  {
+   &quot;vsl&quot;: &quot;KMSH&quot;,
+   &quot;name&quot;: &quot;KMTC SHIMIZU&quot;,
+   &quot;vyg_in&quot;: &quot;2608N&quot;,
+   &quot;vyg_out&quot;: &quot;2609S&quot;,
+   &quot;etb&quot;: &quot;2026-09-24T21:30:00&quot;,
+   &quot;수입리스트&quot;: [
+    &quot;아직&quot;,
+    &quot;&quot;
+   ],
+   &quot;수출리스트&quot;: [
+    &quot;아직&quot;,
+    &quot;&quot;
+   ]
+  },
+  {
+   &quot;vsl&quot;: &quot;YSVY&quot;,
+   &quot;name&quot;: &quot;YEOSU VOYAGER&quot;,
+   &quot;vyg_in&quot;: &quot;2607N&quot;,
+   &quot;vyg_out&quot;: &quot;양하만&quot;,
+   &quot;etb&quot;: &quot;2026-09-25T15:30:00&quot;,
+   &quot;수입리스트&quot;: [
+    &quot;아직&quot;,
+    &quot;&quot;
+   ],
+   &quot;수출리스트&quot;: [
+    &quot;해당없음&quot;,
+    &quot;양하만&quot;
+   ]
+  },
+  {
+   &quot;vsl&quot;: &quot;SOH&quot;,
+   &quot;name&quot;: &quot;SONGYUNHE&quot;,
+   &quot;vyg_in&quot;: &quot;032W&quot;,
+   &quot;vyg_out&quot;: &quot;양하만&quot;,
+   &quot;etb&quot;: &quot;2026-09-25T16:00:00&quot;,
+   &quot;수입리스트&quot;: [
+    &quot;아직&quot;,
+    &quot;&quot;
+   ],
+   &quot;수출리스트&quot;: [
+    &quot;해당없음&quot;,
+    &quot;양하만&quot;
+   ]
+  },
+  {
+   &quot;vsl&quot;: &quot;LCVY&quot;,
+   &quot;name&quot;: &quot;LAEM CHABANG VOYAGER&quot;,
+   &quot;vyg_in&quot;: &quot;2606N&quot;,
+   &quot;vyg_out&quot;: &quot;2607W&quot;,
+   &quot;etb&quot;: &quot;2026-09-26T10:30:00&quot;,
+   &quot;수입리스트&quot;: [
+    &quot;아직&quot;,
+    &quot;&quot;
+   ],
+   &quot;수출리스트&quot;: [
+    &quot;아직&quot;,
+    &quot;&quot;
+   ]
+  },
+  {
+   &quot;vsl&quot;: &quot;EVVS&quot;,
+   &quot;name&quot;: &quot;EVER VERSE&quot;,
+   &quot;vyg_in&quot;: &quot;017N&quot;,
+   &quot;vyg_out&quot;: &quot;018S&quot;,
+   &quot;etb&quot;: &quot;2026-09-26T19:00:00&quot;,
+   &quot;수입리스트&quot;: [
+    &quot;아직&quot;,
+    &quot;&quot;
+   ],
+   &quot;수출리스트&quot;: [
+    &quot;아직&quot;,
+    &quot;&quot;
+   ]
+  },
+  {
+   &quot;vsl&quot;: &quot;HYA&quot;,
+   &quot;name&quot;: &quot;HE YANG&quot;,
+   &quot;vyg_in&quot;: &quot;2633E&quot;,
+   &quot;vyg_out&quot;: &quot;2634W&quot;,
+   &quot;etb&quot;: &quot;2026-09-27T05:30:00&quot;,
+   &quot;수입리스트&quot;: [
+    &quot;아직&quot;,
+    &quot;&quot;
+   ],
+   &quot;수출리스트&quot;: [
+    &quot;아직&quot;,
+    &quot;&quot;
+   ]
+  },
+  {
+   &quot;vsl&quot;: &quot;HMVY&quot;,
+   &quot;name&quot;: &quot;HOCHIMINH VOYAGER&quot;,
+   &quot;vyg_in&quot;: &quot;2608N&quot;,
+   &quot;vyg_out&quot;: &quot;2609S&quot;,
+   &quot;etb&quot;: &quot;2026-09-27T08:00:00&quot;,
+   &quot;수입리스트&quot;: [
+    &quot;아직&quot;,
+    &quot;&quot;
+   ],
+   &quot;수출리스트&quot;: [
+    &quot;아직&quot;,
+    &quot;&quot;
+   ]
+  }
+ ],
+ &quot;weekly&quot;: [
+  {
+   &quot;label&quot;: &quot;MRN 송부&quot;,
+   &quot;state&quot;: &quot;보냄&quot;,
+   &quot;due&quot;: &quot;금요일 오후 ~ 월요일 오전&quot;,
+   &quot;at&quot;: &quot;09-18 16:39&quot;,
+   &quot;subject&quot;: &quot;추가송부/ RE: 장금상선 운항모선 MRN 송부의 건 (2026.09.17~2026.09.30)&quot;
+  },
+  {
+   &quot;label&quot;: &quot;기선적/기반출 LIST&quot;,
+   &quot;state&quot;: &quot;아직&quot;,
+   &quot;due&quot;: &quot;화요일&quot;,
+   &quot;at&quot;: &quot;09-15 10:34&quot;,
+   &quot;subject&quot;: &quot;지난주: 광양사무소 기선적 기반출 LIST(2026.09.08~2026.09.14)&quot;
+  }
+ ]
+}</pre></details>
+    </div></div><div class="grp"><h2>7 · 신경 안 써도 되는 것</h2>
+<div class="gd">건드릴 일이 없는 것들입니다. 무엇인지만 알아두시면 됩니다.</div><div class="small"><table><tbody><tr><td>data</td><td>자료가 쌓이는 곳입니다. 위 프로그램들이 만든 결과가 들어갑니다.</td></tr><tr><td>__pycache__</td><td>파이썬이 스스로 만드는 임시 폴더입니다. 지워도 다시 생깁니다.</td></tr><tr><td>.크롬프로필</td><td>PLISM 로그인이 저장되는 곳입니다. 지우면 다시 로그인해야 합니다. <span style="color:#94a3b8">(지금은 없음)</span></td></tr><tr><td>.playwright-mcp</td><td>검사하느라 잠깐 생긴 폴더입니다. 지워도 됩니다. <span style="color:#94a3b8">(지금은 없음)</span></td></tr><tr><td>board.백업-20260922.py</td><td>2026-09-22 에 고치기 전 원본입니다. 문제가 없으면 지우셔도 됩니다. <span style="color:#94a3b8">· 6.5 KB · 2026-09-16</span></td></tr><tr><td>mail.백업-20260922.py</td><td>2026-09-22 에 고치기 전 원본입니다. 문제가 없으면 지우셔도 됩니다. <span style="color:#94a3b8">· 6.3 KB · 2026-09-19</span></td></tr><tr><td>pull.백업-20260922.js</td><td>2026-09-22 에 고치기 전 원본입니다. 문제가 없으면 지우셔도 됩니다. <span style="color:#94a3b8">· 7.5 KB · 2026-09-16</span></td></tr><tr><td>메일확인만.백업-20260922.bat</td><td>2026-09-22 에 고치기 전 원본입니다. 문제가 없으면 지우셔도 됩니다. <span style="color:#94a3b8">· 431 B · 2026-09-19</span></td></tr><tr><td>실행.백업-20260922.bat</td><td>2026-09-22 에 고치기 전 원본입니다. 문제가 없으면 지우셔도 됩니다. <span style="color:#94a3b8">· 764 B · 2026-09-19</span></td></tr></tbody></table></div></div><div class="foot">2026-09-22 12:38 기준으로 만든 안내입니다.<br>
+파일이 바뀌면 내용도 달라지니, 많이 바뀌었으면 이 화면을 다시 만들어 달라고 하세요.</div>
+</div></body></html>

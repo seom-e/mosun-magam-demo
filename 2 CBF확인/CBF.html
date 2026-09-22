@@ -1,0 +1,1235 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CBF</title>
+<style>
+  :root {
+    --primary: #0b4a7a; --bg: #f0f3f7; --card: #fff; --border: #d8dde4;
+    --text: #1d2733; --muted: #6b7785; --ok: #16a34a; --warn: #d97706; --danger: #dc2626;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text);
+         font-family: 'Malgun Gothic', -apple-system, sans-serif; font-size: 14px; }
+
+  header.top { background: var(--primary); color: #fff; padding: 12px 28px;
+    display: flex; align-items: center; gap: 12px; }
+  header.top .logo { font-size: 20px; font-weight: 800; letter-spacing: 1px; }
+  header.top .sub { font-size: 12px; opacity: .8; }
+  header.top .gear-btn { margin-left: auto; background: rgba(255,255,255,.15); color: #fff;
+    border: 1px solid rgba(255,255,255,.35); border-radius: 7px; padding: 6px 12px;
+    font-size: 12px; cursor: pointer; font-weight: 600; }
+  header.top .gear-btn:hover { background: rgba(255,255,255,.28); }
+
+  /* 설정 모달 */
+  .modal-back { position: fixed; inset: 0; background: rgba(15,23,42,.5);
+    display: flex; align-items: flex-start; justify-content: center; z-index: 900; padding: 40px 16px; }
+  .modal { background: #fff; border-radius: 12px; width: 760px; max-width: 100%;
+    max-height: 86vh; display: flex; flex-direction: column; box-shadow: 0 20px 50px rgba(0,0,0,.3); }
+  .modal-head { display: flex; align-items: center; padding: 16px 20px; border-bottom: 1px solid var(--border); }
+  .modal-head b { font-size: 16px; } .modal-head small { font-weight: 400; color: #64748b; font-size: 12px; margin-left: 6px; }
+  .modal-head .x { margin-left: auto; border: none; background: none; font-size: 18px; cursor: pointer; color: #64748b; }
+  .modal-body { padding: 16px 20px; overflow: auto; }
+  .modal-body .hint { font-size: 12px; color: #64748b; margin: 0 0 12px; line-height: 1.5; }
+  .modal-foot { display: flex; align-items: center; gap: 8px; padding: 12px 20px; border-top: 1px solid var(--border); }
+  .set-tbl { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .set-tbl th { text-align: left; padding: 6px 8px; color: #64748b; font-weight: 600; border-bottom: 1px solid var(--border); }
+  .set-tbl td { padding: 4px 6px; border-bottom: 1px solid #eef2f6; vertical-align: middle; }
+  .set-tbl input { width: 100%; box-sizing: border-box; border: 1px solid #cbd3dd; border-radius: 6px; padding: 6px 8px; font-size: 13px; }
+  .set-tbl input.code { text-transform: uppercase; font-weight: 700; text-align: center; }
+  .set-tbl .del { border: none; background: none; color: #ef4444; cursor: pointer; font-size: 15px; }
+  .mini { margin-top: 10px; border: 1px dashed #cbd3dd; background: #f8fafc; border-radius: 7px;
+    padding: 7px 12px; font-size: 12px; cursor: pointer; color: #475569; }
+  .btn-primary { background: var(--primary); color: #fff; border: none; border-radius: 7px; padding: 8px 18px; font-weight: 600; cursor: pointer; }
+  .btn-ghost { background: #fff; border: 1px solid #cbd3dd; border-radius: 7px; padding: 8px 14px; cursor: pointer; color: #475569; }
+
+  /* 메인 탭 */
+  .nav { background: #fff; border-bottom: 1px solid var(--border);
+    padding: 12px 28px 0; display: flex; gap: 8px; }
+  .nav-tab {
+    --tab: #2563eb; padding: 10px 20px; cursor: pointer; border-radius: 10px 10px 0 0;
+    background: #eceff3; color: #55606e; font-weight: 600; font-size: 14px;
+    border: 2px solid transparent; border-bottom: none;
+    display: inline-flex; align-items: center; gap: 7px; user-select: none;
+    transition: background .15s, color .15s, box-shadow .15s;
+  }
+  .nav-tab:hover { background: #fff; color: var(--tab); }
+  .nav-tab.active { background: var(--tab); color: #fff; box-shadow: 0 -2px 8px rgba(2,20,40,.15); }
+
+  /* 책갈피(모선 탭) 바 */
+  .bookmark-bar { background: #e8ecf1; border-bottom: 1px solid var(--border);
+    padding: 0 28px; min-height: 0; display: flex; gap: 6px; flex-wrap: wrap;
+    align-items: flex-end; }
+  .bookmark-bar:not(:empty) { padding: 8px 28px; }
+  .bm-tab {
+    --bm: #7c3aed; display: inline-flex; align-items: center; gap: 8px;
+    background: #fff; border: 1px solid #c5cdd8; border-bottom: 3px solid var(--bm);
+    border-radius: 8px 8px 0 0; padding: 7px 10px 7px 12px; cursor: pointer;
+    font-size: 12.5px; font-weight: 600; color: #3a4452; user-select: none; max-width: 220px;
+  }
+  .bm-tab:hover { background: #f6f8fb; }
+  .bm-tab.active { background: var(--bm); color: #fff; border-color: var(--bm); }
+  .bm-tab .bm-x { font-size: 14px; opacity: .6; border-radius: 4px; padding: 0 3px; }
+  .bm-tab .bm-x:hover { opacity: 1; background: rgba(0,0,0,.12); }
+  .bm-tab.active .bm-x:hover { background: rgba(255,255,255,.25); }
+
+  main { padding: 22px 28px; max-width: 1500px; margin: 0 auto; }
+
+  /* 카드 */
+  .grid { display: grid; gap: 14px; }
+  .grid-3 { grid-template-columns: 1fr 1fr 1fr; }
+  @media (max-width: 900px) { .grid-3 { grid-template-columns: 1fr; } }
+  .card { background: var(--card); border: 1px solid #c5cdd8; border-radius: 10px;
+    box-shadow: 0 1px 4px rgba(16,32,56,.07); overflow: hidden; margin-bottom: 16px; }
+  .card > .card-body { padding: 16px 18px; }
+  .card-title { font-weight: 700; color: var(--primary); padding: 10px 18px;
+    background: #f3f6fa; border-bottom: 2px solid #d5dce5;
+    display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .card-title small { color: var(--muted); font-weight: 400; font-size: 11px; margin-left: 6px; }
+
+  .btn-extract { color: #fff; border: none; border-radius: 8px; padding: 12px;
+    font-size: 13px; font-weight: 700; cursor: pointer; width: 100%;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,.18); }
+  .btn-extract:hover { filter: brightness(1.06); }
+  .btn-extract:disabled { opacity: .6; cursor: default; }
+  .extract-sub { font-size: 11px; color: var(--muted); margin-top: 8px; text-align: center; min-height: 14px; }
+
+  table.vessels { width: 100%; border-collapse: collapse; font-size: 13px; }
+  table.vessels th, table.vessels td { padding: 8px 10px; text-align: left;
+    border: 1px solid #e2e7ee; }
+  table.vessels th { background: #eef2f7; font-weight: 700; font-size: 12px; color: #3a4452; }
+  table.vessels tr.vrow { cursor: pointer; }
+  table.vessels tr.vrow:hover td { background: #eef6ff; }
+  table.vessels td.vname { font-weight: 700; color: var(--primary); }
+  table.vessels td.trunc { max-width: 130px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .cbf-chip { display: inline-block; background: #e6f6ec; color: #15803d; border: 1px solid #b7e4c7;
+    font-size: 11px; font-weight: 700; padding: 1px 7px; border-radius: 10px; margin: 1px 2px; white-space: nowrap; cursor: pointer; }
+  .cbf-chip-empty { display: inline-block; background: #f1f3f6; color: #9aa4b0; border: 1px dashed #cbd3dd;
+    font-size: 11px; font-weight: 700; padding: 1px 7px; border-radius: 10px; margin: 1px 2px; white-space: nowrap; }
+  .dir-toggle { display: inline-flex; border: 1px solid #cbd3dd; border-radius: 8px; overflow: hidden; }
+  .dir-btn { border: none; background: #fff; color: #64748b; font-size: 12px; font-weight: 700; padding: 5px 14px; cursor: pointer; }
+  .dir-btn.on { background: #2563eb; color: #fff; }
+  .grp-head { margin: 18px 0 6px; font-weight: 700; color: #3a4452; font-size: 13px;
+    display: flex; align-items: center; gap: 8px; }
+  .grp-head .cnt { background: #dbe4ef; color: #34506e; font-size: 11px; padding: 2px 8px; border-radius: 10px; }
+  /* 담당자 필터 */
+  .assignee-filter { display: flex; align-items: center; flex-wrap: wrap; gap: 6px;
+    padding: 10px 12px; margin-bottom: 10px; background: #f1f5f9; border: 1px solid var(--border); border-radius: 10px; }
+  .assignee-filter .af-lbl { font-size: 12px; font-weight: 700; color: #475569; margin-right: 4px; }
+  .assignee-filter .af-lbl small { font-weight: 400; color: #94a3b8; font-size: 10px; }
+  .af-chip { border: 1px solid #cbd3dd; border-radius: 16px; padding: 5px 12px; font-size: 12px;
+    cursor: pointer; font-weight: 600; user-select: none; }
+  .af-chip.on { background: #2563eb; color: #fff; border-color: #2563eb; }
+  .af-chip.off { background: #fff; color: #9aa4b0; text-decoration: line-through; }
+  .af-chip .af-n { font-size: 10px; opacity: .85; margin-left: 2px; }
+  .af-sep { flex: 1; }
+  .af-act { border: 1px solid #cbd3dd; background: #fff; border-radius: 8px; padding: 5px 12px;
+    font-size: 12px; cursor: pointer; color: #475569; font-weight: 600; }
+  /* 스케줄 엑셀 드롭존 */
+  .drop-zone { border: 2px dashed #7dd3fc; background: #f0f9ff; border-radius: 10px;
+    padding: 14px 10px; text-align: center; cursor: pointer; transition: all .12s;
+    display: flex; align-items: center; gap: 10px; justify-content: center; }
+  .drop-zone:hover { background: #e0f2fe; border-color: #38bdf8; }
+  .drop-zone.dragover { background: #dbeafe; border-color: #2563eb; transform: scale(1.01); }
+  .drop-zone .dz-icon { font-size: 24px; }
+  .drop-zone .dz-text { font-size: 12px; color: #0369a1; line-height: 1.4; text-align: left; }
+  .drop-zone .dz-text span { color: #64748b; font-size: 11px; }
+  .pill { font-size: 11px; padding: 2px 8px; border-radius: 10px; font-weight: 700; white-space: nowrap; }
+  table.vessels td.vname { width: 210px; min-width: 210px; max-width: 210px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .pill-skr { background: #e0edff; color: #1d4ed8; }
+  .pill-has { background: #ffe9d6; color: #b45309; }
+  .empty { text-align: center; padding: 40px 20px; color: var(--muted); }
+
+  /* CBF Forecast 표 */
+  .cbf-wrap { border: 1px solid #b9c2cd; border-radius: 6px; overflow: hidden; max-width: 780px; }
+  .cbf-title { background: #eef2f7; text-align: center; font-weight: 800; color: #4a5666;
+    padding: 8px; border-bottom: 1px solid #cdd5df; font-size: 14px; }
+  table.cbf { width: 100%; border-collapse: collapse; font-size: 12px; }
+  table.cbf th, table.cbf td { border: 1px solid #d6dce4; padding: 5px 6px; text-align: center; }
+  table.cbf thead th { background: #f1f4f8; color: #4a5666; font-weight: 700; }
+  table.cbf thead tr:nth-child(2) th { background: #f6f8fb; font-weight: 600; }
+  table.cbf td.lp { text-align: center; font-weight: 800; color: #33404f; background: #fafbfc; vertical-align: middle; }
+  table.cbf td.pod { text-align: left; font-weight: 600; color: #334; background: #f2f8ec; }
+  table.cbf tbody td { color: #333; }
+  table.cbf tr.cbf-total td { background: #e9eef4; font-weight: 800; }
+  table.cbf tr.cbf-total td.lp { background: #dbe4ef; }
+  table.cbf tr.cbf-extra-head td { background: #fef3c7; color: #92400e; font-weight: 700; font-size: 11px; text-align: left; padding: 5px 8px; }
+  table.cbf tr.cbf-extra td { background: #fffbeb; }
+  table.cbf tr.cbf-extra td.lp, table.cbf tr.cbf-extra td.pod { color: #b45309; font-weight: 700; }
+  /* 편집 입력칸 */
+  table.cbf .cbf-in { width: 100%; box-sizing: border-box; border: 1px solid transparent; background: transparent;
+    text-align: center; font-size: 12px; padding: 4px 2px; border-radius: 4px; }
+  table.cbf .cbf-in:hover { border-color: #dbe4ef; }
+  table.cbf .cbf-in:focus { border-color: #2563eb; background: #fff; outline: none; box-shadow: 0 0 0 2px rgba(37,99,235,.15); }
+  table.cbf .cbf-in.lpin { font-weight: 700; color: #34506e; text-transform: uppercase; }
+  table.cbf .cbf-in.podin { color: #475569; }
+  table.cbf .cbf-in::-webkit-outer-spin-button, table.cbf .cbf-in::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+  table.cbf .cbf-del { border: none; background: none; cursor: pointer; font-size: 13px; opacity: .55; }
+  table.cbf .cbf-del:hover { opacity: 1; }
+
+  /* 로그 */
+  .logbox { margin-top: 18px; background: #0f172a; color: #cbd5e1; border-radius: 8px;
+    font-family: Consolas, monospace; font-size: 11.5px; max-height: 180px; overflow-y: auto; }
+  .logbox .lh { padding: 6px 10px; background: #1e293b; color: #94a3b8; font-family: inherit;
+    display: flex; justify-content: space-between; position: sticky; top: 0; }
+  .logbox .lb { padding: 6px 10px; white-space: pre-wrap; }
+  .log-ok { color: #4ade80; } .log-warn { color: #fbbf24; } .log-err { color: #f87171; }
+
+  .toast { position: fixed; bottom: 22px; left: 50%; transform: translateX(-50%);
+    background: #1d2733; color: #fff; padding: 10px 18px; border-radius: 8px;
+    font-size: 13px; opacity: 0; transition: opacity .3s; pointer-events: none; z-index: 100; }
+  .toast.show { opacity: 1; }
+</style>
+
+<!-- 발표용에만 들어가는 것. 실제 쓰는 쪽에는 없다. -->
+<script src="../발표용-띠.js"></script>
+</head>
+<body>
+
+<header class="top">
+  <span class="logo">CBF</span>
+  <span class="sub">광양 입항모선 CBF 확인 · (가칭)</span>
+  <button class="gear-btn" id="btn-settings" onclick="openSettings()" title="선사·이메일 설정">⚙ 선사 설정</button>
+</header>
+
+<!-- ===== 설정: 선사 · 한글명 · 마감메일 발신자 ===== -->
+<div class="modal-back" id="settings-back" style="display:none">
+  <div class="modal">
+    <div class="modal-head">
+      <b>선사 설정 <small>포탈코드 · 한글명 · 마감메일 발신자(이메일)</small></b>
+      <button class="x" onclick="closeSettings()">✕</button>
+    </div>
+    <div class="modal-body">
+      <p class="hint">메일 제목의 <b>한글명</b>으로 선사를 식별하고, <b>이메일</b> 발신자에게서 온 메일만 파싱합니다. 여러 이메일은 쉼표(,)로 구분하세요.</p>
+      <table class="set-tbl">
+        <thead><tr><th style="width:70px">코드</th><th style="width:150px">한글명</th><th>마감메일 발신자(이메일, 콤마구분)</th><th style="width:36px"></th></tr></thead>
+        <tbody id="set-rows"></tbody>
+      </table>
+      <button class="mini" onclick="addCarrierRow()">+ 선사 추가</button>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-ghost" onclick="resetCarriers()">기본값 복원</button>
+      <span style="flex:1"></span>
+      <button class="btn-ghost" onclick="closeSettings()">취소</button>
+      <button class="btn-primary" onclick="saveSettings()">저장</button>
+    </div>
+  </div>
+</div>
+
+<div class="nav">
+  <div class="nav-tab active" data-view="dashboard" onclick="switchView('dashboard')">📊 대시보드</div>
+</div>
+<div class="bookmark-bar" id="bookmark-bar"></div>
+
+<main>
+  <!-- ===== 대시보드 ===== -->
+  <section id="panel-dashboard">
+    <div class="grid grid-3">
+      <div class="card" style="margin-bottom:0">
+        <div class="card-title">📅 스케줄 base <small>포털에서 광양 입항모선 추출</small></div>
+        <div class="card-body">
+          <button class="btn-extract" id="btn-sched" style="background:#2563eb" onclick="autoExtractSchedulePortal()">📨 스케줄 포탈 자동추출</button>
+          <div style="text-align:center;margin:6px 0 4px;font-size:11px;color:#94a3b8">— 또는 —</div>
+          <input type="file" id="sched-file" accept=".xlsx,.xls" style="display:none" onchange="uploadSchedule(this.files[0]); this.value='';">
+          <div class="drop-zone" id="sched-drop" onclick="document.getElementById('sched-file').click()"
+            ondragover="schedDrag(event,true)" ondragleave="schedDrag(event,false)" ondrop="schedDrop(event)">
+            <div class="dz-icon">📁</div>
+            <div class="dz-text"><b>스케줄 엑셀 업로드</b><br><span>클릭하거나 파일을 여기로 끌어다 놓으세요 (.xlsx/.xls)</span></div>
+          </div>
+          <div class="extract-sub" id="sub-sched"></div>
+        </div>
+      </div>
+      <div class="card" style="margin-bottom:0">
+        <div class="card-title">📧 MRN 메일 <small>장금(SKR)+흥아(HAS) MRN</small></div>
+        <div class="card-body">
+          <button class="btn-extract" id="btn-mrn" style="background:#0d9488" onclick="autoExtractMrn()">📨 MRN 메일 OUTLOOK 자동추출</button>
+          <div class="extract-sub" id="sub-mrn"></div>
+        </div>
+      </div>
+      <div class="card" style="margin-bottom:0">
+        <div class="card-title">📨 CBF 메일 <small>추후 연결 예정</small></div>
+        <div class="card-body">
+          <button class="btn-extract" id="btn-cbf" style="background:#7c3aed" onclick="autoExtractCbf()">📨 CBF 메일 자동추출</button>
+          <div class="extract-sub" id="sub-cbf"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">🚢 이번주 광양 입항모선 <small>모선을 클릭하면 CBF 확인 탭이 열립니다</small>
+        <span class="dir-toggle" style="margin-left:auto">
+          <button class="dir-btn on" data-dir="export" onclick="setCbfDir('export')">수출</button>
+          <button class="dir-btn" data-dir="import" onclick="setCbfDir('import')">수입</button>
+        </span>
+        <button onclick="resetState()" style="margin-left:8px;font-size:11px;padding:4px 10px;border:1px solid #cbd3dd;background:#fff;border-radius:6px;cursor:pointer;color:#64748b">🗑 초기화</button></div>
+      <div class="card-body" id="vessels-slot">
+        <div class="empty">스케줄 포탈 + MRN 자동추출 후<br>이번주 광양 입항모선이 표시됩니다.</div>
+      </div>
+    </div>
+
+    <div class="logbox">
+      <div class="lh"><span>실시간 로그</span><span id="ws-state">연결 대기</span></div>
+      <div class="lb" id="log"></div>
+    </div>
+  </section>
+
+  <!-- ===== 모선 CBF 확인 패널 (책갈피 탭 선택 시) ===== -->
+  <section id="panel-vessel" style="display:none"></section>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const BACKEND_URL = window.location.origin.startsWith("file") ? "http://localhost:8010" : window.location.origin;
+const WS_URL = BACKEND_URL.replace(/^http/, "ws") + "/ws/log";
+
+// 담당자 (서비스별 상세 매핑은 추후. 1차: MRN 발신자 이름으로 자동 배정)
+const ASSIGNEES = ['홍길동', '김철수', '이영희', '장지운', '조희영'];
+const LINER = { SKR: '장금', HAS: '흥아' };
+
+// 선사 레지스트리: 포탈 LINE 3자리 코드 · 한글명 · 별칭(제목매칭용) · 이메일(마감 발신자)
+// DB(공동운항선사 담당자DB) 기준으로 초기값 구성 — 설정창(⚙)에서 수정 가능, localStorage 저장.
+const CARRIER_DEFAULT = [
+  { code: 'SKR', name: '장금상선',       aliases: ['장금'],            emails: [] },
+  { code: 'CKL', name: '천경해운',       aliases: ['천경'],            emails: ['demo04@example.com'] },
+  { code: 'HAS', name: '흥아라인',       aliases: ['흥아'],            emails: ['demo05@example.com', 'demo06@example.com'] },
+  { code: 'TYL', name: '태영상선',       aliases: ['태영', 'TYS'],     emails: ['demo07@example.com', 'demo08@example.com', 'demo09@example.com'] },
+  { code: 'HSL', name: '한성라인',       aliases: ['한성'],            emails: ['demo10@example.com', 'demo11@example.com'] },
+  { code: 'PCS', name: '범주해운',       aliases: ['범주'],            emails: ['demo12@example.com', 'demo13@example.com', 'demo14@example.com', 'demo15@example.com'] },
+  { code: 'EMC', name: '에버그린',       aliases: ['EVERGREEN'],       emails: ['demo04@example.com'] },
+  { code: 'JJS', name: '동우해운(DOOWOO)', aliases: ['동우', 'DOOWOO', '두우'], emails: ['demo16@example.com', 'demo17@example.com'] },
+  { code: 'KMT', name: '고려해운',       aliases: ['고려'],            emails: ['demo04@example.com'] },
+  { code: 'HMM', name: '현대상선',       aliases: ['현대'],            emails: ['demo18@example.com', 'demo19@example.com'] },
+  { code: 'DYS', name: '동영해운',       aliases: ['동영'],            emails: ['demo20@example.com'] },
+  { code: 'ASL', name: 'ASL',            aliases: [],                  emails: [] },
+  { code: 'NAM', name: '남성해운',       aliases: ['남성'],            emails: ['demo20@example.com'] },
+  { code: 'DJS', name: '동진상선',       aliases: ['동진'],            emails: ['demo21@example.com', 'demo22@example.com'] },
+  { code: 'ONE', name: 'ONE',            aliases: [],                  emails: ['demo23@example.com', 'demo24@example.com', 'demo25@example.com'] },
+  { code: 'CUL', name: '벤라인',         aliases: ['BENLINE', 'BEN LINE'], emails: ['demo26@example.com', 'demo27@example.com'] },
+  { code: 'PNA', name: '팬스코',         aliases: ['PAN', 'PANSCO'],   emails: ['demo28@example.com', 'demo29@example.com'] },
+  { code: 'TSL', name: 'TS LINE',        aliases: ['TSLINE', 'TSLINES'], emails: ['demo30@example.com', 'demo31@example.com'] },
+  { code: 'RCL', name: 'RCL',            aliases: [],                  emails: ['demo32@example.com', 'demo33@example.com', 'demo34@example.com'] },
+];
+const CARRIER_KEY = 'cbf_carriers_v1';
+let CARRIER_MAP = loadCarriers();
+function loadCarriers() {
+  try {
+    const raw = localStorage.getItem(CARRIER_KEY);
+    if (raw) { const a = JSON.parse(raw); if (Array.isArray(a) && a.length) return a.map(normCarrier); }
+  } catch (e) {}
+  return CARRIER_DEFAULT.map(normCarrier);
+}
+function normCarrier(c) {
+  return {
+    code: String(c.code || '').toUpperCase().trim(),
+    name: String(c.name || '').trim(),
+    aliases: Array.isArray(c.aliases) ? c.aliases.filter(Boolean) : [],
+    emails: (Array.isArray(c.emails) ? c.emails : []).map(e => String(e || '').toLowerCase().trim()).filter(Boolean),
+  };
+}
+function saveCarriers() {
+  try { localStorage.setItem(CARRIER_KEY, JSON.stringify(CARRIER_MAP)); } catch (e) {}
+}
+// 텍스트(제목/DB이름)에 등장하는 모든 선사코드 (예: '남성동영' → [NAM, DYS])
+function carrierCodes(text) {
+  const s = String(text || '');
+  const S = s.toUpperCase();
+  const out = [];
+  for (const c of CARRIER_MAP) {
+    const terms = [c.name, ...(c.aliases || []), c.code].filter(Boolean);
+    for (const a of terms) {
+      const hit = /[가-힣]/.test(a) ? s.includes(a) : new RegExp('\\b' + a.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\b').test(S);
+      if (hit) { if (!out.includes(c.code)) out.push(c.code); break; }
+    }
+  }
+  return out;
+}
+function carrierCode(text) { return carrierCodes(text)[0] || ''; }
+// 레지스트리에 등록된 모든 마감 발신자 이메일 (백엔드 파싱 필터로 전달)
+function allCarrierEmails() {
+  const set = new Set();
+  CARRIER_MAP.forEach(c => (c.emails || []).forEach(e => e && set.add(e.toLowerCase())));
+  return [...set];
+}
+function carrierByCode(code) { return CARRIER_MAP.find(c => c.code === code); }
+
+// ── 설정창 (선사·한글명·마감메일 발신자) ──
+function openSettings() { renderSetRows(CARRIER_MAP); $('#settings-back').style.display = 'flex'; }
+function closeSettings() { $('#settings-back').style.display = 'none'; }
+function renderSetRows(list) {
+  const esc = s => String(s == null ? '' : s).replace(/"/g, '&quot;').replace(/</g, '&lt;');
+  $('#set-rows').innerHTML = list.map((c, i) => `
+    <tr data-i="${i}">
+      <td><input class="code" value="${esc(c.code)}" maxlength="4" placeholder="SKR"></td>
+      <td><input class="name" value="${esc(c.name)}" placeholder="장금상선"></td>
+      <td><input class="mails" value="${esc((c.emails || []).join(', '))}" placeholder="demo35@example.com, ..."></td>
+      <td><button class="del" onclick="this.closest('tr').remove()" title="삭제">🗑</button></td>
+    </tr>`).join('');
+}
+function addCarrierRow() {
+  const cur = collectSetRows();
+  cur.push({ code: '', name: '', aliases: [], emails: [] });
+  renderSetRows(cur);
+}
+function collectSetRows() {
+  return [...document.querySelectorAll('#set-rows tr')].map(tr => {
+    const i = +tr.dataset.i;
+    const prev = (i >= 0 && CARRIER_MAP[i]) ? CARRIER_MAP[i] : null;
+    return {
+      code: tr.querySelector('.code').value.toUpperCase().trim(),
+      name: tr.querySelector('.name').value.trim(),
+      aliases: prev ? (prev.aliases || []) : [],   // 별칭은 유지(내부 매칭용)
+      emails: tr.querySelector('.mails').value.split(',').map(s => s.trim().toLowerCase()).filter(Boolean),
+    };
+  }).filter(c => c.code || c.name || c.emails.length);
+}
+function saveSettings() {
+  CARRIER_MAP = collectSetRows().map(normCarrier);
+  saveCarriers();
+  closeSettings();
+  toast('선사 설정 저장됨');
+  if (dashVessels.length) renderDashboard();
+}
+function resetCarriers() {
+  if (!confirm('DB 기준 기본값으로 되돌릴까요? 편집한 이메일이 사라집니다.')) return;
+  CARRIER_MAP = CARRIER_DEFAULT.map(normCarrier);
+  renderSetRows(CARRIER_MAP);
+}
+
+let dashSchedule = [];
+let dashMrnRows = [];
+let dashCbfMails = [];
+let dashVessels = [];
+let cbfDb = {};            // 서비스별 필요 선사(수입/수출) — /db/carriers
+let cbfDir = 'export';     // 'export'(수출) | 'import'(수입)
+let openTabs = [];         // [{key,label,vessel}]
+let activeView = 'dashboard';
+let hiddenAssignees = [];   // 대시보드에서 숨길 담당자 목록
+let serviceTemplates = {};  // 서비스별 포탈 양식 { SVC: [{line,pod}, ...] } (포탈에서 캡처)
+let cbfEdits = {};          // 모선별 편집한 CBF 행 { vesselKey: [{line,pod,full20,...}] }
+
+const STORAGE_KEY = 'cbf_state_v1';
+function saveState() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({
+      dashSchedule, dashMrnRows, dashCbfMails, dashVessels, cbfDb, cbfDir, openTabs, activeView, hiddenAssignees, serviceTemplates, cbfEdits, savedAt: Date.now(),
+    }));
+  } catch (e) {}
+}
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return;
+    const s = JSON.parse(raw);
+    dashSchedule = s.dashSchedule || [];
+    dashMrnRows = s.dashMrnRows || [];
+    dashCbfMails = s.dashCbfMails || [];
+    dashVessels = s.dashVessels || [];
+    cbfDb = s.cbfDb || {};
+    cbfDir = s.cbfDir || 'export';
+    openTabs = s.openTabs || [];
+    activeView = s.activeView || 'dashboard';
+    hiddenAssignees = s.hiddenAssignees || [];
+    serviceTemplates = s.serviceTemplates || {};
+    cbfEdits = s.cbfEdits || {};
+    if (dashSchedule.length) $('#sub-sched').textContent = `✓ 저장됨 ${dashSchedule.length}행`;
+    if (dashMrnRows.length) $('#sub-mrn').textContent = `✓ 저장됨 ${dashMrnRows.length}건`;
+    if (dashCbfMails.length) $('#sub-cbf').textContent = `✓ 저장됨 ${dashCbfMails.length}건`;
+    log(`저장된 데이터 복원: 모선 ${dashVessels.length}척`, 'ok');
+  } catch (e) { log('저장 데이터 복원 실패: ' + e.message, 'warn'); }
+}
+function resetState() {
+  if (!confirm('저장된 데이터를 모두 지울까요? (스케줄/MRN/CBF/열린 탭)')) return;
+  dashSchedule = []; dashMrnRows = []; dashCbfMails = []; dashVessels = [];
+  openTabs = []; activeView = 'dashboard';
+  try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
+  $('#sub-sched').textContent = ''; $('#sub-mrn').textContent = ''; $('#sub-cbf').textContent = '';
+  renderTabs(); renderMain(); renderDashboard();
+  toast('초기화 완료');
+}
+
+// ---------- 유틸 ----------
+function $(s) { return document.querySelector(s); }
+function escapeHtml(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function toast(msg) { const t = $('#toast'); t.textContent = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2200); }
+function log(msg, kind = '') {
+  const el = $('#log'); if (!el) return;
+  const ts = new Date().toTimeString().slice(0, 8);
+  const cls = kind ? ' class="log-' + kind + '"' : '';
+  el.insertAdjacentHTML('beforeend', `<div${cls}>[${ts}] ${escapeHtml(msg)}</div>`);
+  el.scrollTop = el.scrollHeight;
+}
+function normVoy(s) { return (s || '').toUpperCase().replace(/[\s\-]/g, ''); }
+
+// ---------- WebSocket 로그 ----------
+function connectWs() {
+  try {
+    const ws = new WebSocket(WS_URL);
+    ws.onopen = () => { $('#ws-state').textContent = '연결됨'; };
+    ws.onclose = () => { $('#ws-state').textContent = '끊김 (재연결)'; setTimeout(connectWs, 3000); };
+    ws.onerror = () => {};
+    ws.onmessage = (ev) => {
+      try {
+        const d = JSON.parse(ev.data);
+        if (d.kind && d.kind !== 'vessel_status' && d.msg) log(d.msg, d.kind === 'ok' ? 'ok' : d.kind === 'warn' ? 'warn' : d.kind === 'err' ? 'err' : '');
+      } catch (e) {}
+    };
+  } catch (e) { $('#ws-state').textContent = '연결 실패'; }
+}
+
+// ---------- 스케줄 포탈 자동추출 ----------
+async function autoExtractSchedulePortal() {
+  if (!confirm('📨 스케줄 포탈 자동추출\n\n✓ SinokorPortal 실행+로그인\n✓ Schedule Information 메뉴 열림\n✓ Voyage Schedule 탭 활성\n\n진행할까요? (약 0.3초 마우스 사용)')) return;
+  const btn = $('#btn-sched'), sub = $('#sub-sched');
+  btn.disabled = true; const orig = btn.innerHTML; btn.innerHTML = '⏳ 추출 중...'; sub.textContent = '포털에서 가져오는 중...';
+  try {
+    const res = await fetch(BACKEND_URL + '/parse/schedule-portal', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ daysBack: 7, daysForward: 10, closeWorkbookAfter: true }),
+    });
+    const data = await res.json();
+    if (data.status !== 'ok') throw new Error(data.message || '백엔드 오류');
+    dashSchedule = Array.isArray(data.rows) ? data.rows : [];
+    sub.textContent = `✓ ${dashSchedule.length}행 (${data.frDate || '?'} ~ ${data.toDate || '?'})`;
+    log(`포탈 스케줄 ${dashSchedule.length}행 추출`, 'ok');
+    rebuildDashVessels(); renderDashboard();
+  } catch (e) { sub.textContent = '✗ ' + e.message; log('포탈 추출 실패: ' + e.message, 'err'); toast('포탈 추출 실패'); }
+  finally { btn.disabled = false; btn.innerHTML = orig; }
+}
+
+// ---------- 스케줄 엑셀 드래그앤드롭 ----------
+function schedDrag(e, on) {
+  e.preventDefault(); e.stopPropagation();
+  $('#sched-drop').classList.toggle('dragover', on);
+}
+function schedDrop(e) {
+  e.preventDefault(); e.stopPropagation();
+  $('#sched-drop').classList.remove('dragover');
+  const f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+  if (!f) return;
+  if (!/\.(xlsx|xls)$/i.test(f.name)) { toast('엑셀(.xlsx/.xls) 파일만 가능합니다'); return; }
+  uploadSchedule(f);
+}
+
+// ---------- 스케줄 엑셀 업로드 ----------
+async function uploadSchedule(file) {
+  if (!file) { toast('파일이 없습니다'); return; }
+  const sub = $('#sub-sched');
+  log(`스케줄 업로드 시작: ${file.name} (${Math.round(file.size / 1024)} KB)`, 'ok');
+  sub.textContent = `${file.name} 처리 중...`;
+  try {
+    const fd = new FormData();
+    fd.append('file', file, file.name);
+    const res = await fetch(BACKEND_URL + '/parse/schedule-upload', { method: 'POST', body: fd });
+    let data;
+    const txt = await res.text();
+    try { data = JSON.parse(txt); }
+    catch (_) { throw new Error(`서버 응답 오류 (HTTP ${res.status}). 백엔드를 재시작했는지 확인하세요.`); }
+    if (!res.ok || data.status !== 'ok') throw new Error(data.message || `HTTP ${res.status}`);
+    dashSchedule = Array.isArray(data.rows) ? data.rows : [];
+    sub.textContent = `✓ 업로드 ${dashSchedule.length}행 (${escapeHtml(data.workbookName || file.name)})`;
+    log(`스케줄 엑셀 업로드 ${dashSchedule.length}행 변환`, 'ok');
+    rebuildDashVessels(); renderDashboard();
+  } catch (e) {
+    sub.textContent = '✗ ' + e.message;
+    log('스케줄 업로드 실패: ' + e.message, 'err');
+    toast('스케줄 업로드 실패: ' + e.message);
+  }
+}
+
+// ---------- MRN Outlook 자동추출 ----------
+async function autoExtractMrn() {
+  const btn = $('#btn-mrn'), sub = $('#sub-mrn');
+  btn.disabled = true; const orig = btn.innerHTML; btn.innerHTML = '⏳ 추출 중...'; sub.textContent = 'Outlook에서 가져오는 중...';
+  try {
+    const res = await fetch(BACKEND_URL + '/parse/mrn-outlook', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ days: 30 }),
+    });
+    const data = await res.json();
+    if (data.status !== 'ok') throw new Error(data.message || '백엔드 오류');
+    dashMrnRows = Array.isArray(data.rows) ? data.rows : [];
+    sub.textContent = `✓ 메일 ${data.emails || 0}건 → 모선 ${dashMrnRows.length}건`;
+    log(`MRN ${dashMrnRows.length}건 추출`, 'ok');
+    rebuildDashVessels(); renderDashboard();
+  } catch (e) { sub.textContent = '✗ ' + e.message; log('MRN 추출 실패: ' + e.message, 'err'); toast('MRN 추출 실패'); }
+  finally { btn.disabled = false; btn.innerHTML = orig; }
+}
+
+// ---------- CBF 메일 자동추출 (테스트: 매칭 확인) ----------
+async function autoExtractCbf() {
+  const btn = $('#btn-cbf'), sub = $('#sub-cbf');
+  btn.disabled = true; const orig = btn.innerHTML; btn.innerHTML = '⏳ 추출 중...'; sub.textContent = 'Outlook에서 가져오는 중...';
+  try {
+    const res = await fetch(BACKEND_URL + '/parse/cbf-mail', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ days: 7, allowedSenders: allCarrierEmails() }),
+    });
+    const data = await res.json();
+    if (data.status !== 'ok') throw new Error(data.message || '백엔드 오류');
+    dashCbfMails = Array.isArray(data.mails) ? data.mails : [];
+    sub.textContent = `✓ CBF 메일 ${dashCbfMails.length}건`;
+    log(`CBF 메일 ${dashCbfMails.length}건 수집 (최근 7일)`, 'ok');
+    // 테스트: 각 모선별 매칭 결과 로그
+    let hit = 0;
+    dashVessels.forEach(v => {
+      const c = cbfForVessel(v);
+      const arr = c.labels.filter(l => l.arrived).map(l => l.abbr);
+      if (arr.length) { hit++; log(`  · ${v.vessel} ${v.voyage} → 도착: ${arr.join(', ')}`); }
+    });
+    log(`CBF ${cbfDir === 'export' ? '수출' : '수입'} 매칭: ${hit}/${dashVessels.length}척 (메일 온 선사)`, hit ? 'ok' : 'warn');
+    renderDashboard();
+  } catch (e) { sub.textContent = '✗ ' + e.message; log('CBF 추출 실패: ' + e.message, 'err'); toast('CBF 추출 실패'); }
+  finally { btn.disabled = false; btn.innerHTML = orig; }
+}
+
+// 제목에서 선사 추출 (대괄호 우선 → 해운/상선/라인 → 영문 선사)
+// 예외: 대괄호가 '서비스' 태그(VTS 등)면 선사가 아니므로 무시하고 실제 선사(HMM 등)를 찾는다.
+const CBF_IGNORE_BRACKET = ['VTS', 'KWANGYANG', 'KRKAN', 'KAN', 'CLL'];
+function parseCarrier(subject) {
+  const s = String(subject || '');
+  const b = (s.match(/\[([^\]]+)\]/) || [])[1];
+  if (b) {
+    const first = b.split(/[-\/]/)[0].trim();
+    if (first && !CBF_IGNORE_BRACKET.includes(first.toUpperCase())) return first;
+    // 서비스 태그면 아래에서 실제 선사 탐색
+  }
+  const m = s.match(/([가-힣A-Za-z]+(?:해운|상선|라인|물류))/);
+  if (m) return m[1];
+  const e = s.match(/\b(HMM|MSC|ONE|COSCO|EMC|OOCL|SITC|SM\s?LINE)\b/i);  // VTS/CLL 은 선사 아님 → 제외
+  return e ? e[1].toUpperCase() : '';
+}
+
+// 모선 ↔ CBF 메일 매칭 (선명 + 항차 필수)
+// 메일 제목 → 방향 'export'(수출) / 'import'(수입) / ''(불명, 양쪽 표시)
+// 수출: OUT(단어), CLL, 선적, 수출 · 수입: IN(단어), 수입, 양하
+function mailDirection(subject) {
+  const s = String(subject || '');
+  const S = s.toUpperCase();
+  const exp = /\bOUT\b/.test(S) || S.includes('CLL') || s.includes('선적') || s.includes('수출');
+  const imp = /\bIN\b/.test(S) || s.includes('수입') || s.includes('양하');
+  if (exp && !imp) return 'export';
+  if (imp && !exp) return 'import';
+  return '';  // 둘 다거나 없음 → 불명 (양쪽에 표시, 예외는 추후 규칙 추가)
+}
+
+// 모선 서비스 → 현재 방향(수출/수입)의 필요 선사 [{abbr,name,email}]
+function requiredForVessel(v) {
+  const svc = (v.service || '').toUpperCase();
+  const e = cbfDb[svc];
+  if (!e) return [];
+  return (cbfDir === 'export' ? e.exportRecips : e.importRecips) || [];
+}
+// DB 수신처 → 포탈 LINE 코드 목록 [{code, emails:Set}] ('남성동영'→NAM+DYS 처럼 다중 가능)
+function requiredCodesForVessel(v) {
+  const map = {};
+  requiredForVessel(v).forEach(rc => {
+    let codes = carrierCodes((rc.abbr || '') + ' ' + (rc.name || ''));
+    if (!codes.length) codes = [(rc.abbr || '?')];
+    codes.forEach(code => {
+      (map[code] = map[code] || { code, emails: new Set() }).emails.add((rc.email || '').toLowerCase());
+    });
+  });
+  return Object.values(map);
+}
+
+function cbfForVessel(v) {
+  const nameSq = (v.vessel || '').toUpperCase().replace(/\s+/g, '');
+  const voy = (v.voyage || '').toUpperCase();
+  if (!nameSq) return { matched: [], labels: [], cbfGroups: [] };
+  // 이 모선(선명+항차) + 현재 방향(수출/수입)에 해당하는 CBF 메일
+  const matched = dashCbfMails.filter(mm => {
+    const s = (mm.subject || '').toUpperCase();
+    if (!s.replace(/\s+/g, '').includes(nameSq)) return false;
+    const d = mailDirection(mm.subject);
+    if (d && d !== cbfDir) return false;            // 방향이 명확하면 토글과 일치해야
+    const mv = s.match(/\d{4}[WESN]/g) || [];
+    if (mv.length && voy && !mv.includes(voy)) return false;
+    return true;
+  });
+  // 각 메일의 선사코드 = 제목 기준(한국명) → 포탈 LINE 코드 (NKX 동영/남성 구분 포함)
+  const codeOf = mm => carrierCode(mm.subject) || parseCarrier(mm.subject) || mm.sender || '?';
+
+  // 필요 선사(DB→포탈코드) → 도착 여부 라벨 (도착은 제목 선사코드 일치로 판정)
+  const reqCodes = requiredCodesForVessel(v);
+  const reqSet = new Set(reqCodes.map(r => r.code));
+  const labels = reqCodes.map(rc => {
+    const ml = matched.filter(mm => codeOf(mm) === rc.code);
+    return { abbr: rc.code, email: [...rc.emails].filter(Boolean).join(', '), arrived: ml.length > 0, ids: ml.map(m => m.entryId || '').filter(Boolean) };
+  });
+  // 필요목록엔 없지만 도착한 메일(추가 표시)
+  matched.forEach(mm => {
+    const code = codeOf(mm);
+    if (code && !reqSet.has(code) && !labels.find(l => l.abbr === code)) {
+      labels.push({ abbr: code, email: mm.senderEmail || '', arrived: true, extra: true, ids: [mm.entryId || ''].filter(Boolean) });
+    }
+  });
+
+  // Forecast: 선사코드별 POD 수량 (LINE=포탈 코드)
+  const groupsMap = {};
+  matched.forEach(mm => {
+    const code = codeOf(mm);
+    const g = groupsMap[code] = groupsMap[code] || {};
+    (mm.cbf || []).forEach(r => {
+      const p = r.pod || '?';
+      const d = g[p] = g[p] || { pod: p, full20: 0, full40: 0, full40h: 0, e20: 0, e40: 0, e40h: 0 };
+      d.full20 += (+r.full20 || 0); d.full40 += (+r.full40 || 0); d.full40h += (+r.full40h || 0);
+      d.e20 += (+r.e20 || 0); d.e40 += (+r.e40 || 0); d.e40h += (+r.e40h || 0);
+    });
+  });
+  const cbfGroups = Object.keys(groupsMap)
+    .map(carrier => ({ carrier, rows: Object.values(groupsMap[carrier]) }))
+    .filter(g => g.rows.length);
+  return { matched, labels, cbfGroups };
+}
+
+// CBF 선사 칩 더블클릭 → Outlook 에서 해당 메일 열기
+async function openCbfMail(ev, idsStr) {
+  ev.stopPropagation();
+  const ids = (idsStr || '').split('|').filter(Boolean);
+  if (!ids.length) { toast('메일 ID 없음 (재추출 필요)'); return; }
+  try {
+    for (const id of ids) {
+      const res = await fetch(BACKEND_URL + '/open-mail', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ entryId: id }),
+      });
+      const d = await res.json();
+      if (d.status !== 'ok') throw new Error(d.message || '실패');
+    }
+    toast('Outlook에서 메일 열림');
+  } catch (e) { toast('메일 열기 실패: ' + e.message); log('메일 열기 실패: ' + e.message, 'err'); }
+}
+
+// ---------- 스케줄 + MRN → 모선 목록 ----------
+function rebuildDashVessels() {
+  if (!dashSchedule.length) return;
+  const now = new Date();
+  const today0 = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+  const krkan = dashSchedule.filter(r => {
+    if (r.skip || !r.etb) return false;
+    if (r.pol !== 'KRKAN') return false;
+    if (!['SKR', 'HAS'].includes(r.opLiner)) return false;
+    const d = new Date(r.etb);
+    if (isNaN(d.getTime())) return false;
+    return d >= today0;
+  });
+  krkan.sort((a, b) => String(a.etb).localeCompare(String(b.etb)));
+
+  dashVessels = krkan.map(row => {
+    const cands = dashMrnRows.filter(m => m.vessel && m.vessel.toUpperCase().trim() === (row.vesselName || '').toUpperCase().trim());
+    const rowV = normVoy(row.voyage);
+    let mrn = null;
+    if (rowV && cands.length) {
+      mrn = cands.find(m => { const o = normVoy(m.voyageOut); return o && (o.endsWith(rowV) || rowV.endsWith(o)); })
+         || cands.find(m => { const i = normVoy(m.voyageIn); return i && (i.endsWith(rowV) || rowV.endsWith(i)); })
+         || cands.find(m => { const v = normVoy(m.voyage); return v && (v.endsWith(rowV) || rowV.endsWith(v)); });
+    }
+    const sender = (mrn && mrn.sender) || '';
+    return {
+      key: (row.vesselName || '') + '|' + (row.voyage || ''),
+      service: row.service || '',
+      opLiner: row.opLiner || '',
+      vessel: row.vesselName || '',
+      vesselCode: row.vesselCode || '',   // 4자리 약어 (포탈 조회용)
+      voyage: row.voyage || '',
+      count: (mrn && mrn.count) || '',
+      inMrn: (mrn && mrn.inMrn) || '',
+      outMrn: (mrn && mrn.outMrn) || '',
+      sender: sender,
+      assignee: assigneeForVessel(sender),
+    };
+  });
+  log(`모선 ${dashVessels.length}척 구성 (KRKAN·SKR/HAS·오늘이후)`);
+}
+
+function assigneeForVessel(sender) {
+  const s = String(sender || '');
+  return ASSIGNEES.find(a => s.includes(a)) || '미배정';
+}
+
+// ---------- 대시보드 렌더 ----------
+function renderDashboard() {
+  saveState();
+  const slot = $('#vessels-slot');
+  if (!dashVessels.length) {
+    slot.innerHTML = '<div class="empty">스케줄 포탈 + MRN 자동추출 후<br>이번주 광양 입항모선이 표시됩니다.</div>';
+    return;
+  }
+  const groups = {};
+  [...ASSIGNEES, '미배정'].forEach(a => groups[a] = []);
+  dashVessels.forEach((v, i) => { (groups[v.assignee] || (groups[v.assignee] = [])).push({ v, i }); });
+
+  // 담당자 필터 칩바 (클릭 → 숨기기/보기, 저장됨)
+  const allA = [...ASSIGNEES, '미배정'].filter(a => (groups[a] || []).length);
+  let html = '<div class="assignee-filter"><span class="af-lbl">담당자 <small>클릭=숨김/보기 · 더블클릭=이 담당자만</small></span>';
+  allA.forEach(a => {
+    const hidden = hiddenAssignees.includes(a);
+    html += `<button class="af-chip ${hidden ? 'off' : 'on'}" title="클릭: 숨기기/보기 · 더블클릭: 이 담당자만 보기"
+      onclick="toggleAssignee('${escapeHtml(a)}')" ondblclick="onlyAssignee('${escapeHtml(a)}')">${hidden ? '🚫' : '👤'} ${escapeHtml(a)} <span class="af-n">${(groups[a] || []).length}</span></button>`;
+  });
+  html += `<span class="af-sep"></span>
+    <button class="af-act" onclick="showAllAssignees()">전체 보기</button>`;
+  html += '</div>';
+
+  for (const a of [...ASSIGNEES, '미배정']) {
+    const rows = groups[a] || [];
+    if (!rows.length) continue;
+    if (hiddenAssignees.includes(a)) continue;   // 숨긴 담당자는 렌더 스킵
+    html += `<div class="grp-head">👤 ${escapeHtml(a)} <span class="cnt">${rows.length}척</span></div>`;
+    html += `<table class="vessels"><thead><tr>
+      <th style="width:30px" title="선택">✓</th>
+      <th style="width:56px">서비스</th><th style="width:210px">선명</th><th style="width:54px">선사</th>
+      <th style="width:56px">항차</th><th style="width:48px">회수</th>
+      <th>CBF 선사</th><th style="width:130px">MRN</th></tr></thead><tbody>`;
+    for (const { v, i } of rows) {
+      const liner = LINER[v.opLiner] || v.opLiner || '';
+      const pillCls = v.opLiner === 'SKR' ? 'pill-skr' : v.opLiner === 'HAS' ? 'pill-has' : '';
+      const mrnTxt = [v.inMrn && ('IN ' + v.inMrn), v.outMrn && ('OUT ' + v.outMrn)].filter(Boolean).join(' / ') || '-';
+      const cbf = cbfForVessel(v);
+      const cbfCell = cbf.labels.length
+        ? cbf.labels.map(l => l.arrived
+            ? `<span class="cbf-chip" onclick="event.stopPropagation()" ondblclick="openCbfMail(event,'${escapeHtml(l.ids.join('|'))}')" title="${escapeHtml(l.email)} · 더블클릭: 메일 열기">✓ ${escapeHtml(l.abbr)}</span>`
+            : `<span class="cbf-chip-empty" title="${escapeHtml(l.email)} · 아직 안 옴">${escapeHtml(l.abbr)}</span>`
+          ).join(' ')
+        : '<span style="color:#b0b8c2" title="DB에 이 서비스 필요선사 없음">–</span>';
+      html += `<tr class="vrow" onclick="openVesselTab(${i})">
+        <td style="text-align:center"><input type="checkbox" ${v.cbfChecked ? 'checked' : ''} onclick="event.stopPropagation();toggleCbfCheck('${v.key.replace(/'/g, "\\'")}',this.checked)"></td>
+        <td>${escapeHtml(v.service)}</td>
+        <td class="vname" title="${escapeHtml(v.vessel)}">${escapeHtml(v.vessel)}</td>
+        <td>${pillCls ? `<span class="pill ${pillCls}">${escapeHtml(liner)}</span>` : escapeHtml(liner)}</td>
+        <td>${escapeHtml(v.voyage)}</td>
+        <td>${escapeHtml(v.count || '-')}</td>
+        <td style="white-space:nowrap">${cbfCell}</td>
+        <td class="trunc" style="font-size:11px;color:#556" title="${escapeHtml(mrnTxt)}">${escapeHtml(mrnTxt)}</td></tr>`;
+    }
+    html += `</tbody></table>`;
+  }
+  const checkedN = dashVessels.filter(v => v.cbfChecked).length;
+  html += `<div style="margin-top:16px;display:flex;align-items:center;gap:10px;justify-content:flex-end">
+    <span style="font-size:12px;color:var(--muted)">선택 ${checkedN}척</span>
+    <button onclick="runCbfInput()" ${checkedN ? '' : 'disabled'}
+      style="background:${checkedN ? '#2563eb' : '#9aa4b0'};color:#fff;border:none;border-radius:8px;padding:10px 18px;font-size:13px;font-weight:700;cursor:${checkedN ? 'pointer' : 'default'}">
+      📥 CBF 입력 (선택 모선 → 포탈)</button></div>`;
+  slot.innerHTML = html;
+}
+
+function toggleCbfCheck(key, checked) {
+  const v = dashVessels.find(x => x.key === key);
+  if (v) { v.cbfChecked = checked; saveState(); renderDashboard(); }
+}
+
+// ── 담당자 숨기기/보기 ──
+function toggleAssignee(a) {
+  const i = hiddenAssignees.indexOf(a);
+  if (i >= 0) hiddenAssignees.splice(i, 1);
+  else hiddenAssignees.push(a);
+  saveState(); renderDashboard();
+}
+function showAllAssignees() {
+  hiddenAssignees = [];
+  saveState(); renderDashboard();
+}
+// 특정 담당자만 보기 (그 외 전부 숨김)
+function onlyAssignee(a) {
+  const all = [...ASSIGNEES, '미배정'];
+  hiddenAssignees = all.filter(x => x !== a);
+  saveState(); renderDashboard();
+}
+
+// 선택 모선의 CBF Forecast를 포탈 Container Booking Forecast 탭에 입력
+async function runCbfInput() {
+  const sel = dashVessels.filter(v => v.cbfChecked);
+  if (!sel.length) { toast('선택된 모선이 없습니다'); return; }
+  const payload = {
+    dir: cbfDir,
+    fill: true,
+    save: true,
+    vessels: sel.map(v => {
+      // 편집본이 있으면 그 값, 없으면 초기(메일) 값
+      const rows = getCbfRows(v).map(r => ({
+        line: r.line, pod: r.pod,
+        full20: r.full20, full40: r.full40, full40h: r.full40h,
+        e20: r.e20, e40: r.e40, e40h: r.e40h,
+      }));
+      return { vessel: v.vessel, vesselCode: v.vesselCode, voyage: v.voyage, service: v.service, opLiner: v.opLiner, rows };
+    }),
+  };
+  if (!confirm(`📥 CBF 입력 + 저장 (${sel.length}척, ${cbfDir === 'export' ? '수출' : '수입'})\n\n✓ SinokorPortal의 Container Booking Forecast 탭을 열어두세요\n✓ 모선별로 선명·항차·KRKAN 조회 → 그리드 수량 입력 → 저장\n⚠ 자동화 중에는 다른 창을 클릭하지 마세요\n\n진행할까요?`)) return;
+  log(`CBF 포탈 입력 시작: ${sel.length}척`, 'ok');
+  try {
+    const res = await fetch(BACKEND_URL + '/automate/cbf-input', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload),
+    });
+    const data = await res.json();
+    if (data.status !== 'ok') throw new Error(data.message || '백엔드 오류');
+    toast(data.message || 'CBF 입력 요청 완료');
+    log('CBF 포탈 입력: ' + (data.message || '완료'), 'ok');
+  } catch (e) { toast('CBF 입력 실패: ' + e.message); log('CBF 입력 실패: ' + e.message, 'err'); }
+}
+
+// ---------- 책갈피(모선) 탭 ----------
+function openVesselTab(idx) {
+  const v = dashVessels[idx];
+  if (!v) return;
+  if (!openTabs.find(t => t.key === v.key)) {
+    openTabs.push({ key: v.key, label: `${v.vessel} ${v.voyage}`.trim(), vessel: { ...v } });
+  }
+  activeView = v.key;
+  renderTabs(); renderMain();
+}
+function closeTab(key, ev) {
+  if (ev) ev.stopPropagation();
+  openTabs = openTabs.filter(t => t.key !== key);
+  if (activeView === key) activeView = 'dashboard';
+  renderTabs(); renderMain();
+}
+function switchView(view) { activeView = view; renderTabs(); renderMain(); }
+
+function renderTabs() {
+  saveState();
+  const bar = $('#bookmark-bar');
+  bar.innerHTML = openTabs.map(t => {
+    const act = activeView === t.key ? ' active' : '';
+    return `<div class="bm-tab${act}" onclick="switchView('${t.key.replace(/'/g, "\\'")}')" title="${escapeHtml(t.label)}">
+      <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">🚢 ${escapeHtml(t.label)}</span>
+      <span class="bm-x" onclick="closeTab('${t.key.replace(/'/g, "\\'")}', event)">✕</span></div>`;
+  }).join('');
+  document.querySelectorAll('.nav-tab').forEach(x => x.classList.toggle('active', x.dataset.view === activeView));
+}
+
+function renderMain() {
+  const dash = $('#panel-dashboard'), ves = $('#panel-vessel');
+  if (activeView === 'dashboard') {
+    dash.style.display = ''; ves.style.display = 'none';
+  } else {
+    dash.style.display = 'none'; ves.style.display = '';
+    const tab = openTabs.find(t => t.key === activeView);
+    ves.innerHTML = tab ? renderVesselPanel(tab.vessel) : '<div class="empty">모선을 찾을 수 없습니다.</div>';
+  }
+}
+
+function vesselByKey(k) {
+  return (openTabs.find(t => t.key === k) || {}).vessel || dashVessels.find(x => x.key === k);
+}
+// 편집 전 초기 행: 포탈 양식(있으면) × 메일 수량 + 매칭 안 된 메일행
+function initialCbfRows(v) {
+  const groups = cbfForVessel(v).cbfGroups;
+  const tpl = serviceTemplates[(v.service || '').toUpperCase()];
+  const fc = {};
+  (groups || []).forEach(g => g.rows.forEach(r => {
+    fc[(g.carrier || '').toUpperCase() + '|' + (r.pod || '').toUpperCase()] = { ...r, line: g.carrier, used: false };
+  }));
+  const mk = (line, pod, r) => ({ line: line || '', pod: pod || '',
+    full20: +(r && r.full20) || 0, full40: +(r && r.full40) || 0, full40h: +(r && r.full40h) || 0,
+    e20: +(r && r.e20) || 0, e40: +(r && r.e40) || 0, e40h: +(r && r.e40h) || 0 });
+  const rows = [];
+  if (Array.isArray(tpl) && tpl.length) {
+    tpl.forEach(t => {
+      const r = fc[(t.line || '').toUpperCase() + '|' + (t.pod || '').toUpperCase()];
+      if (r) r.used = true;
+      rows.push(mk(t.line, t.pod, r));
+    });
+    Object.values(fc).filter(r => !r.used).forEach(r => rows.push(mk(r.line, r.pod, r)));
+  } else {
+    (groups || []).forEach(g => g.rows.forEach(r => rows.push(mk(g.carrier, r.pod, r))));
+  }
+  return rows;
+}
+// 현재 표시/편집용 행 (편집본 있으면 그걸, 없으면 초기값)
+function getCbfRows(v) { return cbfEdits[v.key] ? cbfEdits[v.key] : initialCbfRows(v); }
+function ensureEdits(vkey) {
+  if (!cbfEdits[vkey]) cbfEdits[vkey] = initialCbfRows(vesselByKey(vkey)).map(r => ({ ...r }));
+  return cbfEdits[vkey];
+}
+function editCbf(vkey, idx, field, val) {
+  const firstEdit = !cbfEdits[vkey];
+  const rows = ensureEdits(vkey);
+  if (!rows[idx]) return;
+  if (field === 'line' || field === 'pod') rows[idx][field] = (val || '').toUpperCase().trim();
+  else rows[idx][field] = Math.max(0, parseInt(val, 10) || 0);
+  saveState();
+  if (firstEdit) renderMain();       // 편집 뱃지·초기화 버튼 표시 위해 최초 1회만
+  else refreshCbfTotals(vkey);       // 이후엔 합계만 갱신(입력 흐름 유지)
+}
+function refreshCbfTotals(vkey) {
+  const rows = cbfEdits[vkey] || [];
+  const tot = { full20: 0, full40: 0, full40h: 0, e20: 0, e40: 0, e40h: 0 };
+  rows.forEach(r => Object.keys(tot).forEach(f => tot[f] += (+r[f] || 0)));
+  Object.keys(tot).forEach(f => { const el = document.getElementById('tot-' + f); if (el) el.textContent = tot[f] || ''; });
+}
+function addCbfRow(vkey) {
+  ensureEdits(vkey).push({ line: '', pod: '', full20: 0, full40: 0, full40h: 0, e20: 0, e40: 0, e40h: 0 });
+  saveState(); renderMain();
+}
+function delCbfRow(vkey, idx) {
+  const rows = ensureEdits(vkey); rows.splice(idx, 1);
+  saveState(); renderMain();
+}
+function resetCbfRows(vkey) {
+  if (!confirm('편집한 값을 버리고 메일 수량으로 초기화할까요?')) return;
+  delete cbfEdits[vkey]; saveState(); renderMain(); toast('메일값으로 초기화됨');
+}
+
+function renderVesselPanel(v) {
+  const liner = LINER[v.opLiner] || v.opLiner || '';
+  const tpl = serviceTemplates[(v.service || '').toUpperCase()];
+  const hasTpl = Array.isArray(tpl) && tpl.length;
+  const edited = !!cbfEdits[v.key];
+  const vk = v.key.replace(/'/g, "\\'");
+  const note = hasTpl
+    ? `※ 포탈 양식(서비스 ${escapeHtml(v.service)}) 기준. <b>숫자 칸만</b> 직접 수정할 수 있고(썼다 지웠다 가능), 편집값이 포탈 입력에 그대로 쓰입니다.`
+    : `※ 아직 이 서비스(${escapeHtml(v.service)})의 포탈 양식이 없습니다. <b>"📋 포탈 양식 불러오기"</b>로 포탈과 동일한 선사·POD를 채우세요. (지금은 메일 온 선사만 표시)`;
+  return `
+    <div class="card">
+      <div class="card-title">🚢 ${escapeHtml(v.vessel)} ${escapeHtml(v.voyage)}
+        <small>CBF 확인 · 선사 ${escapeHtml(liner)} · 서비스 ${escapeHtml(v.service)} · 입항횟수 ${escapeHtml(v.count || '-')}${edited ? ' · ✏ 편집됨' : ''}</small>
+        <button onclick="captureTemplate('${vk}')" style="margin-left:auto;font-size:12px;padding:6px 12px;border:1px solid #7dd3fc;background:#f0f9ff;color:#0369a1;border-radius:7px;cursor:pointer;font-weight:600">📋 포탈 양식 불러오기</button></div>
+      <div class="card-body">
+        ${cbfEditableTable(v)}
+        ${edited ? `<div style="margin-top:10px"><button onclick="resetCbfRows('${vk}')" style="font-size:12px;padding:7px 14px;border:1px solid #cbd3dd;background:#fff;color:#64748b;border-radius:7px;cursor:pointer">↺ 메일값으로 초기화</button></div>` : ''}
+        <div style="margin-top:10px;font-size:12px;color:var(--muted)">${note}</div>
+      </div>
+    </div>`;
+}
+
+// CBF 표 — LINE 묶음(rowspan, 읽기전용) · POD 읽기전용 · 숫자 칸만 편집
+function cbfEditableTable(v) {
+  const rows = getCbfRows(v);
+  const vk = v.key.replace(/'/g, "\\'");
+  const tot = { full20: 0, full40: 0, full40h: 0, e20: 0, e40: 0, e40h: 0 };
+  const num = (i, f, val) => `<td><input class="cbf-in" type="number" min="0" value="${(+val || 0) || ''}" onchange="editCbf('${vk}',${i},'${f}',this.value)"></td>`;
+  let body = '';
+  rows.forEach((r, i) => {
+    ['full20', 'full40', 'full40h', 'e20', 'e40', 'e40h'].forEach(f => tot[f] += (+r[f] || 0));
+    const line = (r.line || '').toUpperCase();
+    const isFirst = i === 0 || (rows[i - 1].line || '').toUpperCase() !== line;
+    let span = 1;
+    if (isFirst) { for (let j = i + 1; j < rows.length && (rows[j].line || '').toUpperCase() === line; j++) span++; }
+    const lineCell = isFirst ? `<td class="lp" rowspan="${span}">${escapeHtml(r.line || '')}</td>` : '';
+    body += `<tr>${lineCell}<td class="pod">${escapeHtml(r.pod || '')}</td>
+      ${num(i, 'full20', r.full20)}${num(i, 'full40', r.full40)}${num(i, 'full40h', r.full40h)}
+      ${num(i, 'e20', r.e20)}${num(i, 'e40', r.e40)}${num(i, 'e40h', r.e40h)}
+      <td></td><td></td><td></td><td></td></tr>`;
+  });
+  const c = x => x || '';
+  body += `<tr class="cbf-total"><td class="lp">합계</td><td class="pod">TOTAL</td>
+    <td id="tot-full20">${c(tot.full20)}</td><td id="tot-full40">${c(tot.full40)}</td><td id="tot-full40h">${c(tot.full40h)}</td>
+    <td id="tot-e20">${c(tot.e20)}</td><td id="tot-e40">${c(tot.e40)}</td><td id="tot-e40h">${c(tot.e40h)}</td>
+    <td></td><td></td><td></td><td></td></tr>`;
+  if (!rows.length) {
+    body = `<tr><td colspan="12" style="color:#8894a3;padding:18px">📨 CBF 메일 자동추출 시 선사·POD별 수량이 채워집니다</td></tr>` + body;
+  }
+  return `<div class="cbf-wrap">
+    <div class="cbf-title">Container Booking Forecast (Input)</div>
+    <table class="cbf">
+      <thead>
+        <tr><th colspan="2">LINE &amp; PORT</th><th colspan="3">FULL</th><th colspan="3">EMPTY</th>
+          <th colspan="2">WEIGHT</th><th rowspan="2">Remarks</th><th rowspan="2">ReSale</th></tr>
+        <tr><th>LINE</th><th>POD</th><th>20'</th><th>40'</th><th>40H</th>
+          <th>E20'</th><th>E40'</th><th>E40H</th><th>N.WEIGHT</th><th>G.WEIGHT</th></tr>
+      </thead>
+      <tbody>${body}</tbody>
+    </table>
+  </div>`;
+}
+
+// 포탈 양식(서비스 template)에 맞춰 모든 LINE×POD 렌더 + 메일 수량 채움
+function cbfTableTemplated(v, tpl, cbfGroups) {
+  const c = x => (x == null || x === '' || x === 0) ? '' : escapeHtml(x);
+  const hasQty = r => (+r.full20 || 0) + (+r.full40 || 0) + (+r.full40h || 0) + (+r.e20 || 0) + (+r.e40 || 0) + (+r.e40h || 0) > 0;
+  // 메일 수량 조회맵: (LINE,POD) → 값. used 로 매칭 여부 추적
+  const fc = {};
+  (cbfGroups || []).forEach(g => g.rows.forEach(r => {
+    fc[(g.carrier || '').toUpperCase() + '|' + (r.pod || '').toUpperCase()] = { ...r, line: g.carrier, used: false };
+  }));
+  const tot = { full20: 0, full40: 0, full40h: 0, e20: 0, e40: 0, e40h: 0 };
+  const addTot = r => { tot.full20 += (+r.full20 || 0); tot.full40 += (+r.full40 || 0); tot.full40h += (+r.full40h || 0); tot.e20 += (+r.e20 || 0); tot.e40 += (+r.e40 || 0); tot.e40h += (+r.e40h || 0); };
+  // LINE 연속 그룹 rowspan 계산
+  let body = '';
+  for (let i = 0; i < tpl.length; i++) {
+    const row = tpl[i];
+    const line = (row.line || '').toUpperCase();
+    const pod = (row.pod || '').toUpperCase();
+    const r = fc[line + '|' + pod];
+    if (r) r.used = true;
+    const rr = r || {};
+    const isFirst = i === 0 || (tpl[i - 1].line || '').toUpperCase() !== line;
+    let span = 1;
+    if (isFirst) { for (let j = i + 1; j < tpl.length && (tpl[j].line || '').toUpperCase() === line; j++) span++; }
+    const lineCell = isFirst ? `<td class="lp" rowspan="${span}">${escapeHtml(row.line)}</td>` : '';
+    body += `<tr>${lineCell}<td class="pod">${escapeHtml(row.pod)}</td>
+      <td>${c(rr.full20)}</td><td>${c(rr.full40)}</td><td>${c(rr.full40h)}</td>
+      <td>${c(rr.e20)}</td><td>${c(rr.e40)}</td><td>${c(rr.e40h)}</td>
+      <td></td><td></td><td></td><td></td></tr>`;
+    addTot(rr);
+  }
+  // 양식에 매칭 안 된 메일 수량 → 별도 행으로 하단에 표시(사라지지 않게)
+  const extras = Object.keys(fc).map(k => fc[k]).filter(r => !r.used && hasQty(r));
+  if (extras.length) {
+    body += `<tr class="cbf-extra-head"><td colspan="12">⚠ 포탈 양식에 없는 POD (코드 확인 필요 · 자동입력 제외)</td></tr>`;
+    extras.forEach(r => {
+      body += `<tr class="cbf-extra"><td class="lp">${escapeHtml(r.line)}</td><td class="pod">${escapeHtml(r.pod)}</td>
+        <td>${c(r.full20)}</td><td>${c(r.full40)}</td><td>${c(r.full40h)}</td>
+        <td>${c(r.e20)}</td><td>${c(r.e40)}</td><td>${c(r.e40h)}</td>
+        <td></td><td></td><td></td><td></td></tr>`;
+      addTot(r);
+    });
+  }
+  body += `<tr class="cbf-total"><td class="lp">합계</td><td class="pod">TOTAL</td>
+    <td>${c(tot.full20)}</td><td>${c(tot.full40)}</td><td>${c(tot.full40h)}</td>
+    <td>${c(tot.e20)}</td><td>${c(tot.e40)}</td><td>${c(tot.e40h)}</td>
+    <td></td><td></td><td></td><td></td></tr>`;
+  return `<div class="cbf-wrap">
+    <div class="cbf-title">Container Booking Forecast (Input)</div>
+    <table class="cbf">
+      <thead>
+        <tr><th colspan="2">LINE &amp; PORT</th><th colspan="3">FULL</th><th colspan="3">EMPTY</th>
+          <th colspan="2">WEIGHT</th><th rowspan="2">Remarks</th><th rowspan="2">ReSale</th></tr>
+        <tr><th>LINE</th><th>POD</th><th>20'</th><th>40'</th><th>40H</th>
+          <th>E20'</th><th>E40'</th><th>E40H</th><th>N.WEIGHT</th><th>G.WEIGHT</th></tr>
+      </thead>
+      <tbody>${body}</tbody>
+    </table>
+  </div>`;
+}
+
+// 선택 모선 1척 조회 → 포탈 그리드의 (LINE,POD) 양식 캡처 → 서비스별 저장
+async function captureTemplate(key) {
+  const v = (openTabs.find(t => t.key === key) || {}).vessel || dashVessels.find(x => x.key === key);
+  if (!v) { toast('모선을 찾을 수 없습니다'); return; }
+  if (!confirm(`📋 포탈 양식 불러오기\n\n✓ SinokorPortal의 Container Booking Forecast 탭을 열어두세요\n✓ ${v.vessel} ${v.voyage} 를 조회해 서비스 ${v.service} 양식을 가져옵니다\n\n진행할까요?`)) return;
+  log(`포탈 양식 캡처 시작: ${v.vessel} ${v.voyage} (서비스 ${v.service})`, 'ok');
+  try {
+    const res = await fetch(BACKEND_URL + '/automate/cbf-input', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ capture: true, fill: false, vessels: [{ vessel: v.vessel, vesselCode: v.vesselCode, voyage: v.voyage, service: v.service, opLiner: v.opLiner }] }),
+    });
+    const data = await res.json();
+    if (data.status !== 'ok') throw new Error(data.message || '백엔드 오류');
+    let saved = 0;
+    (data.results || []).forEach(rr => {
+      if (rr.skeleton && rr.skeleton.length) {
+        serviceTemplates[(rr.service || v.service || '').toUpperCase()] = rr.skeleton;
+        saved += rr.skeleton.length;
+      }
+    });
+    saveState();
+    if (saved) { toast(`포탈 양식 저장됨 (${saved}행)`); log(`포탈 양식 캡처 완료: ${saved}행`, 'ok'); renderMain(); }
+    else { toast('양식을 못 읽었습니다'); log('포탈 양식 캡처: 빈 결과', 'warn'); }
+  } catch (e) { toast('양식 캡처 실패: ' + e.message); log('포탈 양식 캡처 실패: ' + e.message, 'err'); }
+}
+
+// Container Booking Forecast (Input) 표 — 선사(LINE)별 블록 + 합계
+function cbfTable(cbfGroups) {
+  const groups = Array.isArray(cbfGroups) ? cbfGroups : [];
+  const c = x => (x == null || x === '' || x === 0) ? '' : escapeHtml(x);
+  const tot = { full20: 0, full40: 0, full40h: 0, e20: 0, e40: 0, e40h: 0 };
+  let body = '';
+  if (!groups.length) {
+    body = `<tr><td class="lp">-</td><td colspan="11" style="color:#8894a3;padding:18px">📨 CBF 메일 자동추출 시 선사·POD별 수량이 채워집니다</td></tr>`;
+  } else {
+    groups.forEach(g => {
+      g.rows.forEach((r, i) => {
+        const lineCell = i === 0 ? `<td class="lp" rowspan="${g.rows.length}">${escapeHtml(g.carrier)}</td>` : '';
+        body += `<tr>${lineCell}<td class="pod">${escapeHtml(r.pod)}</td>
+          <td>${c(r.full20)}</td><td>${c(r.full40)}</td><td>${c(r.full40h)}</td>
+          <td>${c(r.e20)}</td><td>${c(r.e40)}</td><td>${c(r.e40h)}</td>
+          <td></td><td></td><td></td><td></td></tr>`;
+        tot.full20 += r.full20; tot.full40 += r.full40; tot.full40h += r.full40h;
+        tot.e20 += r.e20; tot.e40 += r.e40; tot.e40h += r.e40h;
+      });
+    });
+    body += `<tr class="cbf-total"><td class="lp">합계</td><td class="pod">TOTAL</td>
+      <td>${c(tot.full20)}</td><td>${c(tot.full40)}</td><td>${c(tot.full40h)}</td>
+      <td>${c(tot.e20)}</td><td>${c(tot.e40)}</td><td>${c(tot.e40h)}</td>
+      <td></td><td></td><td></td><td></td></tr>`;
+  }
+  return `<div class="cbf-wrap">
+    <div class="cbf-title">Container Booking Forecast (Input)</div>
+    <table class="cbf">
+      <thead>
+        <tr>
+          <th colspan="2">LINE &amp; PORT</th>
+          <th colspan="3">FULL</th>
+          <th colspan="3">EMPTY</th>
+          <th colspan="2">WEIGHT</th>
+          <th rowspan="2">Remarks</th>
+          <th rowspan="2">ReSale</th>
+        </tr>
+        <tr>
+          <th>LINE</th><th>POD</th>
+          <th>20'</th><th>40'</th><th>40H</th>
+          <th>E20'</th><th>E40'</th><th>E40H</th>
+          <th>N.WEIGHT</th><th>G.WEIGHT</th>
+        </tr>
+      </thead>
+      <tbody>${body}</tbody>
+    </table>
+  </div>`;
+}
+
+// ---------- 담당자 DB 로드 + 수출/수입 토글 ----------
+async function fetchDbCarriers() {
+  try {
+    const res = await fetch(BACKEND_URL + '/db/carriers');
+    const data = await res.json();
+    if (data.status === 'ok' && data.db) {
+      cbfDb = data.db;
+      log(`담당자 DB 로드: 서비스 ${Object.keys(cbfDb).length}개${data.path ? ' (' + data.path + ')' : ''}`, 'ok');
+      renderDashboard(); renderMain();
+    } else { log('DB 로드 응답 이상: ' + (data.message || ''), 'warn'); }
+  } catch (e) { log('담당자 DB 로드 실패(저장본 사용): ' + e.message, 'warn'); }
+}
+function setCbfDir(d) {
+  cbfDir = d;
+  document.querySelectorAll('.dir-btn').forEach(b => b.classList.toggle('on', b.dataset.dir === d));
+  renderDashboard(); renderMain();
+}
+
+// ---------- init ----------
+connectWs();
+loadState();
+fetchDbCarriers();
+renderTabs();
+renderMain();
+renderDashboard();
+setCbfDir(cbfDir);
+</script>
+<a id="mosun-home" href="../시작.html" title="모선마감 시작화면으로">
+<span style="font-size:15px">&#127968;</span><span class="home-home">HOME</span>
+<span>모선마감</span><span style="opacity:.55">·</span><span>CBF확인</span></a>
+<style>
+#mosun-home{position:fixed;left:14px;bottom:14px;z-index:99999;display:flex;align-items:center;
+  gap:7px;padding:8px 14px;border-radius:99px;background:#0f2d5e;color:#fff;font-size:12.5px;
+  font-weight:600;text-decoration:none;box-shadow:0 3px 12px rgba(15,45,94,.35);
+  font-family:'Noto Sans KR','Malgun Gothic',sans-serif;opacity:.85;transition:opacity .12s}
+#mosun-home:hover{opacity:1}
+#mosun-home .home-home{font-weight:800;letter-spacing:.4px;margin-right:2px}
+@media print{#mosun-home{display:none}}
+</style>
+
+<script>
+/* [추가 20260922] 팝업으로 열렸을 때의 HOME 단추 ────────────────────────
+   이 쪽이 시작 화면(대시보드)에서 따로 뜬 창이면, HOME 은 '되돌아가기' 가 아니라
+   '이 창을 닫고 대시보드로' 가 맞다. 팝업 안에서 시작.html 을 또 열면
+   대시보드가 두 개가 되어 어느 쪽이 진짜인지 헷갈린다.
+   직접 열어본 경우(팝업이 아닌 경우)에는 지금까지처럼 그냥 이동한다.            */
+(function(){
+  if(!window.opener || window.opener.closed) return;
+  var a = document.querySelector('#skr-backbar a')
+       || document.getElementById('mosun-home')
+       || document.querySelector('a.home');
+  if(!a) return;
+  a.title = '모선마감 화면으로 갑니다 (이 창은 닫힙니다)';
+  a.addEventListener('click', function(e){
+    e.preventDefault();
+    try{ window.opener.focus(); }catch(err){}
+    window.close();
+  });
+})();
+</script>
+</body>
+</html>

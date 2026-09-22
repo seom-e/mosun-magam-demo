@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>모선마감</title>
+<style>
+:root{
+  --bg:#f4f6fa; --card:#fff; --line:#e3e8f0;
+  --text:#1e2939; --muted:#6b7789;
+  --blue:#2557a7; --blue-dark:#1d4585; --blue-soft:#eef3fb;
+  --green:#1e8449; --red:#c0392b;
+  --radius:8px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:'Noto Sans KR','Malgun Gothic','맑은 고딕',sans-serif;
+  font-size:15px; line-height:1.6; color:var(--text);
+  background:var(--bg); padding:28px 16px 60px;
+}
+.wrap{max-width:1000px;margin:0 auto}
+
+/* 머리말 */
+header{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;margin-bottom:6px}
+h1{font-size:26px;font-weight:700;letter-spacing:-.5px}
+.today{font-size:15px;color:var(--muted)}
+.weekinfo{font-size:13px;color:var(--muted);margin-bottom:24px}
+
+/* 구역 제목 */
+.sec{display:flex;align-items:center;gap:10px;margin:0 0 12px}
+.sec h2{font-size:15px;font-weight:600;color:var(--muted)}
+.sec .rule{flex:1;height:1px;background:var(--line)}
+.sec .reset{
+  font-size:13px;color:var(--muted);background:none;border:1px solid var(--line);
+  border-radius:6px;padding:3px 10px;cursor:pointer;font-family:inherit;
+}
+.sec .reset:hover{background:var(--card);color:var(--text)}
+
+/* 흐름 4단계 */
+.flow{display:flex;align-items:stretch;gap:10px;margin-bottom:34px}
+.arrow{display:flex;align-items:center;color:#b9c3d2;font-size:20px;flex:0 0 auto;padding-bottom:34px}
+.step{
+  flex:1 1 0; background:var(--card); border:1px solid var(--line);
+  border-radius:var(--radius); display:flex; flex-direction:column;
+  transition:border-color .12s, box-shadow .12s;
+}
+.step:hover{border-color:#c2d0e4;box-shadow:0 2px 10px rgba(37,87,167,.07)}
+.step.done{background:#f7fbf8;border-color:#cfe6d8}
+.step > a{
+  display:block;padding:16px 16px 14px;text-decoration:none;color:inherit;flex:1;
+  border-radius:var(--radius) var(--radius) 0 0;
+}
+.step .num{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:22px;height:22px;border-radius:50%;
+  background:var(--blue-soft);color:var(--blue);
+  font-size:12px;font-weight:700;margin-bottom:9px;
+}
+.step.done .num{background:#dcefe3;color:var(--green)}
+.step .name{font-size:17px;font-weight:600;margin-bottom:3px}
+.step .desc{font-size:13px;color:var(--muted);line-height:1.45}
+.step label{
+  display:flex;align-items:center;gap:7px;
+  padding:9px 16px;border-top:1px solid var(--line);
+  font-size:13px;color:var(--muted);cursor:pointer;user-select:none;
+}
+.step.done label{border-top-color:#dcefe3;color:var(--green);font-weight:500}
+.step input[type=checkbox]{width:15px;height:15px;accent-color:var(--green);cursor:pointer}
+
+/* 업무 캘린더 - 자주 보는 것이라 맨 위에 크게 */
+.cal{
+  position:relative; overflow:hidden;
+  display:flex; align-items:center; gap:24px;
+  background:
+    radial-gradient(120% 150% at 88% -30%, rgba(255,255,255,.20) 0%, rgba(255,255,255,0) 58%),
+    linear-gradient(118deg,#11305f 0%,#1c4b91 45%,#2e73c8 100%);
+  border:1px solid rgba(255,255,255,.16); border-radius:14px;
+  padding:20px 24px; margin-bottom:32px;
+  text-decoration:none; color:#fff;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.24), 0 6px 22px rgba(17,48,95,.28);
+  transition:transform .16s ease, box-shadow .16s ease;
+}
+.cal:hover{transform:translateY(-2px); box-shadow:inset 0 1px 0 rgba(255,255,255,.28), 0 12px 32px rgba(17,48,95,.38)}
+
+/* 왼쪽 날짜 */
+.cal .mark{
+  flex:0 0 auto; width:76px; padding:11px 0 12px; border-radius:12px;
+  background:rgba(255,255,255,.13); border:1px solid rgba(255,255,255,.22);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.2);
+  display:flex; flex-direction:column; align-items:center; line-height:1;
+}
+.cal .mark .m{font-size:11.5px; font-weight:600; opacity:.8; letter-spacing:.6px}
+.cal .mark .d{font-size:34px; font-weight:700; margin:6px 0 5px; letter-spacing:-1.4px}
+.cal .mark .w{font-size:11.5px; font-weight:600; opacity:.78}
+
+/* 가운데 글 */
+.cal .body{flex:1 1 auto; min-width:0; padding-right:6px}
+.cal .body .name{display:block; font-size:21px; font-weight:700; letter-spacing:-.5px; margin-bottom:5px}
+.cal .body .desc{display:block; font-size:13px; opacity:.82; line-height:1.5; margin-bottom:11px}
+.cal .chips{display:flex; gap:6px; flex-wrap:wrap}
+.cal .chips span{
+  font-size:11.5px; font-weight:500; padding:4px 10px; border-radius:20px;
+  background:rgba(255,255,255,.13); border:1px solid rgba(255,255,255,.18);
+}
+
+/* 오른쪽 묶음 */
+.cal .right{
+  flex:0 0 auto; display:flex; align-items:center; gap:20px;
+  padding-left:24px; border-left:1px solid rgba(255,255,255,.18);
+}
+.cal .wk{display:flex; flex-direction:column; gap:8px}
+.cal .wk-cap{font-size:11px; font-weight:600; opacity:.62; letter-spacing:1px; padding-left:2px}
+
+/* 오른쪽 이번 주 */
+.cal .week{display:flex; gap:6px; flex:0 0 auto}
+.cal .week i{
+  font-style:normal; width:36px; padding:8px 0 9px; border-radius:10px;
+  display:flex; flex-direction:column; align-items:center; gap:5px;
+  background:rgba(255,255,255,.10); border:1px solid rgba(255,255,255,.14);
+  line-height:1;
+}
+.cal .week i b{font-size:10.5px; font-weight:600; opacity:.72}
+.cal .week i em{font-style:normal; font-size:14px; font-weight:600}
+.cal .week i.sat b, .cal .week i.sat em{color:#c6dcff}
+.cal .week i.sun b, .cal .week i.sun em{color:#ffc9c9}
+.cal .week i.now{
+  background:#fff; border-color:#fff;
+  box-shadow:0 0 0 3px rgba(255,255,255,.22), 0 3px 10px rgba(0,0,0,.2);
+}
+.cal .week i.now b{color:#3f6ea8; opacity:.9}
+.cal .week i.now em{color:#12356b; font-weight:700}
+
+/* 열기 */
+.cal .go{
+  flex:0 0 auto; display:flex; align-items:center; gap:7px;
+  font-size:13.5px; font-weight:700; color:#15417f;
+  background:#fff; border-radius:9px; padding:11px 18px;
+  box-shadow:0 2px 10px rgba(0,0,0,.16);
+  transition:box-shadow .16s, transform .16s;
+}
+.cal .go svg{width:14px; height:14px; transition:transform .16s}
+.cal:hover .go{box-shadow:0 5px 16px rgba(0,0,0,.24)}
+.cal:hover .go svg{transform:translateX(3px)}
+
+@media(max-width:1060px){
+  .cal .wk{display:none}
+  .cal .right{padding-left:0; border-left:0}
+}
+@media(max-width:640px){
+  .cal{flex-direction:column; align-items:stretch; gap:16px; padding:20px}
+  .cal .mark{align-self:flex-start}
+  .cal .right{width:100%}
+  .cal .go{flex:1; justify-content:center}
+}
+
+/* 고칠거리 띠 */
+.todo{
+  display:flex; align-items:center; gap:12px;
+  background:var(--card); border:1px solid var(--line); border-left:3px solid var(--blue);
+  border-radius:var(--radius); padding:12px 16px; margin-bottom:32px;
+  text-decoration:none; color:inherit;
+  transition:border-color .12s, box-shadow .12s;
+}
+.todo:hover{border-color:#c2d0e4; border-left-color:var(--blue-dark);
+            box-shadow:0 2px 10px rgba(37,87,167,.07)}
+.todo .t{font-size:14.5px; font-weight:600}
+.todo .s{font-size:13px; color:var(--muted)}
+.todo .n{
+  margin-left:auto; font-size:12.5px; font-weight:700;
+  background:var(--blue-soft); color:var(--blue);
+  border-radius:20px; padding:3px 12px;
+}
+.todo .n.zero{background:#f0f2f5; color:var(--muted); font-weight:500}
+
+/* 수시 도구 */
+.tools{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.tool{
+  background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+  padding:14px 15px;text-decoration:none;color:inherit;display:block;
+  transition:border-color .12s, box-shadow .12s;
+}
+.tool:hover{border-color:#c2d0e4;box-shadow:0 2px 10px rgba(37,87,167,.07)}
+.tool .name{font-size:15px;font-weight:600;margin-bottom:2px}
+.tool .desc{font-size:12.5px;color:var(--muted);line-height:1.45}
+
+/* [추가 20260922] 열림 표시등 — 지금 어떤 도구 창이 떠 있는지 */
+.dot{display:inline-block;width:7px;height:7px;border-radius:50%;
+  background:#d7dce4;margin-left:7px;vertical-align:middle;
+  transition:background .15s, box-shadow .15s;}
+.dot.on{background:var(--green);box-shadow:0 0 0 3px rgba(30,132,73,.16);}
+.dot-t{font-size:11px;font-weight:600;color:var(--green);margin-left:5px;
+  vertical-align:middle;visibility:hidden;}
+.dot.on ~ .dot-t{visibility:visible;}
+.howto{font-size:12.5px;color:var(--muted);margin:-16px 0 24px;
+  display:flex;align-items:center;gap:7px;flex-wrap:wrap;}
+.howto b{color:var(--blue);font-weight:600;}
+
+/* [추가 20260922] 웹(공유판)에서 안 되는 것 표시 */
+.pconly{opacity:.5;}
+.pconly .name::after{content:'이 PC에서만';font-size:10.5px;font-weight:600;
+  color:#b06a00;background:#fff4e0;border:1px solid #f0dcb8;border-radius:10px;
+  padding:1px 7px;margin-left:7px;vertical-align:middle;}
+.webnote{font-size:12.5px;color:#8a6d3b;background:#fdf6e6;border:1px solid #f0e2c4;
+  border-radius:8px;padding:9px 13px;margin:-16px 0 24px;line-height:1.55;}
+.webnote b{color:#7a5a1e;}
+
+/* 꼬리말 */
+footer{margin-top:38px;padding-top:16px;border-top:1px solid var(--line);
+  display:flex;gap:18px;flex-wrap:wrap;font-size:13px}
+footer a{color:var(--muted);text-decoration:none}
+footer a:hover{color:var(--blue);text-decoration:underline}
+
+@media(max-width:880px){
+  .flow{flex-direction:column}
+  .arrow{transform:rotate(90deg);padding:0;justify-content:center;height:18px}
+  .tools{grid-template-columns:repeat(2,1fr)}
+}
+</style>
+
+<!-- 발표용에만 들어가는 것. 실제 쓰는 쪽에는 없다. -->
+<script src="./발표용-띠.js"></script>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <h1>모선마감</h1>
+    <span class="today" id="today"></span>
+  </header>
+  <div class="weekinfo" id="weekinfo"></div>
+  <div class="howto">
+    <span>이 화면은 <b>계속 열어두세요.</b> 도구는 따로 창으로 뜨고,
+      이미 열려 있으면 <b>그 창이 앞으로</b> 나옵니다 &mdash; 넣어둔 자료 그대로.</span>
+  </div>
+
+  <a class="cal" href="https://claude.ai/artifact/6oYhhULGkW7MN3mXQuyK2r?sk=WCfVwrlRnN9oRLdRoAXqZg" target="_blank" rel="noopener">
+    <span class="mark">
+      <span class="m" id="cal-m"></span>
+      <span class="d" id="cal-d"></span>
+      <span class="w" id="cal-w"></span>
+    </span>
+    <span class="body">
+      <span class="name">업무 캘린더</span>
+      <span class="desc">팀 일정을 한자리에서. 적은 내용은 담당자별로 따로 저장됩니다.</span>
+      <span class="chips"><span>일정</span><span>모선마감</span><span>휴가·유연근무</span><span>TO DO LIST</span></span>
+    </span>
+    <span class="right">
+      <span class="wk">
+        <span class="wk-cap">이번 주</span>
+        <span class="week" id="cal-week"></span>
+      </span>
+      <span class="go">열기
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"
+             stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
+      </span>
+    </span>
+  </a>
+
+  <a class="todo" href="고칠거리.html" data-win="skr_todo" data-small="1">
+    <span>
+      <span class="t">고칠거리</span>
+      <span class="s"> &nbsp;일하다 이상한 게 보이면 여기 한 줄 적어두세요</span>
+    </span>
+    <span class="n zero" id="todo-n">0</span>
+  </a>
+
+  <div class="sec">
+    <h2>이번 주 흐름</h2>
+    <span class="rule"></span>
+    <button class="reset" id="reset">체크 지우기</button>
+  </div>
+
+  <div class="flow" id="flow">
+    <div class="step" data-id="1">
+      <a href="1 스케줄확인/SKR-SCHEDULE.html" data-win="skr_schedule">
+        <span class="num">1</span>
+        <div class="name">스케줄확인</div>
+        <div class="desc">모선·ETB·다큐마감 확인</div>
+      </a>
+      <label><input type="checkbox"> 이번 주 완료</label>
+    </div>
+    <div class="arrow">→</div>
+    <div class="step" data-id="2">
+      <a href="2 CBF확인/CBF.html" data-win="skr_cbf">
+        <span class="num">2</span>
+        <div class="name">CBF확인</div>
+        <div class="desc">마감 · 포탈 자동입력</div>
+      </a>
+      <label><input type="checkbox"> 이번 주 완료</label>
+    </div>
+    <div class="arrow">→</div>
+    <div class="step" data-id="3">
+      <a href="skrshuttle:open">
+        <span class="num">3</span>
+        <div class="name">미반입 &amp; 셔틀</div>
+        <div class="desc">반입 사전확인 · 셔틀 재반출<br>눌러서 실행 (창이 따로 뜹니다)</div>
+      </a>
+      <label><input type="checkbox"> 이번 주 완료</label>
+    </div>
+    <div class="arrow">→</div>
+    <div class="step" data-id="4">
+      <a href="4 화물료/화물료신고.html" data-win="skr_cargo">
+        <span class="num">4</span>
+        <div class="name">화물료</div>
+        <div class="desc">화물료·보안료 신고</div>
+      </a>
+      <label><input type="checkbox"> 이번 주 완료</label>
+    </div>
+  </div>
+
+  <div class="sec">
+    <h2>수시</h2>
+    <span class="rule"></span>
+  </div>
+
+  <div class="tools">
+    <a class="tool" href="위험물DG/DG-위험물 마감대조.html" data-win="skr_dg">
+      <div class="name">위험물DG</div>
+      <div class="desc">수출 마감 검사증 대조</div>
+    </a>
+    <a class="tool" href="신고현황/index.html" data-win="skr_plism">
+      <div class="name">신고현황</div>
+      <div class="desc">PLISM 신고 4칸 확인<br>자료는 실행.bat 으로 받는다</div>
+    </a>
+    <a class="tool" href="적하목록정정/적하목록_정정신청서_자동생성기.html" data-win="skr_fix">
+      <div class="name">적하목록정정</div>
+      <div class="desc">세관 정정신청서 생성</div>
+    </a>
+    <a class="tool" href="체크리스트/체크리스트.html" data-win="skr_check">
+      <div class="name">체크리스트</div>
+      <div class="desc">주간 모선 체크리스트</div>
+    </a>
+  </div>
+
+  <footer>
+    <a href="자료/">자료 폴더</a>
+    <a href="_계획/">정리 계획 폴더</a>
+  </footer>
+
+</div>
+
+<script>
+var KEY = 'mosun_magam_flow';
+
+// 이번 주 월요일 (YYYY-MM-DD)
+function thisMonday(){
+  var d = new Date();
+  var off = (d.getDay() + 6) % 7;        // 월=0 … 일=6
+  d.setDate(d.getDate() - off);
+  d.setHours(0,0,0,0);
+  return d.getFullYear() + '-'
+       + String(d.getMonth()+1).padStart(2,'0') + '-'
+       + String(d.getDate()).padStart(2,'0');
+}
+
+function load(){
+  try{
+    var o = JSON.parse(localStorage.getItem(KEY) || 'null');
+    if(o && o.week === thisMonday()) return o.done || [];
+  }catch(e){}
+  return [];                              // 주가 바뀌면 자동으로 비운다
+}
+
+function save(done){
+  try{ localStorage.setItem(KEY, JSON.stringify({week:thisMonday(), done:done})); }
+  catch(e){}
+}
+
+// 머리말 날짜
+var days = ['일','월','화','수','목','금','토'];
+var n = new Date();
+document.getElementById('today').textContent =
+  (n.getMonth()+1) + '월 ' + n.getDate() + '일 ' + days[n.getDay()] + '요일';
+
+// 고칠거리 남은 개수
+(function(){
+  var el = document.getElementById('todo-n');
+  if(!el) return;
+  var n = 0;
+  try{
+    var l = JSON.parse(localStorage.getItem('mosun_todo_v1') || '[]');
+    n = l.filter(function(x){ return !x.done; }).length;
+  }catch(e){}
+  el.textContent = n;
+  el.classList.toggle('zero', n === 0);
+})();
+
+// 캘린더 카드 - 오늘 날짜와 이번 주
+document.getElementById('cal-m').textContent = (n.getMonth()+1) + '월';
+document.getElementById('cal-d').textContent = n.getDate();
+document.getElementById('cal-w').textContent = days[n.getDay()] + '요일';
+
+(function(){
+  var strip = document.getElementById('cal-week');
+  if(!strip) return;
+  var mo = thisMonday().split('-');
+  var base = new Date(Number(mo[0]), Number(mo[1])-1, Number(mo[2]));
+  var html = '';
+  for(var k=0; k<7; k++){
+    var d = new Date(base); d.setDate(base.getDate()+k);
+    var dow = d.getDay();
+    var cls = dow===6 ? 'sat' : (dow===0 ? 'sun' : '');
+    if(d.getFullYear()===n.getFullYear() && d.getMonth()===n.getMonth()
+       && d.getDate()===n.getDate()) cls += ' now';
+    html += '<i class="'+cls.trim()+'"><b>'+days[dow]+'</b><em>'+d.getDate()+'</em></i>';
+  }
+  strip.innerHTML = html;
+})();
+
+var mon = thisMonday().split('-');
+document.getElementById('weekinfo').textContent =
+  '이번 주 기준 ' + Number(mon[1]) + '월 ' + Number(mon[2]) + '일(월) — 체크는 월요일에 저절로 지워집니다';
+
+// 체크 상태 그리기
+var steps = Array.prototype.slice.call(document.querySelectorAll('.step'));
+function draw(){
+  var done = load();
+  steps.forEach(function(el){
+    var on = done.indexOf(el.dataset.id) !== -1;
+    el.classList.toggle('done', on);
+    el.querySelector('input').checked = on;
+  });
+}
+draw();
+
+steps.forEach(function(el){
+  el.querySelector('input').addEventListener('change', function(){
+    var done = load();
+    var id = el.dataset.id;
+    var i = done.indexOf(id);
+    if(this.checked){ if(i === -1) done.push(id); }
+    else if(i !== -1){ done.splice(i,1); }
+    save(done);
+    draw();
+  });
+});
+
+document.getElementById('reset').addEventListener('click', function(){
+  save([]);
+  draw();
+});
+
+/* ── [추가 20260922] 도구는 팝업창으로 ────────────────────────────────
+   대시보드(이 화면)는 자리를 지키고, 도구만 따로 창으로 뜬다.
+   같은 도구를 또 누르면 **새로 열지 않고** 이미 떠 있는 창을 앞으로 부른다.
+   그래야 올려둔 엑셀·입력하던 값이 그대로 남는다.
+   창을 닫아도 각 도구가 제 자료를 저장해 두므로 다시 열면 복원된다.
+   (자료를 지우는 것은 도구 안의 초기화 단추뿐이다)                        */
+var WINS = {};                      // 창 이름 → 창. 이 화면이 살아있는 동안만 기억한다
+
+function winFeat(small){
+  if(small) return 'width=980,height=760,resizable=yes,scrollbars=yes';
+  var W = screen.availWidth, H = screen.availHeight;
+  var w = Math.max(1000, W - 80), h = Math.max(700, H - 80);
+  return 'width='+w+',height='+h
+       + ',left='+Math.round((W-w)/2)+',top='+Math.round((H-h)/2)
+       + ',resizable=yes,scrollbars=yes';
+}
+
+function openTool(name, url, small){
+  var w = WINS[name];
+  if(w && !w.closed){ try{ w.focus(); }catch(e){} return; }   // 이미 열려 있다 → 앞으로
+  // 이 화면을 새로고침했으면 WINS 가 비어 있다. 이름으로 다시 잡아본다.
+  try{ w = window.open('', name, winFeat(small)); }catch(e){ w = null; }
+  if(!w){ location.href = url; return; }                      // 팝업이 막히면 그냥 이동
+  var blank = true;
+  try{ var u = w.location.href; blank = (u === '' || u === 'about:blank'); }
+  catch(e){ blank = false; }        // 못 읽는다 = 이미 다른 내용이 들어있는 창이다
+  if(blank) w.location.replace(url);
+  WINS[name] = w;
+  try{ w.focus(); }catch(e){}
+  paintDots();
+}
+
+// 표시등 달기 — 카드 제목 옆에 작은 점
+Array.prototype.forEach.call(document.querySelectorAll('[data-win]'), function(a){
+  var t = a.querySelector('.name') || a.querySelector('.t');
+  if(t && !t.querySelector('.dot')){
+    t.insertAdjacentHTML('beforeend',
+      '<i class="dot" data-for="'+a.dataset.win+'"></i><i class="dot-t">열림</i>');
+  }
+  a.addEventListener('click', function(e){
+    if(e.button!==0 || e.ctrlKey || e.metaKey || e.shiftKey || e.altKey) return;  // 새 탭 열기는 그대로
+    e.preventDefault();
+    openTool(a.dataset.win, a.getAttribute('href'), a.dataset.small === '1');
+  });
+});
+
+/* ── [추가 20260922] 공유판(인터넷 주소로 열었을 때) ──────────────────
+   이 도구들은 본래 내 컴퓨터에서 돌게 만든 것이다. 인터넷 주소로 열면
+   아웃룩·파이썬·폴더 열기처럼 **컴퓨터를 직접 만져야 하는 기능은 안 된다.**
+   안 되는 것을 눌러보고 고장인 줄 알면 안 되니, 미리 표시해 둔다.        */
+if(location.protocol !== 'file:'){
+  var PCONLY = ['skrshuttle:open', '자료/', '_계획/'];
+  Array.prototype.forEach.call(document.querySelectorAll('a[href]'), function(a){
+    var href = a.getAttribute('href') || '';
+    if(PCONLY.indexOf(href) === -1) return;
+    a.classList.add('pconly');
+    (a.closest('.step') || a).classList.add('pconly');
+    a.addEventListener('click', function(e){
+      e.preventDefault();
+      alert('이 기능은 내 컴퓨터에 설치된 프로그램을 여는 것이라 인터넷 주소로는 열 수 없습니다. 회사 PC 의 [모선마감] 바로가기로 열어주세요.');
+    });
+  });
+  var n = document.createElement('div');
+  n.className = 'webnote';
+  n.innerHTML = '<b>공유판입니다.</b> 엑셀을 올려서 쓰는 기능은 모두 됩니다. '
+    + '다만 <b>셔틀정리·자료 폴더 열기</b>처럼 컴퓨터를 직접 만지는 것은 안 됩니다 '
+    + '(위에 <b>이 PC에서만</b> 이라고 표시). 넣은 자료는 이 브라우저에만 저장되고 '
+    + '<b>남에게 보이지 않습니다.</b>';
+  var w = document.querySelector('.howto');
+  if(w) w.parentNode.insertBefore(n, w.nextSibling);
+}
+
+function paintDots(){
+  Array.prototype.forEach.call(document.querySelectorAll('.dot'), function(d){
+    var w = WINS[d.dataset.for];
+    d.classList.toggle('on', !!(w && !w.closed));
+  });
+}
+paintDots();
+setInterval(paintDots, 1000);       // 창을 닫으면 표시등도 꺼진다
+</script>
+</body>
+</html>

@@ -1,0 +1,1692 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>화물료 신고 — SKR</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
+<style>
+:root{
+  --bg:#f4f6fb; --card:#fff; --border:#e4eaf4;
+  --blue:#2563eb; --blue-lt:#eff6ff; --blue-mid:#bfdbfe;
+  --navy:#0f2d5e; --green:#16a34a; --green-lt:#f0fdf4; --green-bd:#86efac;
+  --red:#dc2626; --red-lt:#fff1f1; --orange:#ea580c;
+  --text:#0f172a; --sub:#64748b; --muted:#94a3b8;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Noto Sans KR','Apple SD Gothic Neo',sans-serif;font-weight:400;background:var(--bg);color:var(--text);min-height:100vh;font-size:15px}
+/* 헤더 */
+.hdr{background:linear-gradient(135deg,#0f2d5e 0%,#1e4d9b 60%,#2563eb 100%);padding:18px 26px;display:flex;align-items:center;gap:14px;position:relative;overflow:hidden}
+.hdr::before{content:'';position:absolute;right:-40px;top:-40px;width:220px;height:220px;background:radial-gradient(circle,rgba(255,255,255,.08) 0%,transparent 70%);border-radius:50%}
+.hdr-icon{width:46px;height:46px;background:rgba(255,255,255,.15);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:24px;color:#fff;flex-shrink:0}
+.hdr h1{font-size:18px;font-weight:700;color:#fff;font-family:'Nunito',sans-serif}
+.hdr .sub{font-size:11.5px;color:rgba(255,255,255,.6);margin-top:2px;font-weight:300}
+.wrap{max-width:100%;margin:0 auto;padding:10px 14px}
+/* 카드 */
+.card{background:var(--card);border-radius:14px;padding:10px 14px;margin-bottom:12px;border:1px solid var(--border);box-shadow:0 1px 6px rgba(15,45,94,.06)}
+.ctitle{display:flex;align-items:center;gap:7px;margin-bottom:12px;font-size:13px;font-weight:700;color:var(--navy);text-transform:uppercase;letter-spacing:.02em}
+.ctitle i{font-size:15px;color:var(--blue)}
+/* 요약 */
+.sum-row{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+.sum-box{flex:1;min-width:100px;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:10px 14px;box-shadow:0 1px 4px rgba(15,45,94,.05)}
+.sum-l{font-size:10.5px;color:var(--muted);margin-bottom:3px;font-weight:500;text-transform:uppercase;letter-spacing:.05em}
+.sum-v{font-size:18px;font-weight:800;font-family:'Nunito',monospace;color:var(--text)}
+/* 업로드존 */
+.upzone{border:1.5px dashed #c7d7f0;border-radius:10px;padding:12px 16px;cursor:pointer;background:#f8faff;transition:all .15s}
+.upzone:hover,.upzone.drag{border-color:var(--blue);background:var(--blue-lt)}
+/* 버튼 */
+.btn{display:inline-flex;align-items:center;gap:5px;padding:7px 15px;border-radius:8px;border:1px solid var(--border);background:var(--card);color:var(--blue);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;white-space:nowrap;transition:all .12s}
+.btn:hover{opacity:.85;transform:translateY(-1px)}
+.btn.primary{background:var(--navy);color:#fff;border:none;box-shadow:0 2px 8px rgba(15,45,94,.25)}
+.btn.dl{background:linear-gradient(135deg,var(--navy),var(--blue));color:#fff;border:none;box-shadow:0 2px 8px rgba(37,99,235,.3);padding:9px 22px;font-size:14px;font-weight:700}
+/* 정산 카드 */
+.settle-card{background:linear-gradient(135deg,#f0f7ff,#e8f4ff);border:1px solid #bfdbfe;border-radius:14px;padding:16px 18px;margin-bottom:12px}
+.settle-title{font-size:12px;font-weight:700;color:var(--navy);margin-bottom:12px;display:flex;align-items:center;gap:6px;text-transform:uppercase;letter-spacing:.04em}
+.meta-row{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end}
+.meta-box{display:flex;flex-direction:column;gap:3px}
+.meta-lbl{font-size:10.5px;color:var(--sub);font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+.meta-inp{padding:6px 10px;border-radius:8px;border:1.5px solid #bfdbfe;font-size:13px;font-family:inherit;background:#fff;color:var(--text);font-weight:500}
+.meta-inp:focus{outline:none;border-color:var(--blue)}
+/* 필터 탭 */
+.filter-tabs{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap}
+.ftab{padding:5px 14px;border-radius:99px;border:1.5px solid var(--border);background:var(--card);color:var(--sub);font-size:12px;font-weight:600;cursor:pointer;transition:all .12s;font-family:inherit}
+.ftab:hover{border-color:var(--blue);color:var(--blue)}
+.ftab.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.ftab .cnt{font-size:10px;background:rgba(255,255,255,.25);border-radius:99px;padding:1px 6px;margin-left:4px}
+.ftab:not(.on) .cnt{background:#f1f5f9;color:var(--muted)}
+/* 선택 툴바 */
+.sel-toolbar{display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--blue-lt);border-radius:9px;margin-bottom:8px;border:1px solid var(--blue-mid);flex-wrap:wrap}
+.sel-toolbar.hidden{display:none}
+/* 테이블 */
+.vtable-wrap{overflow-x:auto;border-radius:12px;border:1px solid var(--border)}
+.vtable{width:100%;border-collapse:collapse;font-size:13.5px;min-width:0}
+.vtable thead tr{background:var(--navy)}
+.vtable thead th{padding:8px 9px;text-align:left;font-size:12px;font-weight:700;color:rgba(255,255,255,.85);white-space:nowrap}
+.vtable thead th.r{text-align:right}
+.vtable tbody tr{border-bottom:1px solid var(--border);transition:background .1s}
+.vtable tbody tr:last-child{border-bottom:none}
+.vtable tbody tr:hover{background:#f7fbff}
+.vtable tbody tr.has-data{background:#eff6ff}
+.vtable tbody tr.reported{background:#f0fdf4}
+.vtable tbody tr.reported:hover{background:#dcfce7}
+.vtable td{padding:5px 6px;vertical-align:middle;white-space:nowrap}
+.vtable td.r{text-align:right;font-family:'Nunito',monospace;font-weight:700}
+.vtable td.imp{color:#1d4ed8}
+.vtable td.exp{color:var(--orange)}
+.vtable td.tot{color:var(--navy);font-size:13px}
+.vtable tfoot tr{background:#f0f7ff;border-top:2px solid var(--border)}
+.vtable tfoot td{padding:5px 6px;font-weight:800;font-family:'Nunito',monospace;font-size:12.5px}
+.sub-col{transition:all .2s}
+.sub-hidden{display:none}
+.sortable:hover{background:rgba(255,255,255,.12) !important;cursor:pointer}
+.si{font-size:9px;opacity:.45;margin-left:2px}
+.si.on{opacity:1;color:#93c5fd}
+/* 입력칸 */
+.tinp{width:72px;padding:3px 4px;border-radius:5px;border:1.5px solid #e2e8f0;font-size:12px;font-family:'Nunito',monospace;text-align:right;background:#fafcff;color:var(--text);transition:all .1s}
+.tinp:focus{outline:none;border-color:var(--blue);background:var(--blue-lt)}
+.tinp.filled{border-color:var(--blue-mid);background:var(--blue-lt);font-weight:700;color:#1d4ed8}
+/* [추가 20260918] 양하만·적하만으로 자동 0 이 된 칸 — 못 건드린다 */
+.tinp.locked{background:#f1f5f9;border-color:#e2e8f0;color:#94a3b8;cursor:not-allowed}
+/* [추가 20260918] 메모칸 단추 */
+.mbtn{border:1.5px solid #e2e8f0;background:#fff;color:#94a3b8;border-radius:6px;
+  padding:3px 9px;font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;
+  margin-right:4px;transition:all .12s;white-space:nowrap}
+.mbtn:hover{border-color:#cbd5e1;color:#64748b}
+.mbtn.disc.on{background:var(--blue-lt);border-color:var(--blue-mid);color:#1d4ed8}
+.mbtn.load.on{background:#fff7ed;border-color:#fdba74;color:#c2410c}
+.memo-old{font-size:11px;color:#94a3b8;margin-left:5px}
+/* CALL 복사 버튼 */
+.call-copy{background:#dbeafe;border:1px solid #93c5fd;color:#1d4ed8;border-radius:5px;padding:2px 8px;font-size:12.5px;font-weight:700;cursor:pointer;font-family:'Nunito',monospace;white-space:nowrap;letter-spacing:.04em;transition:all .12s}
+.call-copy:hover{background:#bfdbfe}
+.call-copy.copied{background:#dcfce7;border-color:var(--green-bd);color:var(--green)}
+/* 배지 */
+.rep-badge{font-size:11px;font-weight:800;padding:2px 9px;border-radius:99px;background:#dcfce7;color:#15803d;border:1.5px solid #86efac;white-space:nowrap;cursor:pointer}
+.rep-badge:hover{background:#bbf7d0}
+.rep-btn{font-size:11px;font-weight:700;padding:2px 9px;border-radius:99px;border:1.5px solid #cbd5e1;background:#f1f5f9;color:#94a3b8;cursor:pointer;white-space:nowrap;transition:all .12s}
+.rep-btn:hover{border-color:var(--green-bd);color:var(--green);background:var(--green-lt)}
+.inv-ok{font-size:11px;font-weight:700;padding:2px 8px;border-radius:99px;background:#dcfce7;color:#15803d;border:1px solid var(--green-bd);white-space:nowrap}
+.inv-no{font-size:11px;font-weight:600;padding:2px 8px;border-radius:99px;background:#f1f5f9;color:#94a3b8;border:1px solid #e2e8f0;white-space:nowrap}
+.vdel{background:none;border:1px solid #fecaca;color:var(--red);border-radius:5px;width:22px;height:22px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;font-size:11px}
+.vdel:hover{background:var(--red-lt)}
+.empty{text-align:center;padding:30px;color:var(--muted);font-size:13px}
+</style>
+
+<!-- 발표용에만 들어가는 것. 실제 쓰는 쪽에는 없다. -->
+<script src="../발표용-띠.js"></script>
+</head>
+<body>
+<!-- [추가 20260918] 돌아가기 띠 — 시작 화면(모선마감)으로 돌아간다. skr-backbar -->
+<style>
+#skr-backbar{position:sticky;top:0;z-index:99999;display:flex;align-items:center;gap:10px;
+  padding:7px 14px;background:#1a3a5c;color:#fff;font-size:13.5px;
+  font-family:'Noto Sans KR','Malgun Gothic','맑은 고딕',sans-serif;line-height:1.4;
+  box-shadow:0 1px 4px rgba(0,0,0,.18);}
+#skr-backbar a{color:#fff;text-decoration:none;font-weight:700;
+  border:1px solid rgba(255,255,255,.45);border-radius:5px;padding:3px 11px;white-space:nowrap;}
+#skr-backbar a:hover{background:rgba(255,255,255,.18);}
+#skr-backbar a{display:inline-flex;align-items:center;gap:6px;}
+#skr-backbar .here{opacity:.75;font-weight:400;}
+@media print{#skr-backbar{display:none;}}
+</style>
+<div id="skr-backbar">
+  <a href="../시작.html" title="모선마감 시작 화면으로 돌아갑니다"><span style="font-size:14px">&#127968;</span><span style="font-weight:800;letter-spacing:.4px">HOME</span><span>모선마감</span></a>
+  <span class="here">화물료</span>
+</div>
+
+
+<!-- 헤더 -->
+<div class="hdr">
+  <div class="hdr-icon"><i class="ti ti-anchor"></i></div>
+  <div>
+    <h1>화물료 신고 — SKR</h1>
+    <div class="sub">여수광양항만공사 화물료·보안료 · WHG 파일 자동생성</div>
+  </div>
+</div>
+
+<div class="wrap">
+
+<!-- 요약 + 포트미스 -->
+<div style="display:flex;gap:8px;margin-bottom:12px;align-items:stretch;flex-wrap:wrap">
+  <!-- 요약 -->
+  <div style="display:flex;gap:8px;flex-shrink:0">
+    <!-- [추가 20260922] 고지서 장수 — 받아야 할 지로 장수. 모선당 2장(입항+출항),
+         한쪽만 있는 모선(양하만/적하만)은 1장. 스케줄의 I-VOY/O-VOY 유무로 센다. -->
+    <div class="sum-box" style="min-width:96px"><div class="sum-l">고지서</div><div class="sum-v" id="s-inv" style="color:#6d28d9">0 <span style="font-size:12px;font-weight:500;color:var(--muted)">장</span></div><div class="sum-l" id="s-inv-sub" style="margin:2px 0 0;text-transform:none;letter-spacing:0">입 0 · 출 0</div></div>
+    <div class="sum-box" style="min-width:70px"><div class="sum-l">모선</div><div class="sum-v" id="s-cnt">0</div></div>
+    <div class="sum-box" style="min-width:140px"><div class="sum-l">전체 합계</div><div class="sum-v" id="s-tot" style="color:var(--navy);font-size:18px">0 <span style="font-size:12px;font-weight:500;color:var(--muted)">원</span></div></div>
+  </div>
+  <!-- 포트미스 -->
+  <button onclick="window.open('https://new.portmis.go.kr/portmis/websquare/websquare.jsp?w2xPath=/portmis/w2/main/index.xml&page=/portmis/w2/co/como/intro/min/UI-PM-CO-201.xml&menuId=0459&menuCd=M2140&menuNm=%ED%86%B5%ED%95%A9%ED%98%84%ED%99%A9%EC%A0%95%EB%B3%B4','_blank')" style="flex:1;min-width:160px;background:linear-gradient(135deg,#065f46,#059669);border:none;border-radius:10px;padding:10px 16px;cursor:pointer;display:flex;align-items:center;gap:10px;box-shadow:0 2px 8px rgba(5,150,105,.25);transition:all .15s;text-align:left" onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform='none'">
+    <i class="ti ti-world" style="font-size:20px;color:#fff;flex-shrink:0"></i>
+    <div><div style="font-size:13px;font-weight:800;color:#fff">포트미스 접속</div><div style="font-size:10px;color:rgba(255,255,255,.75);margin-top:1px">항만청 화물료 신고</div></div>
+    <i class="ti ti-arrow-right" style="font-size:14px;color:rgba(255,255,255,.6);margin-left:auto"></i>
+  </button>
+</div>
+
+<!-- 모선별 화물료 -->
+<div class="card">
+  <!-- ① 스케줄 · 파일추가 · ② 고지서 -->
+  <div style="display:flex;gap:8px;align-items:stretch;margin-bottom:8px;flex-wrap:wrap">
+    <!-- 드래그존: 옅은 노란색, 50% -->
+    <div class="upzone" id="xls-zone" style="flex:1;margin-bottom:0;background:#fffbeb;border-color:#fcd34d" ondragover="xlsDrag(event,true)" ondragleave="xlsDrag(event,false)" ondrop="xlsDrop(event)" onclick="document.getElementById('xls-f').click()">
+      <input type="file" accept=".xls,.xlsx" id="xls-f" onchange="xlsFile(event)" style="display:none">
+      <div style="display:flex;align-items:center;gap:12px">
+        <div style="width:38px;height:38px;background:#fef3c7;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0"><span style="font-size:23px;font-weight:800;color:#b45309;line-height:1;font-family:'Nunito',sans-serif;flex-shrink:0">①</span></div>
+        <div>
+          <div style="font-size:13px;font-weight:700;color:var(--navy)" id="xls-fn">스케줄 파일 클릭 또는 드래그</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:2px">VSL · 선명 · I/O-VOY · CALL 자동 추출</div>
+        </div>
+        <button onclick="event.stopPropagation();resetAll()" style="margin-left:auto;font-size:11px;padding:2px 9px;border-radius:99px;border:1px solid #fecaca;background:#fff;color:var(--red);cursor:pointer;flex-shrink:0">초기화</button>
+      </div>
+    </div>
+    <!-- 파일 추가: 옅은 붉은색, 50% -->
+    <div style="flex:1;background:#fff1f1;border:1.5px dashed #fca5a5;border-radius:10px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .15s;padding:12px 16px" onclick="document.getElementById('xls-add-f').click()" onmouseover="this.style.background='#fee2e2'" onmouseout="this.style.background='#fff1f1'">
+      <input type="file" accept=".xls,.xlsx" id="xls-add-f" onchange="xlsAddFile(event)" style="display:none">
+      <div style="display:flex;align-items:center;gap:12px">
+        <div style="width:38px;height:38px;background:#fecaca;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="ti ti-plus" style="font-size:19px;color:#dc2626"></i></div>
+        <div>
+          <div style="font-size:13px;font-weight:700;color:var(--navy)">파일 추가 (2주치 합치기)</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:2px">기존 모선 유지 + 새 모선 추가</div>
+        </div>
+      </div>
+    </div>
+
+  <!-- 고지서 총합 대조 -->
+  <div id="chk-card" style="flex:1;min-width:210px;background:linear-gradient(135deg,#5b21b6,#7c3aed);border:none;border-radius:10px;padding:10px 16px;cursor:pointer;display:flex;align-items:center;gap:10px;box-shadow:0 2px 8px rgba(124,58,237,.25);transition:all .15s;text-align:left"
+       ondragover="chkDrag(event,true)" ondragleave="chkDrag(event,false)" ondrop="chkDrop(event)"
+       onclick="document.getElementById('chk-f').click()"
+       onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform='none'">
+    <input type="file" accept=".pdf" multiple id="chk-f" onchange="chkPick(event)" style="display:none">
+    <span id="chk-icon" style="font-size:23px;font-weight:800;color:#fff;line-height:1;font-family:'Nunito',sans-serif;flex-shrink:0">②</span>
+    <div style="min-width:0;flex:1">
+      <div style="font-size:13px;font-weight:800;color:#fff" id="chk-title">고지서 PDF 넣기</div>
+      <div style="font-size:10px;color:rgba(255,255,255,.75);margin-top:1px" id="chk-sub">총합 대조 · 금액 읽기</div>
+    </div>
+    <i class="ti ti-upload" style="font-size:14px;color:rgba(255,255,255,.6);margin-left:auto;flex-shrink:0" id="chk-arrow"></i>
+  </div>
+  </div>
+  <div id="xls-add-msg" style="display:none;font-size:11px;color:var(--green);font-weight:600;margin-bottom:8px;padding:4px 8px;background:#f0fdf4;border-radius:6px;border:1px solid var(--green-bd)"></div>
+
+<div id="chk-panel" style="display:none;margin-bottom:12px;border-radius:12px;padding:14px 17px;border:1.5px solid var(--border);background:#fff">
+  <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:11px">
+    <span style="font-size:12.5px;font-weight:800;color:var(--navy)"><i class="ti ti-scale"></i> 총합 대조</span>
+    <span id="chk-badge" style="font-size:12px;font-weight:800;padding:3px 12px;border-radius:99px"></span>
+    <button onclick="chkToggleDetail()" id="chk-detail-btn" style="font-size:11px;padding:3px 10px;border-radius:6px;border:1px solid var(--border);background:#f8faff;color:var(--blue);cursor:pointer;font-weight:700">장별 보기</button>
+    <button onclick="chkSortByPage()" id="chk-sort-btn" style="display:none;font-size:11.5px;padding:4px 12px;border-radius:7px;border:1.5px solid #c4b5fd;background:#faf5ff;color:#6d28d9;cursor:pointer;font-weight:700">③ 고지서 순서로 표 정렬</button>
+    <button onclick="chkFill()" id="chk-fill-btn" style="display:none;font-size:12px;padding:5px 15px;border-radius:7px;border:none;background:linear-gradient(135deg,var(--navy),var(--blue));color:#fff;cursor:pointer;font-weight:800;box-shadow:0 2px 7px rgba(37,99,235,.28)"></button>
+    <button onclick="chkClear()" style="margin-left:auto;font-size:11px;padding:3px 10px;border-radius:6px;border:1px solid #fecaca;background:#fff;color:var(--red);cursor:pointer;font-weight:600">닫기</button>
+  </div>
+
+  <div style="display:flex;gap:10px;flex-wrap:wrap">
+    <div style="flex:1;min-width:170px;background:#f8faff;border:1px solid var(--border);border-radius:10px;padding:9px 13px">
+      <div style="font-size:10.5px;color:var(--muted);font-weight:600;letter-spacing:.03em">내가 입력한 합계</div>
+      <div id="chk-mine" style="font-size:20px;font-weight:800;font-family:'Nunito',monospace;color:var(--navy);margin-top:2px">0</div>
+    </div>
+    <div style="flex:1;min-width:170px;background:#faf5ff;border:1px solid #ddd6fe;border-radius:10px;padding:9px 13px">
+      <div style="font-size:10.5px;color:#7c3aed;font-weight:600;letter-spacing:.03em">고지서에서 읽은 합계</div>
+      <div id="chk-pdf" style="font-size:20px;font-weight:800;font-family:'Nunito',monospace;color:#6d28d9;margin-top:2px">0</div>
+      <div id="chk-pages" style="font-size:10px;color:var(--muted);margin-top:2px"></div>
+    </div>
+    <div id="chk-diff-box" style="flex:1;min-width:170px;border-radius:10px;padding:9px 13px;display:none">
+      <div style="font-size:10.5px;font-weight:600;letter-spacing:.03em" id="chk-diff-lbl">차이</div>
+      <div id="chk-diff" style="font-size:20px;font-weight:800;font-family:'Nunito',monospace;margin-top:2px">0</div>
+    </div>
+  </div>
+
+  <div id="chk-msg" style="font-size:11.5px;color:var(--sub);margin-top:9px;line-height:1.6"></div>
+
+  <!-- 장별 상세 -->
+  <div id="chk-detail" style="display:none;margin-top:11px">
+    <div style="overflow-x:auto;border-radius:9px;border:1px solid var(--border)">
+      <table class="vtable" style="font-size:12.5px">
+        <thead><tr>
+          <th style="width:36px">장</th><th>CALL</th><th>항차</th><th>입/출항</th>
+          <th class="r">화물료</th><th class="r">보안료</th><th class="r">합계</th>
+          <th>들어갈 자리</th><th>상태</th>
+        </tr></thead>
+        <tbody id="chk-tbody"></tbody>
+      </table>
+    </div>
+    <div style="font-size:10.5px;color:var(--muted);margin-top:5px">
+      금액은 고지서에서 읽기만 한 값입니다 — 표의 입력값은 바뀌지 않습니다.
+    </div>
+  </div>
+</div>
+
+  <div class="ctitle" style="margin-bottom:8px">
+    <span style="font-size:16px;font-weight:800;color:var(--blue);line-height:1;font-family:'Nunito',sans-serif;flex-shrink:0">⑤</span> 모선별 화물료 <span style="font-size:11px;font-weight:600;color:var(--muted);text-transform:none;letter-spacing:0">— 빈칸 직접 입력</span>
+    <div style="margin-left:auto;display:flex;gap:7px;align-items:center">
+      <label style="display:flex;align-items:center;gap:4px;font-size:12px;color:var(--sub);cursor:pointer;font-weight:600">
+        <input type="checkbox" id="chk-all" onchange="toggleAll(this)" style="accent-color:var(--blue);width:14px;height:14px"> 전체선택
+      </label>
+      <button onclick="toggleSub()" id="sub-toggle-btn" style="font-size:11px;padding:3px 9px;border-radius:6px;border:1px solid #b3d4f0;background:#f0f7ff;color:var(--blue);cursor:pointer;font-weight:600">소계 숨기기</button>
+      <button onclick="addVessel()" style="font-size:12px;padding:3px 11px;border-radius:6px;border:1px solid var(--border);background:#f8faff;color:var(--blue);cursor:pointer;font-weight:700">+ 추가</button>
+    </div>
+  </div>
+
+  <!-- 필터 탭 -->
+  <div class="filter-tabs" style="align-items:center">
+    <button class="ftab on" data-f="all" onclick="setFilter('all')">전체 <span class="cnt" id="fc-all">0</span></button>
+    <button class="ftab" data-f="no-invoice" onclick="setFilter('no-invoice')">📋 고지서 미확인 <span class="cnt" id="fc-noinv">0</span></button>
+    <button class="ftab" data-f="no-report" onclick="setFilter('no-report')">미신고 <span class="cnt" id="fc-norep">0</span></button>
+    <div style="display:flex;align-items:center;gap:6px;margin-left:8px;padding-left:10px;border-left:1px solid var(--border)">
+      <span style="font-size:11.5px;font-weight:700;color:#dc2626;white-space:nowrap">⚠ 납부기한</span>
+      <input type="date" id="fee-due" onchange="updateDueBadge();lsave()" style="padding:3px 7px;border:1.5px solid #fca5a5;border-radius:7px;font-size:12px;font-family:inherit;background:#fff1f1;color:var(--text)">
+      <span id="due-badge" style="display:none;font-size:12px;font-weight:700;padding:3px 10px;border-radius:7px;white-space:nowrap"></span>
+    </div>
+  </div>
+
+  <!-- 선택 툴바 -->
+  <div class="sel-toolbar hidden" id="sel-toolbar">
+    <span id="sel-count" style="font-weight:700;color:var(--blue);font-size:13px">0개 선택됨</span>
+    <button class="btn" onclick="whgDlSelected()" style="padding:5px 12px;font-size:12px;background:var(--navy);color:#fff;border:none"><i class="ti ti-download"></i> 선택 WHG 다운로드</button>
+    <button class="btn" onclick="markReported(true)" style="padding:5px 12px;font-size:12px;color:var(--green);border-color:var(--green-bd)"><i class="ti ti-circle-check"></i> 신고완료</button>
+    <button class="btn" onclick="markReported(false)" style="padding:5px 12px;font-size:12px"><i class="ti ti-circle-x"></i> 해제</button>
+    <button class="btn" onclick="delSelected()" style="padding:5px 12px;font-size:12px;color:var(--red);border-color:#fecaca"><i class="ti ti-trash"></i> 선택 삭제</button>
+  </div>
+
+  <!-- 테이블 -->
+  <div class="vtable-wrap">
+    <table class="vtable">
+      <thead>
+        <tr>
+          <th style="width:30px"><input type="checkbox" id="chk-all2" onchange="toggleAll(this)" style="accent-color:rgba(255,255,255,.8);width:14px;height:14px"></th>
+          <th class="sortable" onclick="sortBy('vsl')" data-col="vsl" style="cursor:pointer">VSL <span class="si" id="si-vsl">▲▼</span></th>
+          <th class="sortable" onclick="sortBy('call')" data-col="call" style="cursor:pointer">CALL <span class="si" id="si-call">▲▼</span></th>
+          <th class="sortable" onclick="sortBy('hmc')" data-col="hmc" style="cursor:pointer">항만청 <span class="si" id="si-hmc">▲▼</span></th>
+          <th class="sortable" onclick="sortBy('ivoy')" data-col="ivoy" style="cursor:pointer">I-VOY <span class="si" id="si-ivoy">▲▼</span></th>
+          <th class="sortable" onclick="sortBy('ovoy')" data-col="ovoy" style="cursor:pointer">O-VOY <span class="si" id="si-ovoy">▲▼</span></th>
+          <th class="r" style="color:#93c5fd">수입 화물료</th>
+          <th class="r" style="color:#93c5fd">수입 보안료</th>
+          <th class="r sub-col" style="color:#93c5fd">수입 소계</th>
+          <th class="r" style="color:#fdba74">수출 화물료</th>
+          <th class="r" style="color:#fdba74">수출 보안료</th>
+          <th class="r sub-col" style="color:#fdba74">수출 소계</th>
+          <th class="r" style="color:#fff">합계</th>
+          <th class="sortable" onclick="sortBy('invCheck')" data-col="invCheck" style="text-align:center;cursor:pointer">고지서 <span class="si" id="si-invCheck">▲▼</span></th>
+          <th class="sortable" onclick="sortBy('reported')" data-col="reported" style="text-align:center;cursor:pointer">신고 <span class="si" id="si-reported">▲▼</span></th>
+          <th style="min-width:120px;color:rgba(255,255,255,.85)">메모</th>
+          <th style="width:28px"></th>
+        </tr>
+      </thead>
+      <tbody id="vtbody">
+        <tr><td colspan="14" class="empty"><i class="ti ti-upload" style="font-size:22px;display:block;margin-bottom:5px;opacity:.3"></i>스케줄 파일을 업로드하면 모선 목록이 표시됩니다</td></tr>
+      </tbody>
+      <tfoot id="vtfoot" style="display:none">
+        <tr>
+          <td colspan="6" style="color:var(--sub);font-size:11px;font-weight:600">합계</td>
+          <td colspan="2"></td>
+          <td class="r imp sub-col" id="ft-imp" style="font-weight:800"></td>
+          <td colspan="2"></td>
+          <td class="r exp sub-col" id="ft-exp" style="font-weight:800"></td>
+          <td class="r tot" id="ft-tot"></td>
+          <td colspan="3"></td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+</div>
+
+<!-- 정산 정보 (하단) -->
+<div class="settle-card">
+  <div class="settle-title"><span style="font-size:16px;font-weight:800;color:var(--blue);line-height:1;font-family:'Nunito',sans-serif;flex-shrink:0">⑥</span> 정산 정보 입력 후 WHG 다운로드</div>
+  <div class="meta-row" style="margin-bottom:14px">
+    <div class="meta-box"><div class="meta-lbl">발생일자</div><input class="meta-inp" type="date" id="fee-occ" onchange="autoSettle()"></div>
+    <div class="meta-box"><div class="meta-lbl">정산일 (+14일)</div><input class="meta-inp" type="date" id="fee-set" style="background:#f0f7ff"></div>
+    <div class="meta-box"><div class="meta-lbl">비고</div><input class="meta-inp" type="text" id="fee-rem" placeholder="" style="width:140px"></div>
+  </div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+    <button class="btn primary" onclick="saveData()" style="padding:8px 16px"><i class="ti ti-device-floppy"></i> 저장</button>
+    <button class="btn dl" onclick="whgDl()"><i class="ti ti-download"></i> WHG 작성자료 다운</button>
+    <button class="btn" onclick="exportJSON()" style="padding:8px 14px;border-color:#a78bfa;color:#7c3aed"><i class="ti ti-file-export"></i> 백업 내보내기</button>
+    <label class="btn" style="padding:8px 14px;border-color:#a78bfa;color:#7c3aed;cursor:pointer">
+      <i class="ti ti-file-import"></i> 백업 불러오기
+      <input type="file" accept=".json" onchange="importJSON(event)" style="display:none">
+    </label>
+    <span id="save-ok" style="font-size:12px;color:var(--green);display:none;font-weight:600">✓ 저장됐습니다</span>
+  </div>
+</div>
+
+<!-- 저장 내역 -->
+<div class="card">
+  <div class="ctitle"><i class="ti ti-history"></i> 저장 내역</div>
+  <div id="hist-list"><div style="font-size:12px;color:var(--muted);padding:4px 0">저장된 내역이 없습니다</div></div>
+</div>
+
+</div><!-- /wrap -->
+
+<script>
+// ── 전역 ──────────────────────────────────────────────────────────────────────
+let vessels = [];   // {vsl, vname, ivoy, ovoy, hmc, call, iwh, isc, owh, osc, reported, isNew}
+let saved   = [];
+let curFilter = 'all';
+
+// ── 유틸 ──────────────────────────────────────────────────────────────────────
+const krwN = v => v ? Number(String(v).replace(/[,원\s]/g,'')) : 0;
+const krwF = n => n ? Number(n).toLocaleString() : '0';
+
+function fClr(el){ el.value = el.value.replace(/,/g,''); }
+
+function fFmt(el){
+  const n = krwN(el.value);
+  el.value = n ? krwF(n) : '';
+  el.classList.toggle('filled', !!n);
+  syncDOM(); updateAll();
+}
+
+function autoSettle(){
+  const iso = document.getElementById('fee-occ').value;
+  if(iso){
+    const d = new Date(iso);
+    d.setDate(d.getDate() + 14);
+    document.getElementById('fee-set').value = d.toISOString().slice(0,10);
+  }
+}
+
+function updateDueBadge(){
+  const due = document.getElementById('fee-due').value;
+  const badge = document.getElementById('due-badge');
+  const inp = document.getElementById('fee-due');
+  if(!due){ badge.style.display='none'; return; }
+  const today = new Date(); today.setHours(0,0,0,0);
+  const dueDate = new Date(due); dueDate.setHours(0,0,0,0);
+  const diff = Math.round((dueDate - today) / (1000*60*60*24));
+  badge.style.display = 'block';
+  if(diff < 0){
+    badge.textContent = '⚠ 기한 '+Math.abs(diff)+'일 초과!';
+    badge.style.cssText += ';background:#fee2e2;color:#dc2626;border:1.5px solid #fca5a5';
+    inp.style.borderColor='#dc2626'; inp.style.background='#fff1f1';
+  } else if(diff === 0){
+    badge.textContent = '🚨 오늘 마감!';
+    badge.style.cssText += ';background:#fee2e2;color:#dc2626;border:1.5px solid #fca5a5';
+    inp.style.borderColor='#dc2626'; inp.style.background='#fff1f1';
+  } else if(diff <= 3){
+    badge.textContent = '⚠ '+diff+'일 남음';
+    badge.style.cssText += ';background:#fff7ed;color:#ea580c;border:1.5px solid #fdba74';
+    inp.style.borderColor='#fb923c'; inp.style.background='#fff7ed';
+  } else {
+    badge.textContent = '✓ '+diff+'일 남음';
+    badge.style.cssText += ';background:#f0fdf4;color:#16a34a;border:1.5px solid #86efac';
+    inp.style.borderColor='#86efac'; inp.style.background='#f0fdf4';
+  }
+}
+
+// ── 스케줄 업로드 ─────────────────────────────────────────────────────────────
+// 브라우저가 파일을 새 탭으로 여는 것 방지
+document.addEventListener('dragover', e => e.preventDefault());
+document.addEventListener('drop', e => e.preventDefault());
+
+function xlsDrag(e, on){ e.preventDefault(); e.stopPropagation(); document.getElementById('xls-zone').classList.toggle('drag', on); }
+function xlsDrop(e){ e.preventDefault(); e.stopPropagation(); xlsDrag(e,false); xlsParse(e.dataTransfer.files[0]); }
+function xlsFile(e){ xlsParse(e.target.files[0]); e.target.value=''; }
+function xlsAddFile(e){ xlsParseAdd(e.target.files[0]); e.target.value=''; }
+
+function parseXlsData(result){
+  const wb = XLSX.read(result, {type:'array'});
+  const ws = wb.Sheets[wb.SheetNames[0]];
+  const raw = XLSX.utils.sheet_to_json(ws, {header:1, defval:''});
+  let hi = -1;
+  for(let i=0; i<raw.length; i++){
+    if(raw[i].some(c => String(c).trim() === 'VSL')){ hi=i; break; }
+  }
+  if(hi < 0) throw new Error('헤더를 찾을 수 없습니다 (VSL 컬럼 필요)');
+  const hdr = raw[hi];
+  const voys = hdr.reduce((a,h,i) => { if(h==='VOY') a.push(i); return a; }, []);
+  const vslIdx = hdr.findIndex(h => String(h).trim()==='VSL');
+  const ci = n => hdr.indexOf(n);
+  const COL = {vsl:vslIdx, vname:ci('선명'), ivoy:voys[0]??-1, ovoy:voys[1]??-1, hmc:ci('항만청'), call:ci('CALL')};
+  return raw.slice(hi+1)
+    .filter(r => r[COL.vsl] && String(r[COL.vsl]).trim())
+    .map(r => {
+      const g = c => c>=0 ? String(r[c]||'').trim() : '';
+      return {vsl:g(COL.vsl), vname:g(COL.vname), ivoy:g(COL.ivoy), ovoy:g(COL.ovoy),
+              hmc:g(COL.hmc), call:g(COL.call), iwh:0, isc:0, owh:0, osc:0,
+              reported:false, isNew:false, invCheck:false, memo:''};
+    });
+}
+
+function xlsParse(file){
+  if(!file) return;
+  const r = new FileReader();
+  r.onload = ev => {
+    try{
+      vessels = parseXlsData(ev.target.result);
+      document.getElementById('xls-fn').textContent = file.name + ' — ' + vessels.length + '척';
+      render(); lsave();
+    } catch(e){ alert('파싱 오류: ' + e.message); }
+  };
+  r.readAsArrayBuffer(file);
+}
+
+function xlsParseAdd(file){
+  if(!file) return;
+  syncDOM();
+  if(!vessels.length){ xlsParse(file); return; }
+  const r = new FileReader();
+  r.onload = ev => {
+    try{
+      const newV = parseXlsData(ev.target.result);
+      const existing = new Set(vessels.map(v => v.vsl+'|'+v.ivoy+'|'+v.ovoy+'|'+v.hmc));
+      const added = newV.filter(v => !existing.has(v.vsl+'|'+v.ivoy+'|'+v.ovoy+'|'+v.hmc));
+      vessels = [...vessels, ...added];
+      const msg = document.getElementById('xls-add-msg');
+      msg.style.display = 'block';
+      msg.textContent = '✓ ' + file.name + ' 추가 완료 — ' + added.length + '척 추가 (총 ' + vessels.length + '척)';
+      setTimeout(() => { msg.style.display='none'; }, 4000);
+      document.getElementById('xls-fn').textContent = '총 ' + vessels.length + '척 (파일 추가됨)';
+      render(); lsave();
+    } catch(e){ alert('파싱 오류: ' + e.message); }
+  };
+  r.readAsArrayBuffer(file);
+}
+
+function resetAll(){
+  if(!confirm('전체 초기화하시겠습니까?')) return;
+  vessels = [];
+  document.getElementById('xls-fn').textContent = '지난스케줄.xls 클릭 또는 드래그';
+  document.getElementById('fee-occ').value = '';
+  document.getElementById('fee-set').value = '';
+  document.getElementById('fee-rem').value = '';
+  document.getElementById('fee-due').value = '';
+  const badge = document.getElementById('due-badge');
+  if(badge) badge.style.display = 'none';
+  render(); lsave();
+}
+
+// ── 필터 ──────────────────────────────────────────────────────────────────────
+function setFilter(f){
+  curFilter = f;
+  document.querySelectorAll('.ftab').forEach(t => t.classList.toggle('on', t.dataset.f === f));
+  render();
+}
+
+function filtered(){
+  if(curFilter === 'no-invoice') return vessels.filter(v => !invoiceOk(v));
+  if(curFilter === 'no-report')  return vessels.filter(v => !v.reported);
+  return vessels;
+}
+
+function invoiceOk(v){ return ((v.iwh||0)+(v.isc||0)) > 0 && ((v.owh||0)+(v.osc||0)) > 0; }
+
+function updateCounts(){
+  const noInv = vessels.filter(v => !invoiceOk(v)).length;
+  const noRep = vessels.filter(v => !v.reported).length;
+  const e = id => document.getElementById(id);
+  if(e('fc-all'))   e('fc-all').textContent   = vessels.length;
+  if(e('fc-noinv')) e('fc-noinv').textContent = noInv;
+  if(e('fc-norep')) e('fc-norep').textContent = noRep;
+}
+
+// ── 렌더 ──────────────────────────────────────────────────────────────────────
+function render(){
+  const tbody = document.getElementById('vtbody');
+  const tfoot = document.getElementById('vtfoot');
+  if(!vessels.length){
+    tbody.innerHTML = '<tr><td colspan="14" class="empty"><i class="ti ti-upload" style="font-size:22px;display:block;margin-bottom:5px;opacity:.3"></i>스케줄 파일을 업로드하면 모선 목록이 표시됩니다</td></tr>';
+    tfoot.style.display = 'none';
+    updateSummary(); updateToolbar(); updateCounts(); return;
+  }
+  const list = filtered();
+  if(!list.length){
+    tbody.innerHTML = '<tr><td colspan="14" class="empty"><i class="ti ti-filter-off" style="font-size:22px;display:block;margin-bottom:5px;opacity:.3"></i>해당하는 모선이 없습니다</td></tr>';
+    tfoot.style.display = 'none';
+    updateSummary(); updateToolbar(); updateCounts(); return;
+  }
+  tfoot.style.display = '';
+  tbody.innerHTML = list.map(v => rowHTML(v, vessels.indexOf(v))).join('');
+  // 값 복원
+  vessels.forEach((v,vi) => {
+    ['iwh','isc','owh','osc'].forEach(f => {
+      const el = document.getElementById('t_'+vi+'_'+f);
+      if(!el) return;
+      el.value = v[f] ? krwF(v[f]) : '';
+      el.classList.toggle('filled', !!(v[f]));
+    });
+  });
+  updateFooter(); updateSummary(); updateToolbar(); updateCounts();
+}
+
+function rowHTML(v, vi){
+  const tot = (v.iwh||0)+(v.isc||0)+(v.owh||0)+(v.osc||0);
+  const ok  = invoiceOk(v);
+  const rep = v.reported||false;
+  const isNew = v.isNew||false;
+  const rowCls = rep ? 'reported' : tot>0 ? 'has-data' : '';
+
+  // CALL 버튼
+  const callEl = isNew
+    ? '<input style="width:68px;border:1px solid #93c5fd;border-radius:5px;padding:2px 5px;font-size:12px;font-family:monospace;text-align:center;background:#dbeafe;color:#1d4ed8" value="'+v.call+'" placeholder="CALL" onchange="vessels['+vi+'].call=this.value">'
+    : '<button class="call-copy" onclick="copyCall('+vi+',this)">'+( v.call||'—')+'</button>';
+
+  // 편집 가능 필드 (신규 모선)
+  const nameEl = isNew
+    ? '<input style="width:72px;border:1px solid var(--blue-mid);border-radius:5px;padding:2px 5px;font-size:12px;font-family:monospace" value="'+v.vsl+'" placeholder="VSL" onchange="vessels['+vi+'].vsl=this.value">'
+    : v.vsl;
+  const hmcEl = isNew
+    ? '<input style="width:38px;border:1px solid #fcd34d;border-radius:5px;padding:2px 4px;font-size:12px;text-align:center;background:#fefce8" value="'+v.hmc+'" onchange="vessels['+vi+'].hmc=this.value">'
+    : v.hmc;
+  const ivoyEl = '<input style="width:52px;border:1px solid #e2e8f0;border-radius:5px;padding:2px 4px;font-size:12.5px;font-family:\'Nunito\',monospace;text-align:center;font-weight:700;background:transparent" value="'+(v.ivoy||'')+'" placeholder="I-VOY" onchange="vessels['+vi+'].ivoy=this.value;lsave()" onfocus="this.style.borderColor=\'var(--blue)\';this.style.background=\'#eff6ff\'" onblur="this.style.borderColor=\'#e2e8f0\';this.style.background=\'transparent\'">';
+  const ovoyEl = '<input style="width:52px;border:1px solid #e2e8f0;border-radius:5px;padding:2px 4px;font-size:12.5px;font-family:\'Nunito\',monospace;text-align:center;font-weight:700;background:transparent" value="'+(v.ovoy||'')+'" placeholder="O-VOY" onchange="vessels['+vi+'].ovoy=this.value;lsave()" onfocus="this.style.borderColor=\'var(--blue)\';this.style.background=\'#eff6ff\'" onblur="this.style.borderColor=\'#e2e8f0\';this.style.background=\'transparent\'">';
+
+  // [수정 20260918] 양하만·적하만으로 잠긴 칸은 0 으로 고정하고 못 건드리게 한다
+  const inp = f => isLocked(v, f)
+    ? '<input class="tinp locked" id="t_'+vi+'_'+f+'" type="text" value="0" readonly tabindex="-1"'+
+      ' title="'+memoMode(v)+' 이라 자동으로 0 입니다">'
+    : '<input class="tinp" id="t_'+vi+'_'+f+'" type="text" placeholder="0"'+
+      ' onfocus="fClr(this)" onblur="fFmt(this)"'+
+      ' oninput="liveT('+vi+',\''+f+'\',this)"'+
+      ' onkeydown="enterT(event,'+vi+',\''+f+'\')">';
+
+  const impSub = (v.iwh||0)+(v.isc||0);
+  const expSub = (v.owh||0)+(v.osc||0);
+
+  return '<tr class="'+rowCls+'" id="vr_'+vi+'" data-vi="'+vi+'">'+
+    '<td style="text-align:center"><input type="checkbox" class="vchk" data-vi="'+vi+'" onclick="updateToolbar()" style="accent-color:var(--blue);width:14px;height:14px"></td>'+
+    '<td style="font-weight:700;font-size:12.5px;font-family:\'Nunito\',monospace;letter-spacing:.04em">'+nameEl+'</td>'+
+    '<td>'+callEl+'</td>'+
+    '<td style="font-weight:700;font-size:12.5px;color:var(--text);font-family:\'Nunito\',monospace;letter-spacing:.04em">'+hmcEl+'</td>'+
+    '<td style="font-weight:700;font-size:12.5px;color:var(--text);font-family:\'Nunito\',monospace;letter-spacing:.04em">'+ivoyEl+'</td>'+
+    '<td style="font-weight:700;font-size:12.5px;color:var(--text);font-family:\'Nunito\',monospace;letter-spacing:.04em">'+ovoyEl+'</td>'+
+    '<td class="r">'+inp('iwh')+'</td>'+
+    '<td class="r">'+inp('isc')+'</td>'+
+    '<td class="r imp sub-col" style="font-weight:400;font-size:12px;color:#64748b" id="vi_'+vi+'">'+( impSub ? krwF(impSub) : '—')+'</td>'+
+    '<td class="r">'+inp('owh')+'</td>'+
+    '<td class="r">'+inp('osc')+'</td>'+
+    '<td class="r exp sub-col" style="font-weight:400;font-size:12px;color:#64748b" id="ve_'+vi+'">'+( expSub ? krwF(expSub) : '—')+'</td>'+
+    '<td class="r tot" id="vt_'+vi+'">'+( tot ? krwF(tot) : '—')+'</td>'+
+    '<td style="text-align:center"><input type="checkbox" '+(( ok||v.invCheck)?'checked':'')+' onchange="toggleInv('+vi+',this)" style="accent-color:var(--green);width:16px;height:16px;cursor:pointer" title="클릭하면 수동으로 확인/미확인 변경"></td>'+
+    '<td style="text-align:center">'+(rep
+      ? '<button class="rep-badge" onclick="toggleReport('+vi+')">✓ 완료</button>'
+      : '<button class="rep-btn"  onclick="toggleReport('+vi+')">미신고</button>')+'</td>'+
+    '<td style="white-space:nowrap">'+memoCell(vi, v)+'</td>'+
+    '<td><button class="vdel" onclick="delVessel('+vi+')">✕</button></td>'+
+    '</tr>';
+}
+
+// ── 엔터 이동 ─────────────────────────────────────────────────────────────────
+const T_ORDER = ['iwh','isc','owh','osc'];
+function enterT(e, vi, field){
+  if(e.key !== 'Enter') return;
+  e.preventDefault();
+  // [수정 20260918] 양하만·적하만으로 잠긴 칸은 건너뛴다. 멈춰봐야 못 고치는 칸이다.
+  let curVi = vi, idx = T_ORDER.indexOf(field), nextId = '';
+  for(let step=0; step<40; step++){
+    idx++;
+    if(idx >= T_ORDER.length){ idx = 0; curVi++; if(!vessels[curVi]) return; }
+    if(!isLocked(vessels[curVi], T_ORDER[idx])){
+      nextId = 't_'+curVi+'_'+T_ORDER[idx];
+      break;
+    }
+  }
+  if(nextId) setTimeout(() => { const el=document.getElementById(nextId); if(el){el.focus();el.select();} }, 20);
+}
+
+// ── 실시간 동기화 ─────────────────────────────────────────────────────────────
+function liveT(vi, field, el){
+  const n = krwN(el.value);
+  if(vessels[vi]) vessels[vi][field] = n;
+  el.classList.toggle('filled', !!n);
+  const v = vessels[vi];
+  const tot = (v.iwh||0)+(v.isc||0)+(v.owh||0)+(v.osc||0);
+  const vt = document.getElementById('vt_'+vi);
+  if(vt) vt.textContent = tot ? krwF(tot) : '—';
+  const row = document.getElementById('vr_'+vi);
+  if(row) row.className = v.reported ? 'reported' : tot>0 ? 'has-data' : '';
+  // 자동감지로 체크박스 업데이트
+  const invCb = document.querySelector('#vr_'+vi+' input[type=checkbox][onchange^="toggleInv"]');
+  if(invCb && !v.invCheck) invCb.checked = invoiceOk(v);
+  // 소계 업데이트
+  const vi2 = vi;
+  const viEl = document.getElementById('vi_'+vi2);
+  const veEl = document.getElementById('ve_'+vi2);
+  const impS = (vessels[vi2].iwh||0)+(vessels[vi2].isc||0);
+  const expS = (vessels[vi2].owh||0)+(vessels[vi2].osc||0);
+  if(viEl) viEl.textContent = impS ? krwF(impS) : '—';
+  if(veEl) veEl.textContent = expS ? krwF(expS) : '—';
+  updateFooter(); updateSummary(); lsave();
+}
+
+function syncDOM(){
+  vessels.forEach((v,vi) => {
+    T_ORDER.forEach(f => {
+      const el = document.getElementById('t_'+vi+'_'+f);
+      if(el) v[f] = krwN(el.value);
+    });
+  });
+}
+
+function updateAll(){
+  syncDOM();
+  vessels.forEach((v,vi) => {
+    const tot = (v.iwh||0)+(v.isc||0)+(v.owh||0)+(v.osc||0);
+    const vt = document.getElementById('vt_'+vi);
+    if(vt) vt.textContent = tot ? krwF(tot) : '—';
+    const row = document.getElementById('vr_'+vi);
+    if(row) row.className = v.reported ? 'reported' : tot>0 ? 'has-data' : '';
+    T_ORDER.forEach(f => {
+      const el = document.getElementById('t_'+vi+'_'+f);
+      if(el) el.classList.toggle('filled', !!(v[f]));
+    });
+  });
+  updateFooter(); updateSummary();
+}
+
+function updateFooter(){
+  let iwh=0,isc=0,owh=0,osc=0;
+  vessels.forEach(v => { iwh+=v.iwh||0; isc+=v.isc||0; owh+=v.owh||0; osc+=v.osc||0; });
+  const s = (id,n) => { const el=document.getElementById(id); if(el) el.textContent=n?krwF(n):''; };
+  s('ft-iwh',iwh); s('ft-isc',isc); s('ft-imp',iwh+isc);
+  s('ft-owh',owh); s('ft-osc',osc); s('ft-exp',owh+osc);
+  s('ft-tot',iwh+isc+owh+osc);
+}
+
+function updateSummary(){
+  syncDOM();
+  let tot=0;
+  vessels.forEach(v => { tot+=(v.iwh||0)+(v.isc||0)+(v.owh||0)+(v.osc||0); });
+  document.getElementById('s-cnt').textContent = vessels.length;
+  updateInvSheets();
+  document.getElementById('s-tot').innerHTML = krwF(tot)+' <span style="font-size:13px;font-weight:500;color:var(--muted)">원</span>';
+  updateCounts();
+  if(typeof chkRefresh === 'function') chkRefresh();
+}
+
+// ── 받아야 할 고지서 장수 ─────────────────────────────────────────────────────
+// 지로는 입항에 한 장, 출항에 한 장 나온다(화물료·보안료가 같은 장에 같이 찍힌다).
+// 그래서 보통은 모선 수 × 2. 다만 양하만 하는 모선은 출항 고지서가 없어 한 장이고,
+// 적하만 하는 모선은 입항 고지서가 없어 역시 한 장이다.
+// 스케줄에서 그런 모선은 해당 VOY 칸이 '-' 로 오므로 그걸로 가른다.
+function hasVoy(x){
+  const t = String(x||'').trim();
+  return t !== '' && t !== '-' && t !== '—' && t !== 'X' && t !== 'x';
+}
+function updateInvSheets(){
+  let iN=0, oN=0;
+  vessels.forEach(v => { if(hasVoy(v.ivoy)) iN++; if(hasVoy(v.ovoy)) oN++; });
+  const el = document.getElementById('s-inv');
+  if(el) el.innerHTML = (iN+oN) + ' <span style="font-size:12px;font-weight:500;color:var(--muted)">장</span>';
+  const sub = document.getElementById('s-inv-sub');
+  if(sub) sub.textContent = '입 ' + iN + ' · 출 ' + oN;
+}
+
+// ── CALL 복사 ─────────────────────────────────────────────────────────────────
+function copyCall(vi, el){
+  const call = vessels[vi]?.call||'';
+  if(!call) return;
+  const orig = el.textContent;
+  navigator.clipboard.writeText(call).catch(() => {
+    const ta=document.createElement('textarea'); ta.value=call;
+    document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta);
+  });
+  el.textContent='✓ 복사'; el.classList.add('copied');
+  setTimeout(() => { el.textContent=orig; el.classList.remove('copied'); }, 1500);
+}
+
+// ── 신고완료 토글 ─────────────────────────────────────────────────────────────
+function toggleReport(vi){
+  if(vessels[vi]) vessels[vi].reported = !vessels[vi].reported;
+  render(); updateCounts(); lsave();
+}
+
+// ── 체크박스 ──────────────────────────────────────────────────────────────────
+function toggleAll(cb){
+  document.querySelectorAll('.vchk').forEach(c => c.checked = cb.checked);
+  // 두 체크박스 동기화
+  document.querySelectorAll('#chk-all, #chk-all2').forEach(c => c.checked = cb.checked);
+  updateToolbar();
+}
+
+function updateToolbar(){
+  const checks = [...document.querySelectorAll('.vchk')];
+  const cnt = checks.filter(c => c.checked).length;
+  document.getElementById('sel-toolbar').classList.toggle('hidden', cnt===0);
+  document.getElementById('sel-count').textContent = cnt+'개 선택됨';
+  const allChk = document.getElementById('chk-all');
+  if(allChk){ allChk.checked = cnt===checks.length && checks.length>0; allChk.indeterminate = cnt>0 && cnt<checks.length; }
+}
+
+function markReported(val){
+  document.querySelectorAll('.vchk:checked').forEach(c => {
+    const vi = parseInt(c.dataset.vi);
+    if(vessels[vi]) vessels[vi].reported = val;
+  });
+  render(); updateCounts(); lsave();
+}
+
+// ── 모선 추가/삭제 ────────────────────────────────────────────────────────────
+function addVessel(){
+  syncDOM();
+  vessels.push({vsl:'',vname:'신규 모선',ivoy:'',ovoy:'',hmc:'',call:'',
+                iwh:0,isc:0,owh:0,osc:0,reported:false,isNew:true,invCheck:false});
+  render(); lsave();
+  setTimeout(() => {
+    const rows = document.querySelectorAll('#vtbody tr');
+    const last = rows[rows.length-1];
+    if(last) last.scrollIntoView({behavior:'smooth',block:'center'});
+  }, 80);
+}
+
+function delVessel(vi){
+  syncDOM();
+  if(!confirm('"'+vessels[vi].vname+'" 삭제하시겠습니까?')) return;
+  vessels.splice(vi,1); render(); lsave();
+}
+
+// ── 저장 내역 ─────────────────────────────────────────────────────────────────
+function saveData(){
+  syncDOM();
+  const e = {
+    id: Date.now(),
+    occ: document.getElementById('fee-occ').value,
+    settle: document.getElementById('fee-set').value,
+    rem: document.getElementById('fee-rem').value,
+    vessels: JSON.parse(JSON.stringify(vessels))
+  };
+  saved.push(e); renderHist(); lsave();
+  const ok = document.getElementById('save-ok');
+  ok.style.display='inline'; setTimeout(() => ok.style.display='none', 2000);
+}
+
+function loadEntry(id){
+  const e = saved.find(e => e.id===id); if(!e) return;
+  document.getElementById('fee-occ').value = e.occ||'';
+  document.getElementById('fee-set').value = e.settle||'';
+  document.getElementById('fee-rem').value = e.rem||'';
+  vessels = JSON.parse(JSON.stringify(e.vessels)); render();
+}
+
+function delEntry(id){
+  if(!confirm('삭제?')) return;
+  saved = saved.filter(e => e.id!==id); renderHist();
+}
+
+function renderHist(){
+  const el = document.getElementById('hist-list');
+  if(!saved.length){
+    el.innerHTML = '<div style="font-size:12px;color:var(--muted);padding:4px 0">저장된 내역이 없습니다</div>';
+    return;
+  }
+  el.innerHTML = saved.slice().reverse().map(e => {
+    const tot = e.vessels.reduce((s,v) => s+(v.iwh||0)+(v.isc||0)+(v.owh||0)+(v.osc||0), 0);
+    const imp = e.vessels.reduce((s,v) => s+(v.iwh||0)+(v.isc||0), 0);
+    const exp = e.vessels.reduce((s,v) => s+(v.owh||0)+(v.osc||0), 0);
+    return '<div style="padding:10px 0;border-bottom:1px solid var(--border)">'+
+      '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">'+
+        '<div>'+
+          '<div style="font-size:13px;font-weight:700">'+e.occ+(e.rem?' · '+e.rem:'')+'</div>'+
+          '<div style="color:var(--sub);font-size:11px;margin-top:2px">'+e.vessels.length+'척 · 정산 '+e.settle+'</div>'+
+        '</div>'+
+        '<div style="margin-left:auto;display:flex;align-items:center;gap:10px;flex-wrap:wrap">'+
+          '<div style="text-align:right">'+
+            '<div style="font-size:10px;color:var(--muted);margin-bottom:2px">수입 '+krwF(imp)+' / 수출 '+krwF(exp)+'</div>'+
+            '<div style="font-size:17px;font-weight:800;font-family:\'Nunito\',monospace;color:var(--navy)">'+krwF(tot)+'<span style="font-size:11px;font-weight:400;color:var(--muted)"> 원</span></div>'+
+          '</div>'+
+          '<button onclick="loadEntry('+e.id+')" class="btn" style="padding:4px 11px;font-size:12px">불러오기</button>'+
+          '<button onclick="delEntry('+e.id+')" class="btn" style="padding:4px 11px;font-size:12px;color:var(--red);border-color:#fecaca">삭제</button>'+
+        '</div>'+
+      '</div>'+
+    '</div>';
+  }).join('');
+}
+
+let sortCol='', sortAsc=true;
+
+function sortBy(col){
+  syncDOM();
+  if(sortCol===col) sortAsc=!sortAsc;
+  else { sortCol=col; sortAsc=true; }
+  vessels.sort((a,b)=>{
+    let av=a[col], bv=b[col];
+    // boolean 정렬: true가 위로
+    if(typeof av==='boolean') { av=av?1:0; bv=bv?1:0; }
+    else { av=String(av||''); bv=String(bv||''); }
+    if(typeof av==='number') return sortAsc?av-bv:bv-av;
+    return sortAsc?av.localeCompare(bv,'ko'):bv.localeCompare(av,'ko');
+  });
+  // 아이콘 업데이트
+  document.querySelectorAll('.si').forEach(el=>{ el.textContent='▲▼'; el.classList.remove('on'); });
+  const si=document.getElementById('si-'+col);
+  if(si){ si.textContent=sortAsc?'▲':'▼'; si.classList.add('on'); }
+  render();
+}
+
+function delSelected(){
+  const sel=new Set([...document.querySelectorAll('.vchk:checked')].map(c=>parseInt(c.dataset.vi)));
+  if(!sel.size){ alert('삭제할 모선을 선택하세요.'); return; }
+  if(!confirm(sel.size+'척을 삭제하시겠습니까?')) return;
+  vessels=vessels.filter((_,i)=>!sel.has(i));
+  render(); lsave();
+}
+function toggleSub(){
+  subVisible = !subVisible;
+  document.querySelectorAll('.sub-col').forEach(el => el.classList.toggle('sub-hidden', !subVisible));
+  const btn = document.getElementById('sub-toggle-btn');
+  if(btn) btn.textContent = subVisible ? '소계 숨기기' : '소계 보이기';
+}
+
+// ── 고지서확인 토글 ───────────────────────────────────────────────────────────
+function toggleInv(vi, el){
+  if(vessels[vi]){ vessels[vi].invCheck = el.checked; }
+  lsave();
+}
+
+// ── [추가 20260918] 양하만 / 적하만 ───────────────────────────────────────────
+//  양하만 = 수입에만 금액이 있는 배 → 수출은 0 이 당연하다
+//  적하만 = 수출에만 금액이 있는 배 → 수입은 0 이 당연하다
+//  예전에는 수입·수출 양쪽에 금액이 있어야만 고지서가 자동 체크됐다.
+//  그래서 이런 배는 매번 손으로 눌러줘야 했다. 이제 단추를 누르면 알아서 된다.
+const MEMO_ONLY = {
+  '양하만': {zero:['owh','osc'], need:['iwh','isc']},   // 수출을 0 으로
+  '적하만': {zero:['iwh','isc'], need:['owh','osc']}    // 수입을 0 으로
+};
+function memoMode(v){ return MEMO_ONLY[(v&&v.memo)||''] ? v.memo : ''; }
+
+// 메모칸에 그리는 단추 두 개
+function memoCell(vi, v){
+  const cur = memoMode(v);
+  const btn = (label, cls) =>
+    '<button class="mbtn '+cls+(cur===label?' on':'')+'" onclick="setMemoMode('+vi+',\''+label+'\')"'+
+    ' title="'+label+' — 누르면 반대쪽 금액이 0 으로 고정됩니다">'+label+'</button>';
+  // 예전에 손으로 적어둔 메모 글자는 잃지 않도록 옆에 작게 남긴다
+  const old = (v.memo && !cur) ? '<span class="memo-old" title="예전에 적어두신 메모">'+
+    String(v.memo).replace(/[<>&]/g,'')+'</span>' : '';
+  return btn('양하만','disc') + btn('적하만','load') + old;
+}
+function isLocked(v, field){
+  const m = MEMO_ONLY[memoMode(v)];
+  return !!(m && m.zero.indexOf(field) >= 0);
+}
+
+// 단추를 누를 때 — 반대쪽 금액을 0 으로 밀어넣는다
+function setMemoMode(vi, mode){
+  const v = vessels[vi]; if(!v) return;
+  const next = (v.memo === mode) ? '' : mode;  // 같은 단추를 다시 누르면 해제
+  const m = MEMO_ONLY[next];
+  // 지울 쪽에 이미 금액이 들어 있으면 한 번 물어본다.
+  // 한 번 0 으로 밀면 단추를 도로 풀어도 금액은 돌아오지 않는다.
+  if(m){
+    const lose = m.zero.reduce((s,f) => s + (v[f]||0), 0);
+    if(lose > 0 && !confirm(
+        v.vsl + ' 에 [' + next + '] 을 켭니다.\n\n' +
+        '이미 들어 있는 ' + (next==='양하만' ? '수출' : '수입') + ' 금액 ' +
+        krwF(lose) + ' 원이 0 으로 지워집니다.\n' +
+        '단추를 다시 풀어도 금액은 돌아오지 않습니다.\n\n계속할까요?')) return;
+  }
+  v.memo = next;
+  if(m) m.zero.forEach(f => { v[f] = 0; });
+  // 반드시 render() 가 먼저다. lsave() 는 저장 전에 syncDOM() 으로 화면 값을 도로
+  // 읽어들이는데, 화면을 안 고친 채 저장하면 방금 넣은 0 이 옛 금액으로 덮어써진다.
+  render(); lsave();
+}
+
+// invoiceOk: 자동감지 또는 수동체크
+//  [수정 20260918] 양하만·적하만이면 '있어야 할 쪽'만 채워져도 완료로 본다.
+function invoiceOk(v){
+  if(v.invCheck) return true;
+  const m = MEMO_ONLY[memoMode(v)];
+  if(m) return m.need.reduce((s,f) => s + (v[f]||0), 0) > 0;
+  return ((v.iwh||0)+(v.isc||0))>0 && ((v.owh||0)+(v.osc||0))>0;
+}
+
+// ── localStorage 자동저장 ─────────────────────────────────────────────────────
+const LS_KEY = 'skr_cargo_data';
+
+function lsave(){
+  try{
+    syncDOM();
+    const data = {
+      vessels,
+      saved,
+      occ: document.getElementById('fee-occ').value,
+      settle: document.getElementById('fee-set').value,
+      rem: document.getElementById('fee-rem').value,
+      due: document.getElementById('fee-due').value
+    };
+    localStorage.setItem(LS_KEY, JSON.stringify(data));
+  } catch(e){ console.warn('저장 실패:', e); }
+}
+
+function lload(){
+  try{
+    const raw = localStorage.getItem(LS_KEY);
+    if(!raw) return;
+    const data = JSON.parse(raw);
+    if(data.vessels) vessels = data.vessels;
+    if(data.saved)   saved   = data.saved;
+    if(data.occ    !== undefined) document.getElementById('fee-occ').value    = data.occ;
+    if(data.settle !== undefined) document.getElementById('fee-set').value    = data.settle;
+    if(data.rem    !== undefined) document.getElementById('fee-rem').value    = data.rem;
+    if(data.due    !== undefined){ document.getElementById('fee-due').value   = data.due; updateDueBadge(); }
+    if(vessels.length) document.getElementById('xls-fn').textContent = '저장된 데이터 복원 — '+vessels.length+'척';
+    render(); renderHist();
+  } catch(e){ console.warn('불러오기 실패:', e); }
+}
+
+// 페이지 로드 시 복원
+window.addEventListener('DOMContentLoaded', lload);
+
+// ── JSON 백업 내보내기/불러오기 ───────────────────────────────────────────────
+function exportJSON(){
+  syncDOM();
+  const data = {
+    vessels, saved,
+    occ:    document.getElementById('fee-occ').value,
+    settle: document.getElementById('fee-set').value,
+    rem:    document.getElementById('fee-rem').value,
+    due:    document.getElementById('fee-due').value,
+    exportedAt: new Date().toISOString()
+  };
+  const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'SKR_화물료_백업_' + new Date().toISOString().slice(0,10).replace(/-/g,'') + '.json';
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+function importJSON(e){
+  const file = e.target.files[0];
+  if(!file) return;
+  if(!confirm('현재 데이터를 백업 파일로 덮어쓰시겠습니까?\n현재 입력 중인 내용은 사라집니다.')) {
+    e.target.value=''; return;
+  }
+  const r = new FileReader();
+  r.onload = ev => {
+    try{
+      const data = JSON.parse(ev.target.result);
+      if(data.vessels) vessels = data.vessels;
+      if(data.saved)   saved   = data.saved;
+      if(data.occ    !== undefined) document.getElementById('fee-occ').value    = data.occ;
+      if(data.settle !== undefined) document.getElementById('fee-set').value    = data.settle;
+      if(data.rem    !== undefined) document.getElementById('fee-rem').value    = data.rem;
+      if(data.due    !== undefined){ document.getElementById('fee-due').value   = data.due; updateDueBadge(); }
+      if(vessels.length) document.getElementById('xls-fn').textContent = '백업 복원 — ' + vessels.length + '척';
+      render(); renderHist(); lsave();
+      alert('✓ 백업 불러오기 완료! ' + vessels.length + '척 복원됐습니다.');
+    } catch(err){
+      alert('파일 읽기 오류: ' + err.message);
+    }
+    e.target.value='';
+  };
+  r.readAsText(file);
+}
+
+// WHG 다운로드 ──────────────────────────────────────────────────────────────
+function buildWHG(targetVessels){
+  syncDOM();
+  const occ    = document.getElementById('fee-occ').value;
+  const settle = document.getElementById('fee-set').value;
+  if(!occ)    { alert('발생일자를 입력해 주세요.'); return null; }
+  if(!settle) { alert('정산일을 입력해 주세요.'); return null; }
+  const occFmt = occ.replace(/-/g,'');
+  const setFmt = settle.replace(/-/g,'');
+  const remark = '광양(사) 여수광양항만공사 화물료';
+  const FX = {pc:'00341',pn:'여수광양항만공사',acct:'2001',acnm:'외상매입금(원화)',
+              ev:'기타증빙',cur:'KRW',port:'KRKAN',portnm:'KWANGYANG, KOREA',
+              rt:'없음',pt:'현금지급',pp:'00341',tax:'인보이스',own:'N'};
+  const hdrs = ['순번','거래처코드','거래처명','계정과목','계정과목명','비용증빙타입','증빙번호',
+                '거래처인보이스번호','비용코드','비용명','적요','발생일자','통화','환율단위(발생:원화)',
+                '환율(발생:로컬)','발생금액','부가세액(발생)','원화금액','부가세액(원화)','세금그룹',
+                '선주비용','선박코드','선박명','항차','포트코드','포트명','B/L No','참조타입','참조번호',
+                '시작시간','종료시간','저장품코드','저장품명','공급일자','수량','단가','실부서코드',
+                '실부서명','실사용자명','정산여부','미결번호','그룹미결번호','지급타입','정산일',
+                '지급통화','지급거래처코드','지급거래처명','거래처계좌순번','거래처은행명','거래처계좌번호','지로번호'];
+  const mk = (seq,vsl,voy,code,nm,amt) =>
+    [String(seq).padStart(4,'0'),FX.pc,FX.pn,FX.acct,FX.acnm,FX.ev,'','',
+     code,nm,remark,occFmt,FX.cur,1,1,amt,0,amt,0,FX.tax,FX.own,
+     vsl,'',voy,FX.port,FX.portnm,'',FX.rt,'',
+     '','','','','',0,0,'','','','N','','',
+     FX.pt,setFmt,FX.cur,FX.pc,FX.pn,'','','',''];
+  const rows = [hdrs]; let seq=1;
+  targetVessels.forEach(v => {
+    const vsl = v.vsl || v.vname || '';
+    if(v.iwh) rows.push(mk(seq++, vsl, v.ivoy, '50093', '부두사용료(WHARFAGE)', v.iwh));
+    if(v.isc) rows.push(mk(seq++, vsl, v.ivoy, '50094', '화물보안료',            v.isc));
+    if(v.owh) rows.push(mk(seq++, vsl, v.ovoy, '50093', '부두사용료(WHARFAGE)', v.owh));
+    if(v.osc) rows.push(mk(seq++, vsl, v.ovoy, '50094', '화물보안료',            v.osc));
+  });
+  return {rows, setFmt};
+}
+
+function downloadWHG(rows, setFmt, suffix){
+  const ws = XLSX.utils.aoa_to_sheet(rows);
+  const cw = [6,8,14,6,14,8,8,14,8,20,24,10,4,14,14,12,10,12,10,8,8,6,12,8,6,16,8,6,8,8,8,8,10,8,4,8,8,10,8,6,8,10,8,10,4,8,14,8,10,14,8];
+  ws['!cols'] = cw.map(w => ({wch:w}));
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Sheet');
+  const today = new Date().toISOString().slice(0,10).replace(/-/g,'');
+  XLSX.writeFile(wb, 'WHG_화물료_'+today+(suffix||'')+'.xlsx');
+}
+
+function whgDl(){
+  if(!vessels.length){ alert('모선 데이터가 없습니다.'); return; }
+  showDateModal(() => {
+    const r = buildWHG(vessels); if(!r) return;
+    if(r.rows.length===1){ alert('입력된 금액이 없습니다.'); return; }
+    downloadWHG(r.rows, r.setFmt, '');
+  });
+}
+
+function whgDlSelected(){
+  const sel = [...document.querySelectorAll('.vchk:checked')].map(c => vessels[parseInt(c.dataset.vi)]).filter(Boolean);
+  if(!sel.length){ alert('모선을 선택해 주세요.'); return; }
+  showDateModal(() => {
+    const r = buildWHG(sel); if(!r) return;
+    if(r.rows.length===1){ alert('선택한 모선에 입력된 금액이 없습니다.'); return; }
+    downloadWHG(r.rows, r.setFmt, '_선택');
+  });
+}
+
+// ── 날짜 확인 모달 ────────────────────────────────────────────────────────────
+function showDateModal(onConfirm){
+  // 기존 모달 제거
+  const existing = document.getElementById('date-modal');
+  if(existing) existing.remove();
+
+  const today = new Date().toISOString().slice(0,10);
+  const occ = document.getElementById('fee-occ').value || today;
+  const settle = document.getElementById('fee-set').value || '';
+
+  const modal = document.createElement('div');
+  modal.id = 'date-modal';
+  modal.style.cssText = 'position:fixed;inset:0;background:rgba(15,45,94,.45);display:flex;align-items:center;justify-content:center;z-index:9999';
+  modal.innerHTML = `
+    <div style="background:#fff;border-radius:16px;padding:28px 32px;min-width:320px;box-shadow:0 8px 32px rgba(15,45,94,.2)">
+      <div style="font-size:15px;font-weight:800;color:var(--navy);margin-bottom:6px">📅 날짜 확인 후 다운로드</div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:20px">발생일자와 정산일을 확인·수정 후 다운로드하세요</div>
+      <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:24px">
+        <div>
+          <div style="font-size:11px;font-weight:700;color:var(--sub);text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px">발생일자</div>
+          <input type="date" id="modal-occ" value="${occ}"
+            style="width:100%;padding:8px 10px;border:1.5px solid #bfdbfe;border-radius:8px;font-size:14px;font-family:inherit;color:var(--text)"
+            onchange="const d=new Date(this.value);d.setDate(d.getDate()+14);document.getElementById('modal-set').value=d.toISOString().slice(0,10)">
+        </div>
+        <div>
+          <div style="font-size:11px;font-weight:700;color:var(--sub);text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px">정산일 (+14일)</div>
+          <input type="date" id="modal-set" value="${settle}"
+            style="width:100%;padding:8px 10px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:14px;font-family:inherit;color:var(--text);background:#f0f7ff" readonly>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;justify-content:flex-end">
+        <button onclick="document.getElementById('date-modal').remove()"
+          style="padding:8px 18px;border-radius:8px;border:1px solid var(--border);background:#fff;color:var(--sub);font-size:13px;font-weight:600;cursor:pointer">취소</button>
+        <button id="modal-confirm-btn"
+          style="padding:8px 20px;border-radius:8px;border:none;background:linear-gradient(135deg,var(--navy),var(--blue));color:#fff;font-size:13px;font-weight:700;cursor:pointer">
+          ⬇ 다운로드
+        </button>
+      </div>
+    </div>`;
+  document.body.appendChild(modal);
+
+  // 확인 버튼
+  document.getElementById('modal-confirm-btn').onclick = () => {
+    const newOcc = document.getElementById('modal-occ').value;
+    const newSet = document.getElementById('modal-set').value;
+    if(!newOcc){ alert('발생일자를 입력해 주세요.'); return; }
+    if(!newSet){ alert('정산일을 입력해 주세요.'); return; }
+    // 메인 화면 날짜 업데이트
+    document.getElementById('fee-occ').value = newOcc;
+    document.getElementById('fee-set').value = newSet;
+    lsave();
+    modal.remove();
+    onConfirm();
+  };
+
+  // 배경 클릭 닫기
+  modal.addEventListener('click', e => { if(e.target===modal) modal.remove(); });
+}
+
+
+
+
+// ══════════════════════════════════════════════════════════════════════════════
+// 고지서 총합 대조
+//
+// 표의 금액은 손으로 넣은 값이고, 여기서는 그 합계가 맞는지만 확인한다.
+// 표를 고치지 않는 게 핵심이다 — 사람이 넣은 값과 기계가 읽은 값이 섞이면
+// 어느 쪽을 믿어야 할지 알 수 없게 된다.
+//
+// 한 장에서 총합은 금액칸·합계(Total)·지로통지서에 서너 번 반복되는 반면
+// 화물료·보안료는 한 번씩만 나온다. 그래서 그 장에서 가장 자주 나온 금액을
+// 총합으로 본다. 한 군데를 잘못 읽어도 나머지가 받쳐준다.
+// ══════════════════════════════════════════════════════════════════════════════
+const CHK_PDFJS  = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
+const CHK_WORKER = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+const CHK_TESS   = 'https://cdnjs.cloudflare.com/ajax/libs/tesseract.js/7.0.0/tesseract.min.js';
+
+let chkPages = [], chkBusy = false, chkRendering = false;
+
+// ── 카드 표시 ─────────────────────────────────────────────────────────────────
+function chkCard(icon, title, sub, spin){
+  // 평소엔 ② 를 보여주고, 읽는 중·결과일 때만 그 자리에 상태를 띄운다
+  const el = document.getElementById('chk-icon');
+  el.innerHTML = spin
+    ? '<i class="ti ti-loader-2" style="font-size:20px;animation:ocrspin 1s linear infinite"></i>'
+    : (icon || '②');
+  document.getElementById('chk-title').textContent = title;
+  document.getElementById('chk-sub').textContent = sub;
+}
+function chkReset(){ chkCard('', '고지서 PDF 넣기', 'PDF 넣으면 합계만 읽어 비교', false); }
+
+function chkDrag(e, on){
+  e.preventDefault(); e.stopPropagation();
+  document.getElementById('chk-card').style.filter = on ? 'brightness(1.15)' : '';
+}
+function chkDrop(e){
+  e.preventDefault(); e.stopPropagation(); chkDrag(e, false);
+  chkRun([...e.dataTransfer.files].filter(f => /\.pdf$/i.test(f.name)));
+}
+function chkPick(e){ chkRun([...e.target.files]); e.target.value = ''; }
+
+function chkClear(){
+  chkPages = [];
+  document.getElementById('chk-panel').style.display = 'none';
+  document.getElementById('chk-detail').style.display = 'none';
+  chkReset();
+}
+function chkToggleDetail(){
+  const d = document.getElementById('chk-detail');
+  const on = d.style.display === 'none';
+  d.style.display = on ? 'block' : 'none';
+  document.getElementById('chk-detail-btn').textContent = on ? '장별 숨기기' : '장별 보기';
+}
+
+// ── 라이브러리 ────────────────────────────────────────────────────────────────
+function chkLoad(src){
+  return new Promise((ok, err) => {
+    const s = document.createElement('script');
+    s.src = src; s.onload = ok;
+    s.onerror = () => err(new Error('인터넷에서 읽기 도구를 가져오지 못했습니다.\n연결을 확인해 주세요.'));
+    document.head.appendChild(s);
+  });
+}
+async function chkLibs(){
+  if(!window.pdfjsLib){ await chkLoad(CHK_PDFJS); window.pdfjsLib.GlobalWorkerOptions.workerSrc = CHK_WORKER; }
+  if(!window.Tesseract){ await chkLoad(CHK_TESS); }
+}
+
+// ── 고지서 읽기 ───────────────────────────────────────────────────────────────
+// 한 장을 세 번 읽는다: 대비를 세게 준 부과내역 박스, 손대지 않은 같은 박스,
+// 그리고 아래쪽 '선박사항' 줄(항차·호출부호가 한 번 더 찍혀 있고 글씨가 작아 2배로 키운다).
+// 스캔 상태에 따라 어느 쪽이 잘 읽힐지 달라서, 한 번만 읽으면 그때그때 운이 갈린다.
+async function chkRun(files){
+  if(chkBusy){ alert('이미 읽는 중입니다.'); return; }
+  if(!files || !files.length){ alert('PDF 파일이 없습니다.'); return; }
+  chkBusy = true; chkPages = [];
+  chkCard('', '준비 중…', '읽기 도구 가져오는 중', true);
+
+  let worker = null;
+  try{
+    await chkLibs();
+    worker = await Tesseract.createWorker('eng');
+
+    const docs = [];
+    for(const f of files){
+      docs.push({name: f.name,
+                 pdf: await pdfjsLib.getDocument({data: await f.arrayBuffer()}).promise});
+    }
+    const total = docs.reduce((s, d) => s + d.pdf.numPages, 0);
+
+    let done = 0;
+    for(const d of docs){
+      for(let i = 1; i <= d.pdf.numPages; i++){
+        chkCard('', '읽는 중… ' + (done + 1) + ' / ' + total, d.name, true);
+
+        const page = await d.pdf.getPage(i);
+        const vp = page.getViewport({scale: 4.5});
+        const cv = document.createElement('canvas');
+        cv.width = Math.ceil(vp.width); cv.height = Math.ceil(vp.height);
+        await page.render({canvasContext: cv.getContext('2d'), viewport: vp}).promise;
+
+        const box  = chkCrop(cv, 0.52, 0.30, 0.48, 0.42, 1);   // 대비 보정본
+        const boxR = document.createElement('canvas');          // 원본 그대로
+        boxR.width = box.width; boxR.height = box.height;
+        boxR.getContext('2d').drawImage(
+          cv, Math.floor(cv.width * 0.52), Math.floor(cv.height * 0.30),
+          box.width, box.height, 0, 0, box.width, box.height);
+
+        const {data:{text: tA}} = await worker.recognize(box);
+        const {data:{text: tB}} = await worker.recognize(boxR);
+        const T  = String(tA).replace(/\s+/g, ' ');
+        const Tb = String(tB).replace(/\s+/g, ' ');
+
+        const bot = chkCrop(cv, 0.28, 0.79, 0.55, 0.12, 2);
+        const {data:{text: tC}} = await worker.recognize(bot);
+        const T2 = String(tC).replace(/\s+/g, ' ');
+
+        // 금액은 '화물료+보안료=합계' 가 성립하는 쪽을 택한다
+        let r = chkTotalOf(chkAmounts(T));
+        if(!r.sure){
+          const rb = chkTotalOf(chkAmounts(Tb));
+          if(rb.sure) r = rb;
+          else if(!r.total) r = rb;
+        }
+
+        if(r.total){
+          const voys = chkVoyCands(T);
+          chkVoyCands(Tb).forEach(v => voys.add(v));
+          chkVoyCands(T2).forEach(v => voys.add(v));
+          chkPages.push({
+            page: i, file: d.name, amount: r.total,
+            call:  chkCall(T) || chkCall(Tb) || chkCall(T2),
+            call2: chkCall(T2) || chkCall(Tb),
+            sure: r.sure, parts: r.parts,
+            cargo: r.sure ? r.parts[1] : 0,
+            security: r.sure ? r.parts[2] : 0,
+            voys: voys,
+            dir: chkDirOf(T) || chkDirOf(Tb) || chkDirOf(T2)
+          });
+        }
+        done++;
+      }
+    }
+  } catch(err){
+    chkBusy = false; chkReset();
+    if(worker){ try{ await worker.terminate(); }catch(e){} }
+    alert('고지서를 읽지 못했습니다.\n\n' + (err.message || err));
+    return;
+  }
+  if(worker){ try{ await worker.terminate(); }catch(e){} }
+  chkBusy = false;
+
+  if(!chkPages.length){
+    chkReset();
+    alert('고지서에서 금액을 찾지 못했습니다.\n스캔이 많이 흐리거나 형식이 다른 고지서일 수 있습니다.');
+    return;
+  }
+  chkRender();
+  chkSortByPage(true);        // 읽은 순서대로 표를 맞춰 둔다
+}
+
+// ── 이미지 다듬기 ────────────────────────────────────────────────────────────
+// 고지서는 스캔본이라 종이가 누렇고 글씨가 흐리다. 그대로 읽히면 3을 8로, 0을 2로 흘린다.
+// 회색조로 바꾼 뒤 밝은 쪽은 더 희게, 어두운 쪽은 더 검게 벌려주면 숫자 윤곽이 또렷해진다.
+// (완전한 흑백으로 끊어버리면 얇은 획이 끊겨 오히려 나빠져서, 대비만 세게 준다)
+function chkSharpen(cv){
+  const ctx = cv.getContext('2d');
+  const img = ctx.getImageData(0, 0, cv.width, cv.height);
+  const d = img.data;
+
+  // 이 영역의 밝기 분포를 보고 종이색과 글씨색의 경계를 잡는다
+  const hist = new Uint32Array(256);
+  for(let i = 0; i < d.length; i += 4){
+    const g = (d[i]*0.299 + d[i+1]*0.587 + d[i+2]*0.114) | 0;
+    hist[g]++;
+  }
+  let total = 0, sum = 0;
+  for(let i = 0; i < 256; i++){ total += hist[i]; sum += i * hist[i]; }
+  const mean = sum / Math.max(total, 1);
+  const lo = mean * 0.55, hi = mean * 1.05;   // 이 사이를 0~255 로 펼친다
+
+  for(let i = 0; i < d.length; i += 4){
+    const g = d[i]*0.299 + d[i+1]*0.587 + d[i+2]*0.114;
+    let v = (g - lo) / Math.max(hi - lo, 1) * 255;
+    v = v < 0 ? 0 : v > 255 ? 255 : v;
+    d[i] = d[i+1] = d[i+2] = v;
+  }
+  ctx.putImageData(img, 0, 0);
+  return cv;
+}
+
+// 원본에서 잘라낸 조각을 원하는 배율로 키우고 다듬어 돌려준다
+function chkCrop(src, x0, y0, w0, h0, zoom){
+  const c = document.createElement('canvas');
+  const sx = Math.floor(src.width * x0),  sy = Math.floor(src.height * y0);
+  const sw = Math.ceil(src.width * w0),   sh = Math.ceil(src.height * h0);
+  c.width = Math.ceil(sw * (zoom || 1)); c.height = Math.ceil(sh * (zoom || 1));
+  const g = c.getContext('2d');
+  g.imageSmoothingEnabled = true; g.imageSmoothingQuality = 'high';
+  g.drawImage(src, sx, sy, sw, sh, 0, 0, c.width, c.height);
+  return chkSharpen(c);
+}
+
+// ── 금액 뽑기 ─────────────────────────────────────────────────────────────────
+// 금액은 늘 천단위로 끊겨 있다. '원'이 8로, 콤마가 . 이나 / 로 읽히는 걸 감안한다.
+function chkAmounts(T){
+  const out = [], re = /\d{1,3}(?:[.,\/]\d{3})+/g;
+  let m; while((m = re.exec(T))) out.push(Number(m[0].replace(/[^\d]/g, '')));
+  return out;
+}
+
+// 한 장에 찍힌 천단위 금액은 합계·화물료·보안료 셋뿐이다.
+// (고객조회번호·지로번호·전자납부번호는 콤마가 없어 애초에 안 걸린다)
+//
+// 합계 = 화물료 + 보안료 라는 관계가 있으니, 읽어낸 숫자들 중에서 이 관계가 성립하는
+// 조합을 찾으면 그게 그 장의 합계다. 스캔 잡음으로 엉뚱한 숫자가 하나 끼어들어도
+// (예: 74,519) 그 숫자는 어떤 조합에도 안 맞으므로 저절로 걸러진다.
+// 가장 큰 값을 고르는 방식은 이 잡음에 그대로 속는다.
+function chkTotalOf(list){
+  const uniq = [...new Set(list.filter(v => v > 0))].sort((a, b) => b - a);
+  // 더해서 맞아떨어지는 조합 (합계가 큰 쪽부터)
+  for(let k = 0; k < uniq.length; k++)
+    for(let i = 0; i < uniq.length; i++)
+      for(let j = i + 1; j < uniq.length; j++)
+        if(i !== k && j !== k && uniq[i] + uniq[j] === uniq[k])
+          return {total: uniq[k], sure: true, parts: [uniq[k], uniq[i], uniq[j]]};
+  // 못 찾으면 가장 큰 값을 쓰되, 사람이 확인하도록 표시한다
+  return {total: uniq[0] || 0, sure: false, parts: uniq.slice(0, 3)};
+}
+
+// 항차는 '622 2026 032' 처럼 찍히고 그 끝 세자리가 스케줄의 항만청 값과 같다.
+// OCR이 032를 082로 흘리는 일이 있어 한 숫자만 보고 판단하지 않는다.
+// 페이지 안의 2~4자리 숫자를 모두 모아두고, 그 중에 그 배의 항만청 값이 있는지로 확인한다.
+// (항차는 부과내역과 지로통지서 두 군데에 찍혀 있어 한 번 틀려도 다른 쪽이 받쳐준다)
+function chkVoyCands(T){
+  const out = new Set();
+  const re = /\b(\d{2,4})\b/g;
+  let m; while((m = re.exec(T))) out.add(parseInt(m[1], 10));
+  return out;
+}
+
+// 외항입항 → 수입 칸, 외항출항 → 수출 칸. 고지서에 영문으로도 찍혀 있어 이걸 본다.
+function chkDirOf(T){
+  if(/departure/i.test(T)) return 'export';
+  if(/entry/i.test(T))     return 'import';
+  return '';
+}
+
+function chkCall(T){
+  const m = T.match(/Ca[l1I|]{1,2}\s*S[a-zA-Z0-9]{0,4}\)?\s*[:*·.,]?\s*([A-Z0-9]{3,9})/i);
+  return m ? m[1].toUpperCase() : '';
+}
+
+// OCR이 헷갈리는 글자쌍은 정해져 있다 — 5와 S, 8과 B, 7과 T, 0과 O, 6과 G, 9와 g.
+// 호출부호가 'BPIT5' 대신 'BPITS' 로 읽혀도 같은 배로 알아보게 하려는 것이다.
+// 차이가 났을 때 어느 배인지 못 짚으면 이 표가 쓸모없어진다.
+const CHK_CONFUSE = ['0OoDQ', '1IilL', '2Z', '5S', '6Gb', '8B', '7TY', '9gq', 'VY', 'UV', 'MN', 'CG', 'A4', 'EF'];
+function chkDist(a, b){
+  const cost = (x, y) => {
+    if(x === y) return 0;
+    for(const g of CHK_CONFUSE) if(g.includes(x) && g.includes(y)) return 0.4;
+    return 1;
+  };
+  let prev = Array.from({length: b.length + 1}, (_, j) => j), cur = new Array(b.length + 1);
+  for(let i = 1; i <= a.length; i++){
+    cur[0] = i;
+    for(let j = 1; j <= b.length; j++)
+      cur[j] = Math.min(prev[j] + 1, cur[j-1] + 1, prev[j-1] + cost(a[i-1], b[j-1]));
+    [prev, cur] = [cur, prev];
+  }
+  return prev[b.length];
+}
+
+// 스케줄에 실린 호출부호는 서로 뚜렷이 달라서, 확실히 1등일 때만 붙이면 안전하다.
+// 여기서는 '어느 호출부호냐' 만 정하고, 배를 고르는 건 다음 단계에서 한다 —
+// 같은 호출부호가 두 줄일 수 있기 때문이다(같은 배가 한 주에 두 항차).
+function chkSnapCall(raw){
+  const R = String(raw || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+  if(!R) return '';
+  const calls = [...new Set(vessels.map(v => String(v.call||'').toUpperCase().replace(/[^A-Z0-9]/g,''))
+                                   .filter(Boolean))];
+  let best = '', bd = 99, second = 99;
+  calls.forEach(c => {
+    const d = chkDist(R, c);
+    if(d < bd){ second = bd; bd = d; best = c; } else if(d < second){ second = d; }
+  });
+  if(bd === 0) return best;
+  return (best && bd <= 2 && second - bd >= 0.5) ? best : '';
+}
+
+// 고지서 한 장이 표의 어느 줄에 해당하는지 고른다.
+//
+// 같은 호출부호가 표에 두 줄 있을 수 있다 — 같은 배가 한 주에 032, 033 두 항차로 뜨는 경우다.
+// 그때는 호출부호만으로 못 가리고, 고지서 항차 끝 세자리(= 표의 항만청)로 갈라야 한다.
+// 갈라내지 못하면 아무 줄도 고르지 않는다. 엉뚱한 항차에 금액이 들어가는 게 제일 나쁘다.
+function chkPickVessel(p){
+  const key = chkSnapCall(p && p.call) || chkSnapCall(p && p.call2);
+  if(!key) return null;
+  const cands = vessels.filter(v =>
+    String(v.call||'').toUpperCase().replace(/[^A-Z0-9]/g,'') === key);
+  if(!cands.length) return null;
+  if(cands.length === 1) return cands[0];
+
+  // 두 줄 이상 — 항만청 값이 고지서 항차와 맞는 줄을 찾는다
+  const voys = (p && p.voys) || new Set();
+  const hit = cands.filter(v => {
+    const n = parseInt(String(v.hmc||'').replace(/\D/g,''), 10);
+    return n && voys.has(n);
+  });
+  return hit.length === 1 ? hit[0] : null;     // 딱 하나로 좁혀질 때만 인정
+}
+
+// 이름만 주어질 때 쓰는 간편판 (같은 호출부호가 하나일 때만 답한다)
+function chkFindVessel(call){
+  return chkPickVessel({call: call, voys: new Set()});
+}
+
+// 표에 넣어도 되는지 본다.
+//
+//   ① 고지서의 호출부호로 표의 줄을 하나로 특정할 수 있어야 한다
+//      (같은 호출부호가 두 줄이면 고지서 항차로 갈라야 하고, 못 가리면 넣지 않는다)
+//   ② 입항/출항을 읽어야 한다 — 수입 칸인지 수출 칸인지 갈린다
+//   ③ 화물료 + 보안료 = 그 장의 합계 여야 한다 — 금액을 제대로 읽었다는 뜻이다
+//
+// 엑셀에 찍히는 항차(2630E 같은 값)는 스케줄에서 그대로 가져오므로 OCR 과 무관하다.
+// 고지서의 항차 세 자리는 '어느 줄이냐' 를 가릴 때만 쓴다.
+function chkJudge(p){
+  const key = chkSnapCall(p.call) || chkSnapCall(p.call2);
+  if(!key) return {v: null, ok: false, why: '호출부호를 표에서 못 찾음'};
+
+  const cands = vessels.filter(v =>
+    String(v.call||'').toUpperCase().replace(/[^A-Z0-9]/g,'') === key);
+  const v = chkPickVessel(p);
+
+  if(!v && cands.length > 1)
+    return {v: null, ok: false,
+            why: '같은 호출부호가 ' + cands.length + '줄 — 항차를 못 읽어 가릴 수 없음'};
+  if(!v) return {v: null, ok: false, why: '호출부호를 표에서 못 찾음'};
+  if(!p.dir)  return {v: v, ok: false, why: '입항/출항 판독 실패'};
+  if(!p.sure) return {v: v, ok: false, why: '화물료+보안료가 합계와 안 맞음'};
+
+  const hmc = parseInt(String(v.hmc||'').replace(/\D/g,''), 10);
+  return {v: v, ok: true, why: '',
+          voyOk: !!(hmc && p.voys.has(hmc)), multi: cands.length > 1};
+}
+
+// 표에서 금액을 고치면 대조 패널도 따라가야 한다.
+// 이걸 안 하면 패널의 '내가 입력한 합계' 가 PDF 읽던 시점 값에 멈춰 있어서,
+// 표 아래 합계와 숫자가 달라진다 — 어느 쪽이 맞는지 알 수 없게 되는 게 제일 나쁘다.
+function chkRefresh(){
+  const box = document.getElementById('chk-panel');
+  if(!box || box.style.display === 'none' || !chkPages.length) return;
+  chkRender();
+}
+
+function chkRender(){
+  if(chkRendering) return;      // updateSummary → chkRefresh → chkRender 가 맞물려 도는 것 방지
+  chkRendering = true;
+  try{
+  syncDOM();
+  let mine = 0;
+  vessels.forEach(v => { mine += (v.iwh||0)+(v.isc||0)+(v.owh||0)+(v.osc||0); });
+  const pdf = chkPages.reduce((s, p) => s + p.amount, 0);
+  const diff = pdf - mine;
+  const weak = chkPages.filter(p => !p.sure);
+
+  document.getElementById('chk-panel').style.display = 'block';
+  document.getElementById('chk-mine').textContent  = krwF(mine);
+  document.getElementById('chk-pdf').textContent   = krwF(pdf);
+  document.getElementById('chk-pages').textContent = chkPages.length + '장';
+
+  const badge = document.getElementById('chk-badge');
+  const box   = document.getElementById('chk-diff-box');
+  const msg   = document.getElementById('chk-msg');
+
+  if(diff === 0 && mine > 0 && !weak.length){
+    // 합계가 같고, 게다가 모든 장에서 화물료+보안료가 그 장의 합계와 맞았다.
+    // 장마다 따로 인쇄된 숫자 셋이 서로 맞아떨어진 것이라 읽기가 정확했다는 뜻이다.
+    badge.textContent = '✅ 일치';
+    badge.style.cssText = 'font-size:12px;font-weight:800;padding:3px 12px;border-radius:99px;background:#dcfce7;color:#15803d;border:1.5px solid var(--green-bd)';
+    box.style.display = 'none';
+    msg.innerHTML = '입력하신 합계와 고지서 합계가 같고, <b>' + chkPages.length +
+      '장 모두 화물료+보안료가 그 장의 합계와 맞습니다.</b> ' +
+      '<b>WHG 작성자료 다운</b>으로 진행하셔도 됩니다.';
+    chkCard('✅', '총합 일치', krwF(pdf) + ' 원 · ' + chkPages.length + '장 검산', false);
+  } else if(diff === 0 && mine > 0 && weak.length){
+    // 합계는 같지만 검산이 안 된 장이 있다. 잘못 읽은 값끼리 우연히 맞아떨어졌을 수도 있으니
+    // 합계가 같다는 것만으로 넘어가지 않게 한다.
+    badge.textContent = '⚠ 합계는 같지만 확인 필요';
+    badge.style.cssText = 'font-size:12px;font-weight:800;padding:3px 12px;border-radius:99px;background:#fff7ed;color:#c2410c;border:1.5px solid #fdba74';
+    box.style.display = 'none';
+    msg.innerHTML = '합계는 ' + krwF(pdf) + '원으로 같지만, <b>' + weak.length +
+      '장은 화물료+보안료가 그 장의 합계와 맞지 않습니다.</b> 잘못 읽은 값끼리 우연히 총합이 ' +
+      '맞은 것일 수 있으니, <b>장별 보기</b>에서 그 장만 눈으로 확인해 주세요.';
+    chkCard('⚠', '확인 필요', weak.length + '장 검산 실패', false);
+  } else {
+    const over = diff > 0;
+    badge.textContent = mine === 0 ? '표가 비어 있음' : '⚠ 차이 있음';
+    badge.style.cssText = 'font-size:12px;font-weight:800;padding:3px 12px;border-radius:99px;background:#fee2e2;color:#dc2626;border:1.5px solid #fca5a5';
+    box.style.display = 'block';
+    box.style.background = '#fff1f1'; box.style.border = '1px solid #fca5a5';
+    document.getElementById('chk-diff-lbl').textContent = over ? '고지서가 더 많음' : '고지서가 더 적음';
+    document.getElementById('chk-diff-lbl').style.color = '#dc2626';
+    document.getElementById('chk-diff').textContent = krwF(Math.abs(diff));
+    document.getElementById('chk-diff').style.color = '#dc2626';
+    msg.innerHTML = mine === 0
+      ? '표에 아직 금액이 없습니다. 금액을 입력하신 뒤 다시 대조해 보세요.'
+      : '<b>장별 보기</b>를 눌러 고지서별 금액을 표와 맞춰 보세요. 어느 배가 어긋났는지 찾을 수 있습니다.';
+    chkCard('⚠', '차이 ' + krwF(Math.abs(diff)) + '원', '장별 보기로 확인하세요', false);
+  }
+
+  if(weak.length && diff !== 0){
+    msg.innerHTML += '<br><span style="color:#ea580c">※ ' + weak.length +
+      '장은 화물료+보안료가 그 장의 합계와 맞지 않습니다. 거기부터 보시면 빠릅니다.</span>';
+  }
+
+  document.getElementById('chk-tbody').innerHTML = chkPages.map(p => {
+    const j = chkJudge(p);
+    const dirKo = p.dir === 'export' ? '수출(출항)' : p.dir === 'import' ? '수입(입항)' : '?';
+    const clr = p.dir === 'export' ? 'var(--orange)' : '#1d4ed8';
+    const voy = j.v ? ((p.dir === 'export' ? j.v.ovoy : j.v.ivoy) || '—') : '—';
+    const seat = j.ok
+      ? '<b style="font-family:Nunito,monospace">' + (j.v.vsl||'') + '</b> ' + voy +
+        ' <span style="color:' + clr + ';font-weight:700">' + (p.dir==='export'?'수출':'수입') + '</span>'
+      : (j.v ? '<span style="color:var(--muted)">' + (j.v.vsl||'') + '</span>' : '<span style="color:var(--muted)">—</span>');
+    const badge = j.ok
+      ? (j.multi
+          ? '<span style="font-size:10.5px;font-weight:800;padding:2px 8px;border-radius:99px;background:#dcfce7;color:#15803d">✓ 항차로 가려냄</span>'
+          : (j.voyOk
+            ? '<span style="font-size:10.5px;font-weight:800;padding:2px 8px;border-radius:99px;background:#dcfce7;color:#15803d">✓ 항차까지 확인</span>'
+            : '<span style="font-size:10.5px;font-weight:800;padding:2px 8px;border-radius:99px;background:#dbeafe;color:#1d4ed8">✓ 호출부호로 확인</span>'))
+      : '<span style="font-size:10.5px;font-weight:700;padding:2px 8px;border-radius:99px;background:#fee2e2;color:#dc2626">' + j.why + '</span>';
+    const hmc = j.v && j.v.hmc ? '<div style="font-size:10px;color:var(--muted)">항만청 ' + j.v.hmc + '</div>' : '';
+    return '<tr' + (j.ok ? '' : ' style="background:#fffbfb"') + '>' +
+      '<td style="text-align:center;color:var(--muted);font-size:11px">' + p.page + '</td>' +
+      '<td style="font-family:Nunito,monospace;font-weight:700;color:#1d4ed8;font-size:12px">' + (p.call||'—') + '</td>' +
+      '<td style="text-align:center;font-family:Nunito,monospace;font-size:11.5px">' + voy + hmc + '</td>' +
+      '<td style="color:' + clr + ';font-weight:700;font-size:11.5px">' + dirKo + '</td>' +
+      '<td class="r" style="font-family:Nunito,monospace">' + (p.cargo ? krwF(p.cargo) : '—') + '</td>' +
+      '<td class="r" style="font-family:Nunito,monospace">' + (p.security ? krwF(p.security) : '—') + '</td>' +
+      '<td class="r" style="font-family:Nunito,monospace;font-weight:800">' + krwF(p.amount) + '</td>' +
+      '<td style="font-size:11.5px">' + seat + '</td>' +
+      '<td>' + badge + '</td>' +
+      '</tr>';
+  }).join('');
+
+  // 넣을 수 있는 건수에 따라 버튼 표시
+  const fillable = chkPages.filter(p => chkJudge(p).ok);
+  const fb = document.getElementById('chk-fill-btn');
+  if(fillable.length){
+    fb.style.display = 'inline-block';
+    fb.innerHTML = (fillable.length === chkPages.length)
+      ? '④ 금액 ' + fillable.length + '건 모두 넣기'
+      : '④ 확인된 ' + fillable.length + '건 넣기 (' + (chkPages.length - fillable.length) + '건은 직접)';
+  } else {
+    fb.style.display = 'none';
+  }
+  document.getElementById('chk-sort-btn').style.display = chkPages.length ? 'inline-block' : 'none';
+  } finally { chkRendering = false; }
+}
+
+// ── 고지서 순서로 표 정렬 ─────────────────────────────────────────────────────
+// 고지서는 한 장씩 넘기며 입력하는데 표는 스케줄 순서라, 매번 해당 배를 눈으로 찾아야 한다.
+// 표를 고지서 순서에 맞춰두면 위에서부터 차례로 내려가며 채우면 된다.
+// 금액은 건드리지 않고 줄 순서만 바꾼다.
+function chkSortByPage(quiet){
+  syncDOM();
+  const first = new Map();          // 모선 → 그 배가 처음 나온 고지서 장 번호
+  chkPages.forEach(p => {
+    const v = chkPickVessel(p);
+    if(v && !first.has(v)) first.set(v, p.page);
+  });
+  if(!first.size){ if(!quiet) alert('고지서에서 표의 모선을 찾지 못해 정렬할 수 없습니다.'); return; }
+
+  // 고지서에 없는 배는 뒤로 보내되 원래 순서는 유지한다
+  const idx = new Map(vessels.map((v, i) => [v, i]));
+  vessels.sort((a, b) => {
+    const pa = first.has(a) ? first.get(a) : 1e9;
+    const pb = first.has(b) ? first.get(b) : 1e9;
+    return pa !== pb ? pa - pb : idx.get(a) - idx.get(b);
+  });
+
+  sortCol = ''; sortAsc = true;      // 컬럼 정렬 표시 해제 (이제 고지서 순서다)
+  document.querySelectorAll('.si').forEach(el => { el.textContent = '▲▼'; el.classList.remove('on'); });
+  render(); lsave();
+
+  if(quiet) return;
+  const none = vessels.filter(v => !first.has(v));
+  alert('고지서 순서로 정렬했습니다.\n\n' +
+        '고지서가 있는 모선 ' + first.size + '척이 위로, 위에서부터 차례로 채우시면 됩니다.' +
+        (none.length ? '\n고지서가 없는 ' + none.length + '척은 맨 아래로 내렸습니다.' : ''));
+}
+
+// ── 표에 넣기 ─────────────────────────────────────────────────────────────────
+// 세 가지 확인을 모두 통과한 것만 넣는다. 나머지는 손대지 않는다.
+function chkFill(){
+  syncDOM();
+  const list = chkPages.map(p => ({p: p, j: chkJudge(p)})).filter(x => x.j.ok);
+  if(!list.length){ alert('넣을 수 있는 항목이 없습니다.'); return; }
+
+  // 이미 값이 있는데 다른 경우는 따로 세어 미리 알린다
+  const over = list.filter(x => {
+    const v = x.j.v, exp = x.p.dir === 'export';
+    const c = (exp ? v.owh : v.iwh) || 0, s = (exp ? v.osc : v.isc) || 0;
+    return (c || s) && (c !== x.p.cargo || s !== x.p.security);
+  });
+  let msg = '확인된 ' + list.length + '건을 표에 넣습니다.';
+  if(over.length) msg += '\n\n그중 ' + over.length + '건은 이미 입력된 금액과 다릅니다. 덮어씁니다.';
+  msg += '\n\n계속할까요?';
+  if(!confirm(msg)) return;
+
+  list.forEach(x => {
+    const v = x.j.v;
+    if(x.p.dir === 'export'){ v.owh = x.p.cargo; v.osc = x.p.security; }
+    else                    { v.iwh = x.p.cargo; v.isc = x.p.security; }
+  });
+  render(); lsave(); chkRender();
+  alert('✓ ' + list.length + '건 넣었습니다.' +
+        (chkPages.length - list.length ? '\n나머지 ' + (chkPages.length - list.length) +
+         '건은 확인이 안 돼서 손대지 않았습니다. 장별 보기에서 확인해 주세요.' : ''));
+}
+
+document.head.insertAdjacentHTML('beforeend',
+  '<style>@keyframes ocrspin{to{transform:rotate(360deg)}}</style>');
+</script>
+
+
+<script>
+/* [추가 20260922] 팝업으로 열렸을 때의 HOME 단추 ────────────────────────
+   이 쪽이 시작 화면(대시보드)에서 따로 뜬 창이면, HOME 은 '되돌아가기' 가 아니라
+   '이 창을 닫고 대시보드로' 가 맞다. 팝업 안에서 시작.html 을 또 열면
+   대시보드가 두 개가 되어 어느 쪽이 진짜인지 헷갈린다.
+   직접 열어본 경우(팝업이 아닌 경우)에는 지금까지처럼 그냥 이동한다.            */
+(function(){
+  if(!window.opener || window.opener.closed) return;
+  var a = document.querySelector('#skr-backbar a')
+       || document.getElementById('mosun-home')
+       || document.querySelector('a.home');
+  if(!a) return;
+  a.title = '모선마감 화면으로 갑니다 (이 창은 닫힙니다)';
+  a.addEventListener('click', function(e){
+    e.preventDefault();
+    try{ window.opener.focus(); }catch(err){}
+    window.close();
+  });
+})();
+</script>
+</body>
+</html>

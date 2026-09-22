@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>신고현황</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+:root{
+  --bg:#f4f6fb; --card:#fff; --border:#e4eaf4;
+  --blue:#2563eb; --blue-lt:#eff6ff; --blue-mid:#bfdbfe;
+  --navy:#0f2d5e; --green:#16a34a; --green-lt:#f0fdf4; --green-bd:#86efac;
+  --red:#dc2626; --red-lt:#fff1f1;
+  --text:#0f172a; --sub:#64748b; --muted:#94a3b8;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Noto Sans KR','Apple SD Gothic Neo',sans-serif;background:var(--bg);
+     color:var(--text);font-size:15px;line-height:1.6;padding:0 0 40px}
+.wrap{max-width:1180px;margin:0 auto;padding:0 16px}
+
+.hdr{background:linear-gradient(135deg,var(--navy),#1d4ed8);color:#fff;padding:18px 0;margin-bottom:16px}
+.hdr .wrap{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.hdr h1{font-size:20px;font-weight:700}
+.hdr .meta{font-size:14px;color:#c7d9f5;margin-left:auto;text-align:right}
+.hdr .meta b{color:#fff;font-weight:500}
+
+.btn{display:inline-flex;align-items:center;gap:6px;padding:7px 15px;border-radius:8px;
+     border:1px solid var(--border);background:var(--card);color:var(--blue);
+     font-size:14px;font-weight:500;font-family:inherit;cursor:pointer;transition:all .12s}
+.btn:hover{background:var(--blue-lt)}
+.btn.primary{background:var(--navy);color:#fff;border-color:var(--navy)}
+.btn.primary:hover{background:#12386f}
+.btn.danger{background:var(--card);color:var(--red);border-color:#f3c7c7}
+.btn.danger:hover{background:var(--red-lt)}
+
+.card{background:var(--card);border:1px solid var(--border);border-radius:8px;
+      padding:16px;margin-bottom:12px}
+.card > h2{font-size:16px;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.card > h2 .cnt{font-size:14px;font-weight:500;color:var(--sub)}
+.note{font-size:14px;color:var(--sub)}
+
+/* ── 올리는 칸 ── */
+.drop{border:1.5px dashed #c7d7f0;border-radius:8px;padding:16px;background:#f8faff;
+      cursor:pointer;transition:all .15s;text-align:center}
+.drop:hover,.drop.over{background:var(--blue-lt);border-color:var(--blue)}
+.drop .big{font-size:15px;font-weight:500}
+.drop .sm{font-size:14px;color:var(--sub);margin-top:4px}
+.loaded{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:99px;
+      font-size:13px;background:var(--green-lt);color:var(--green);border:1px solid var(--green-bd)}
+.chip.miss{background:#f8fafc;color:var(--sub);border-color:var(--border)}
+
+.sum{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+.sum .box{flex:1 1 150px;background:var(--card);border:1px solid var(--border);
+          border-radius:8px;padding:16px}
+.sum .k{font-size:14px;color:var(--sub)}
+.sum .v{font-size:24px;font-weight:800;font-family:'Nunito',sans-serif;margin-top:2px}
+.sum .box.warn{border-color:#f3c7c7;background:var(--red-lt)}
+.sum .box.warn .v{color:var(--red)}
+.sum .box.good{border-color:var(--green-bd);background:var(--green-lt)}
+.sum .box.good .v{color:var(--green)}
+
+.alert{border-left:4px solid var(--red);background:var(--red-lt);border-radius:8px;
+       padding:12px 16px;margin-bottom:8px}
+.alert.wait{border-left-color:var(--sub);background:#f8fafc}
+.alert .ttl{font-weight:700;font-size:15px}
+.alert .sub{font-size:14px;color:var(--sub);margin-top:2px}
+.alert .det{font-size:14px;margin-top:4px}
+
+table{width:100%;border-collapse:collapse;font-size:14px}
+th{background:#f7f9fd;color:var(--sub);font-weight:500;text-align:left;
+   padding:10px 8px;border-bottom:2px solid var(--border);white-space:nowrap}
+td{padding:9px 8px;border-bottom:1px solid #f1f5f9;height:38px;vertical-align:middle}
+tbody tr:hover{background:#f7fbff}
+td.vsl{font-weight:700}
+td.num{text-align:right;font-family:'Nunito',monospace}
+.tb-wrap{overflow-x:auto}
+
+.st{display:inline-block;padding:2px 9px;border-radius:99px;font-size:13px;
+    font-weight:500;white-space:nowrap}
+.st.ok  {background:var(--green-lt);color:var(--green);border:1px solid var(--green-bd)}
+.st.work{background:var(--blue-lt); color:var(--blue); border:1px solid var(--blue-mid)}
+.st.err {background:var(--red-lt);  color:var(--red);  border:1px solid #f3c7c7}
+.st.none{background:#f8fafc;        color:var(--sub);  border:1px solid var(--border)}
+.st.na  {background:transparent;    color:var(--muted);border:1px solid transparent}
+.why{font-size:13px;color:var(--muted);display:block;margin-top:1px}
+
+details{margin-bottom:12px}
+details > summary{background:var(--card);border:1px solid var(--border);border-radius:8px;
+  padding:14px 16px;font-size:16px;font-weight:700;cursor:pointer;list-style:none;
+  display:flex;align-items:center;gap:8px}
+details[open] > summary{border-radius:8px 8px 0 0;border-bottom:none}
+details > summary::-webkit-details-marker{display:none}
+details > summary .cnt{font-size:14px;font-weight:500;color:var(--sub)}
+details > summary .arw{margin-left:auto;color:var(--muted);font-size:13px;font-weight:500}
+details[open] > summary .arw::after{content:'접기'}
+details:not([open]) > summary .arw::after{content:'펼치기'}
+details .body{background:var(--card);border:1px solid var(--border);border-top:none;
+  border-radius:0 0 8px 8px;padding:0 16px 8px}
+
+.empty{padding:24px 16px;text-align:center;color:var(--sub);font-size:14px}
+.stale{background:#fffbea;border:1px solid #f0d98c;border-radius:8px;padding:12px 16px;
+       margin-bottom:12px;font-size:14px}
+.legend{font-size:13px;color:var(--muted);margin-top:8px}
+.legend b{color:var(--sub);font-weight:500}
+.log{font-size:13px;color:var(--sub);margin-top:10px;white-space:pre-wrap;
+     font-family:'Nunito',monospace;max-height:150px;overflow:auto}
+</style>
+
+<!-- 발표용에만 들어가는 것. 실제 쓰는 쪽에는 없다. -->
+<script src="../발표용-띠.js"></script>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="wrap">
+    <h1>신고현황</h1>
+    <div class="meta" id="meta"></div>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <!-- ══ 자료 올리기 ══ -->
+  <div class="card">
+    <h2>자료 올리기 <span class="cnt">올린 것은 이 컴퓨터 밖으로 나가지 않습니다</span></h2>
+    <div class="drop" id="drop">
+      <div class="big">여기로 끌어다 놓거나, 눌러서 고르세요</div>
+      <div class="sm">여러 개 한 번에 올려도 됩니다 · 파일 이름이 달라도 내용을 보고 알아서 가립니다</div>
+      <input type="file" id="file" multiple accept=".json,.js,.xls,.xlsx" style="display:none">
+    </div>
+    <div class="loaded" id="loaded"></div>
+    <div class="log" id="log"></div>
+  </div>
+
+  <div id="app"></div>
+</div>
+
+<!-- 배치파일로 돌렸으면 이 두 개가 자동으로 들어온다. 없으면 위에서 올리면 된다. -->
+<script src="data/board.js" onerror="void 0"></script>
+<script src="data/mail.js"  onerror="void 0"></script>
+<script>
+'use strict';
+
+/* ════════════════════════════════════════════════════════════
+   판정 규칙 — board.py 와 같은 규칙이다.
+   한쪽만 고치면 화면과 검은 창의 답이 달라진다. 고칠 땐 둘 다 고친다.
+   (board.js 가 있으면 그쪽 판정을 그대로 쓰고 여기는 쓰지 않는다)
+   ════════════════════════════════════════════════════════════ */
+var OK='승인', WORK='진행중', ERR='오류', NONE='미신고', MINE='타서비스';
+
+function isMrn(cell){
+  var s = String(cell || '').trim().toUpperCase();
+  return (s.length >= 10 && /^\d\d/.test(s) && (s.slice(-1) === 'I' || s.slice(-1) === 'E')) ? s : null;
+}
+function findRow(cell, name, vygs, rows){
+  var mrn = isMrn(cell), i;
+  if (mrn) for (i = 0; i < rows.length; i++) if (rows[i].mrn === mrn) return [rows[i], ''];
+  var up = function(x){ return String(x || '').trim().toUpperCase(); };
+  var hit = rows.filter(function(r){
+    return up(r.vsl) === up(name) && vygs.some(function(v){ return v && up(r.vyg) === up(v); });
+  });
+  if (hit.length === 1) return [hit[0], mrn ? 'MRN 다름' : '체크리스트에 MRN 미기재'];
+  return [null, ''];
+}
+function judgeMf(cell, row, how){
+  if (!row) {
+    var memo = String(cell || '').trim();
+    if (memo && !isMrn(memo)) return {s:MINE, d:memo};
+    return {s:NONE, d:'PLISM 에 없음'};
+  }
+  var tail = how ? ' (' + how + ')' : '';
+  if (row.err) return {s:ERR, d:'오류 B/L ' + row.err + '건' + tail};
+  var st = String(row.st || '').trim();
+  if (st === '승인') return {s:OK, d:'승인' + tail};
+  if (st) return {s:WORK, d:st + tail};
+  return {s:WORK, d:'상태 없음' + tail};
+}
+function judgeDg(rows){
+  if (!rows.length) return {s:NONE, d:'신고 없음'};
+  var latest = {};
+  rows.forEach(function(r){
+    (r.res || []).forEach(function(res){
+      var doc = res.doc, at = String(res.at || '');
+      if (doc && (!(doc in latest) || at > String(latest[doc].at || ''))) latest[doc] = res;
+    });
+  });
+  var docs = Object.keys(latest);
+  if (!docs.length) return {s:WORK, d:'전송됨 · 응답 대기'};
+  var bad = docs.filter(function(d){ return (latest[d].stat || '') !== '(정상처리)'; })
+                .map(function(d){ return (d + ' ' + (latest[d].code || '')).trim(); });
+  if (bad.length) return {s:ERR, d:bad.join(' / ')};
+  if (rows.some(function(r){ return r.wEq === 'N' || r.cEq === 'N'; }))
+    return {s:WORK, d:'정상처리 (중량·컨 수량 불일치)'};
+  return {s:OK, d:'정상처리 ' + docs.length + '종'};
+}
+
+/* ════════════════════════════════════════════════════════════
+   올린 자료 보관함
+   ════════════════════════════════════════════════════════════ */
+var DATA = {
+  board: window.BOARD || null,   // board.py 가 이미 판정해 둔 것
+  keys:  null,                   // keys.json — 모선 목록
+  plism: null,                   // plism.json — PLISM 조회 원자료
+  mail:  window.MAIL || null,    // mail.json — 마감리스트 발송
+  signs: null                    // 엑셀에서 읽은 호출부호 명부
+};
+var logLines = [];
+function say(s){ logLines.push(s); document.getElementById('log').textContent = logLines.join('\n'); }
+
+function esc(s){
+  return String(s == null ? '' : s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+/* ── 파일 가리기: 이름이 아니라 내용을 본다 ───────────────── */
+function takeJson(obj, fname){
+  if (obj && obj.rows && obj.rows.length && ('imp_mf' in (obj.rows[0] || {}))) {
+    DATA.board = obj; return 'board (판정 끝난 신고현황)';
+  }
+  if (obj && obj.imp && obj.exp && obj.dg) { DATA.plism = obj; return 'plism (PLISM 조회 원자료)'; }
+  if (obj && obj.rows && obj.rows.length && ('수입리스트' in (obj.rows[0] || {}))) {
+    DATA.mail = obj; return 'mail (마감리스트 발송)';
+  }
+  if (obj && obj.rows && obj.rows.length && ('vyg_in' in (obj.rows[0] || {}))) {
+    DATA.keys = obj; return 'keys (모선 목록 ' + obj.rows.length + '척)';
+  }
+  if (obj && obj.rows && !Array.isArray(obj.rows)) {          // 체크리스트 스냅샷
+    var arr = Object.keys(obj.rows).map(function(k){ var v = obj.rows[k]; v.key = k; return v; });
+    DATA.keys = {rows: arr, week: obj.week, snapshot: fname};
+    return '체크리스트 스냅샷 (' + arr.length + '척)';
+  }
+  return null;
+}
+function takeExcel(wb, fname){
+  /* 선박 파티큘러(선박|VesselName|Service|CallSign) 또는 체크리스트 AY:AZ 표 */
+  var map = DATA.signs || {}, n = 0;
+  wb.SheetNames.forEach(function(sn){
+    var rows = XLSX.utils.sheet_to_json(wb.Sheets[sn], {header:1, defval:''});
+    rows.forEach(function(r){
+      var code = String(r[0] || '').trim(), sign = String(r[3] || '').trim();
+      if (code && /^[A-Z0-9]{4,10}$/i.test(sign) && !map[code.toUpperCase()]) { map[code.toUpperCase()] = sign; n++; }
+      var c2 = String(r[50] || '').trim(), s2 = String(r[51] || '').trim();   /* AY / AZ */
+      if (c2 && /^[A-Z0-9]{4,10}$/i.test(s2) && !map[c2.toUpperCase()]) { map[c2.toUpperCase()] = s2; n++; }
+    });
+  });
+  DATA.signs = map;
+  return n ? '호출부호 명부 ' + n + '척' : null;
+}
+
+function readFiles(files){
+  var left = files.length;
+  if (!left) return;
+  Array.prototype.forEach.call(files, function(f){
+    var rd = new FileReader();
+    var isX = /\.(xls|xlsx)$/i.test(f.name);
+    rd.onload = function(e){
+      try {
+        var what = null;
+        if (isX) {
+          if (typeof XLSX === 'undefined') throw new Error('엑셀 읽는 부품을 못 불러왔습니다 (인터넷 확인)');
+          what = takeExcel(XLSX.read(e.target.result, {type:'binary'}), f.name);
+        } else {
+          var txt = e.target.result;
+          var m = String(txt).match(/^\s*window\.\w+\s*=\s*([\s\S]*?);?\s*$/);   /* board.js / mail.js */
+          what = takeJson(JSON.parse(m ? m[1] : txt), f.name);
+        }
+        say(what ? ('읽음  ' + f.name + '  →  ' + what)
+                 : ('모르는 형식  ' + f.name + ' — 건너뜁니다'));
+      } catch (err) {
+        say('못 읽음  ' + f.name + ' — ' + err.message);
+      }
+      if (--left === 0) render();
+    };
+    rd.onerror = function(){ say('못 읽음  ' + f.name); if (--left === 0) render(); };
+    if (isX) rd.readAsBinaryString(f); else rd.readAsText(f, 'utf-8');
+  });
+}
+
+/* ── 올리는 칸 동작 ─────────────────────────────────────── */
+var drop = document.getElementById('drop'), fileInput = document.getElementById('file');
+drop.onclick = function(){ fileInput.click(); };
+fileInput.onchange = function(){ readFiles(this.files); this.value = ''; };
+['dragenter','dragover'].forEach(function(ev){
+  drop.addEventListener(ev, function(e){ e.preventDefault(); drop.classList.add('over'); });
+});
+['dragleave','drop'].forEach(function(ev){
+  drop.addEventListener(ev, function(e){ e.preventDefault(); drop.classList.remove('over'); });
+});
+drop.addEventListener('drop', function(e){ readFiles(e.dataTransfer.files); });
+
+/* ════════════════════════════════════════════════════════════
+   화면 그리기
+   ════════════════════════════════════════════════════════════ */
+function etbText(iso){
+  if (!iso) return '—';
+  return String(iso).replace('T',' ').slice(5,16);       /* 09-21 04:30 */
+}
+function today(){
+  var d = new Date();
+  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+}
+var STYLE = {};
+STYLE[OK]={cls:'ok'}; STYLE[WORK]={cls:'work'}; STYLE[ERR]={cls:'err'};
+STYLE[NONE]={cls:'none'}; STYLE[MINE]={cls:'na'};
+STYLE['보냄']={cls:'ok'}; STYLE['아직']={cls:'none'}; STYLE['해당없음']={cls:'na'};
+function stTag(state, why, showWhy){
+  var st = STYLE[state] || {cls:'none'};
+  var h = '<span class="st ' + st.cls + '">' + esc(state || '—') + '</span>';
+  if (showWhy && why) h += '<span class="why">' + esc(why) + '</span>';
+  return h;
+}
+
+/* keys + plism 을 합쳐 board 와 같은 모양으로 만든다 (board.js 가 없을 때만) */
+function buildBoard(){
+  if (DATA.board) return DATA.board;
+  if (!DATA.keys) return null;
+  var p = DATA.plism;
+  var rows = DATA.keys.rows.map(function(v){
+    var sign = (v.sign || v.call || '') || (DATA.signs && DATA.signs[String(v.vsl||'').toUpperCase()]) || '';
+    var base = {name:v.name, vsl:v.vsl, svc_in:v.svc_in, svc_out:v.svc_out, opr:v.opr,
+                sign:sign, seq:(v.seq||''), vyg_in:v.vyg_in, vyg_out:v.vyg_out,
+                etb:v.etb, etd:v.etd};
+    if (!p) {                                   /* PLISM 자료가 없으면 판정하지 않는다 */
+      base.imp_mf = base.exp_mf = base.imp_dg = base.exp_dg = {s:'', d:''};
+      return base;
+    }
+    var seq = String(v.seq || '').trim();
+    function dgRows(flag){
+      return (p.dg || []).filter(function(r){
+        return r.cs === sign && r.inflag === flag &&
+               (!seq || String(r.ser).replace(/^0+/,'') === seq.replace(/^0+/,''));
+      });
+    }
+    var a = findRow(v.imp_cell, v.name, [v.vyg_in, v.vyg_out], p.imp || []);
+    var b = findRow(v.exp_cell, v.name, [v.vyg_out, v.vyg_in], p.exp || []);
+    base.imp_mf = judgeMf(v.imp_cell, a[0], a[1]);
+    base.exp_mf = judgeMf(v.exp_cell, b[0], b[1]);
+    base.imp_dg = judgeDg(dgRows(1));
+    base.exp_dg = judgeDg(dgRows(2));
+    return base;
+  });
+  rows.sort(function(x,y){ return String(x.etb||'9999').localeCompare(String(y.etb||'9999')); });
+  return {rows:rows, made_at:'', pulled_at:(p && p.pulled_at) || '', klnet:(p && p.klnet) || '',
+          judged_here:!!p};
+}
+
+function render(){
+  var B = buildBoard(), M = DATA.mail, out = [];
+
+  /* 올린 것 표시 */
+  var chips = [
+    ['모선 목록',      DATA.keys || DATA.board],
+    ['PLISM 신고현황', DATA.board || DATA.plism],
+    ['마감리스트 발송', DATA.mail],
+    ['호출부호 명부',  DATA.signs]
+  ].map(function(c){
+    return '<span class="chip' + (c[1] ? '' : ' miss') + '">' + (c[1] ? '있음' : '없음') + ' · ' + c[0] + '</span>';
+  }).join('');
+  document.getElementById('loaded').innerHTML = chips;
+
+  /* 머리말 */
+  var meta = [];
+  if (B && B.pulled_at) meta.push('PLISM 조회 <b>' + esc(B.pulled_at) + '</b>');
+  if (B && (B.who || B.klnet))
+    meta.push('조회한 사람 <b>' + esc(B.who ? B.who + '님' : '?') + '</b>' +
+              (B.klnet ? ' [' + esc(B.klnet) + ']' : ''));
+  if (M && M.checked_at) meta.push('메일 확인 <b>' + esc(M.checked_at) + '</b>');
+  if (M && M.week) meta.push('<b>' + esc(M.week[0]) + ' ~ ' + esc(M.week[1]) + '</b>');
+  document.getElementById('meta').innerHTML = meta.length ? meta.join(' · ') : '올린 자료 없음';
+
+  /* 아무것도 없을 때 */
+  if (!B && !M) {
+    out.push('<div class="card"><h2>아직 올린 자료가 없습니다</h2>' +
+      '<p class="note">위 칸에 <b>data</b> 폴더의 파일을 끌어다 놓으면 바로 표가 나옵니다. ' +
+      '받는 것은 이렇습니다.</p>' +
+      '<div class="tb-wrap"><table><thead><tr><th>파일</th><th>채워지는 것</th></tr></thead><tbody>' +
+      '<tr><td class="vsl">keys.json</td><td>모선 · 항차 · 호출부호 · 해수청</td></tr>' +
+      '<tr><td class="vsl">plism.json</td><td>신고 4칸 (이 화면에서 판정)</td></tr>' +
+      '<tr><td class="vsl">board.js</td><td>신고 4칸 (board.py 가 판정한 것 — 이게 있으면 우선)</td></tr>' +
+      '<tr><td class="vsl">mail.json</td><td>마감리스트 발송 · 이번 주 할 일</td></tr>' +
+      '<tr><td class="vsl">선박 파티큘러-콜사인정보.xls</td><td>비어 있는 호출부호 메우기</td></tr>' +
+      '<tr><td class="vsl">체크리스트 스냅샷 json</td><td>keys.json 이 없을 때 모선 목록</td></tr>' +
+      '</tbody></table></div>' +
+      '<p class="note" style="margin-top:12px">실행.bat 을 돌리면 이 자료들이 ' +
+      '<b>신고현황\\data\\</b> 에 생깁니다.</p></div>');
+    document.getElementById('app').innerHTML = out.join('');
+    return;
+  }
+
+  /* 오래된 자료 경고 */
+  var stale = [];
+  if (B && B.made_at && String(B.made_at).slice(0,10) !== today())
+    stale.push('신고현황은 <b>' + esc(B.made_at) + '</b> 에 만든 것');
+  if (M && M.checked_at && String(M.checked_at).slice(0,10) !== today())
+    stale.push('마감리스트 확인은 <b>' + esc(M.checked_at) + '</b> 에 한 것');
+  if (stale.length)
+    out.push('<div class="stale">' + stale.join(' · ') + ' — <b>오늘 자료가 아닙니다.</b></div>');
+
+  var hasJudge = B && B.rows.length && B.rows[0].imp_mf.s !== '';
+
+  /* 요약 */
+  var problems = [];
+  if (hasJudge) B.rows.forEach(function(r){
+    var bad = [['수입신고',r.imp_mf],['수출신고',r.exp_mf],['수입위험물',r.imp_dg],['수출위험물',r.exp_dg]]
+      .filter(function(p){ return p[1].s === ERR || p[1].s === NONE; });
+    if (bad.length) problems.push({row:r, bad:bad, hasErr:bad.some(function(p){ return p[1].s === ERR; })});
+  });
+  var notSent = [];
+  if (M) M.rows.forEach(function(r){
+    ['수입리스트','수출리스트'].forEach(function(k){
+      if (r[k] && r[k][0] === '아직') notSent.push(r.name);
+    });
+  });
+  var s = '<div class="sum">';
+  if (B) s += '<div class="box"><div class="k">모선</div><div class="v">' + B.rows.length + '</div></div>';
+  if (hasJudge) s += '<div class="box ' + (problems.length?'warn':'good') + '"><div class="k">미신고 · 오류</div><div class="v">' + problems.length + '</div></div>';
+  if (M) {
+    s += '<div class="box ' + (notSent.length?'warn':'good') + '"><div class="k">아직 안 보낸 리스트</div><div class="v">' + notSent.length + '</div></div>';
+    var left = M.weekly ? M.weekly.filter(function(w){ return w.state !== '보냄'; }).length : 0;
+    s += '<div class="box ' + (left?'warn':'good') + '"><div class="k">이번 주 남은 일</div><div class="v">' + left + '</div></div>';
+  }
+  out.push(s + '</div>');
+
+  /* 무엇이 모자란지 먼저 알린다 */
+  var need = [];
+  if (!B)             need.push('<b>모선 목록</b>이 없습니다 — <b>keys.json</b> 을 올리세요.');
+  else if (!hasJudge) need.push('<b>PLISM 신고현황</b>이 없습니다 — <b>plism.json</b> 또는 <b>board.js</b> 를 올리면 4칸이 채워집니다.');
+  if (!M)             need.push('<b>마감리스트 발송</b> 확인이 없습니다 — <b>mail.json</b> 을 올리세요.');
+  if (need.length)
+    out.push('<div class="card"><p class="note">' + need.join('<br>') + '</p></div>');
+
+  /* 먼저 볼 것 */
+  if (hasJudge) {
+    var a = '<div class="card"><h2>먼저 볼 것 <span class="cnt">미신고 · 오류</span></h2>';
+    if (!problems.length) a += '<div class="empty">미신고도 오류도 없습니다.</div>';
+    else {
+      a += '<p class="note" style="margin-bottom:10px">마감 전이라 아직 안 한 것도 그대로 나옵니다. 판단은 직접 하세요.</p>';
+      problems.forEach(function(p){
+        var r = p.row;
+        a += '<div class="alert' + (p.hasErr?'':' wait') + '">' +
+          '<div class="ttl">' + esc(r.name) + ' <span style="font-weight:500;color:var(--sub)">' + esc(r.vyg_out||r.vyg_in||'') + '</span></div>' +
+          '<div class="sub">입항 ' + esc(etbText(r.etb)) +
+            (r.sign?' · 호출부호 ' + esc(r.sign):'') + (r.seq?' · 해수청 ' + esc(r.seq):'') + '</div>' +
+          '<div class="det">' + p.bad.map(function(x){
+            return esc(x[0]) + ' ' + stTag(x[1].s,'',false) +
+              (x[1].s === ERR && x[1].d ? ' <span class="why" style="display:inline">' + esc(x[1].d) + '</span>' : '');
+          }).join(' &nbsp; ') + '</div></div>';
+      });
+    }
+    out.push(a + '</div>');
+  }
+
+  /* 신고현황 표 */
+  if (B) {
+    var t = '<details open><summary>신고현황 <span class="cnt">' + B.rows.length + '척' +
+      (hasJudge ? (B.judged_here ? ' · 이 화면에서 판정' : '') : ' · PLISM 자료 없음') +
+      '</span><span class="arw"></span></summary><div class="body"><div class="tb-wrap"><table>' +
+      '<thead><tr><th>모선</th><th>항차</th><th>호출부호</th><th>해수청</th><th>입항</th>' +
+      '<th>수입신고</th><th>수출신고</th><th>수입위험물</th><th>수출위험물</th></tr></thead><tbody>';
+    B.rows.forEach(function(r){
+      function c(j){ return j && j.s ? stTag(j.s, j.d, true) : '<span class="st na">—</span>'; }
+      t += '<tr><td class="vsl">' + esc(r.name) + '</td>' +
+        '<td>' + esc(r.vyg_out || r.vyg_in || '') + '</td>' +
+        '<td class="num">' + esc(r.sign || '—') + '</td>' +
+        '<td class="num">' + esc(r.seq || '—') + '</td>' +
+        '<td class="num">' + esc(etbText(r.etb)) + '</td>' +
+        '<td>' + c(r.imp_mf) + '</td><td>' + c(r.exp_mf) + '</td>' +
+        '<td>' + c(r.imp_dg) + '</td><td>' + c(r.exp_dg) + '</td></tr>';
+    });
+    t += '</tbody></table></div><p class="legend"><b>승인</b> 끝남 · <b>진행중</b> 선별마감·접수 단계 · ' +
+      '<b>오류</b> 오류통보 옴 · <b>미신고</b> PLISM 에 없음 · <b>타서비스</b> 내 소관 아님' +
+      (hasJudge ? '' : ' · <b>—</b> PLISM 자료를 아직 안 올림') + '</p></div></details>';
+    out.push(t);
+  }
+
+  /* 마감리스트 발송 */
+  if (M) {
+    var m = '<details open><summary>마감리스트 발송 <span class="cnt">' +
+      (notSent.length ? '아직 ' + notSent.length + '건' : '모두 보냄') + '</span><span class="arw"></span></summary>' +
+      '<div class="body"><div class="tb-wrap"><table><thead><tr><th>모선</th><th>수입항차</th>' +
+      '<th>수출항차</th><th>수입리스트</th><th>수출리스트</th></tr></thead><tbody>';
+    M.rows.forEach(function(r){
+      function cell(k){ var v = r[k] || ['','']; return stTag(v[0], v[0]==='보냄'?v[1]:'', true); }
+      m += '<tr><td class="vsl">' + esc(r.name) + '</td><td>' + esc(r.vyg_in||'') + '</td>' +
+        '<td>' + esc(r.vyg_out||'') + '</td><td>' + cell('수입리스트') + '</td>' +
+        '<td>' + cell('수출리스트') + '</td></tr>';
+    });
+    out.push(m + '</tbody></table></div><p class="legend">보낸편지함 제목으로 가려냅니다. ' +
+      '<b>해당없음</b> 은 양하만·타서비스라 보낼 일이 없는 것입니다.</p></div></details>');
+  }
+
+  /* 이번 주 할 일 */
+  if (M && M.weekly && M.weekly.length) {
+    var w = '<div class="card"><h2>이번 주 할 일</h2><div class="tb-wrap"><table><tbody>';
+    M.weekly.forEach(function(x){
+      w += '<tr><td style="width:1%;white-space:nowrap">' + stTag(x.state,'',false) + '</td>' +
+        '<td class="vsl">' + esc(x.label) + '</td><td class="note">' + esc(x.due) + '</td>' +
+        '<td class="num">' + esc(x.at||'') + '</td></tr>';
+      if (x.state !== '보냄' && x.subject)
+        w += '<tr><td></td><td colspan="3" class="why">' + esc(x.subject) + '</td></tr>';
+    });
+    out.push(w + '</tbody></table></div></div>');
+  }
+
+
+
+  out.push('<div style="margin-top:16px;display:flex;gap:8px;flex-wrap:wrap">' +
+    '<button class="btn" onclick="document.querySelectorAll(\'details\').forEach(function(d){d.open=true})">모두 펼치기</button>' +
+    '<button class="btn" onclick="document.querySelectorAll(\'details\').forEach(function(d){d.open=false})">모두 접기</button>' +
+    '<button class="btn danger" onclick="location.reload()">올린 것 비우기</button></div>');
+
+  document.getElementById('app').innerHTML = out.join('');
+}
+
+render();
+</script>
+
+<script>
+/* [추가 20260922] 팝업으로 열렸을 때의 HOME 단추 ────────────────────────
+   이 쪽이 시작 화면(대시보드)에서 따로 뜬 창이면, HOME 은 '되돌아가기' 가 아니라
+   '이 창을 닫고 대시보드로' 가 맞다. 팝업 안에서 시작.html 을 또 열면
+   대시보드가 두 개가 되어 어느 쪽이 진짜인지 헷갈린다.
+   직접 열어본 경우(팝업이 아닌 경우)에는 지금까지처럼 그냥 이동한다.            */
+(function(){
+  if(!window.opener || window.opener.closed) return;
+  var a = document.querySelector('#skr-backbar a')
+       || document.getElementById('mosun-home')
+       || document.querySelector('a.home');
+  if(!a) return;
+  a.title = '모선마감 화면으로 갑니다 (이 창은 닫힙니다)';
+  a.addEventListener('click', function(e){
+    e.preventDefault();
+    try{ window.opener.focus(); }catch(err){}
+    window.close();
+  });
+})();
+</script>
+</body>
+</html>

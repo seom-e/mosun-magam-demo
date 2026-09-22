@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>고칠거리</title>
+<style>
+:root{
+  --bg:#f4f6fa; --card:#fff; --line:#e3e8f0;
+  --text:#1e2939; --muted:#6b7789;
+  --blue:#2557a7; --blue-dark:#1d4585; --blue-soft:#eef3fb;
+  --green:#1e8449; --red:#c0392b;
+  --radius:8px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:'Noto Sans KR','Malgun Gothic','맑은 고딕',sans-serif;
+  font-size:15px; line-height:1.6; color:var(--text);
+  background:var(--bg); padding:28px 16px 60px;
+}
+.wrap{max-width:820px;margin:0 auto}
+
+header{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:4px}
+h1{font-size:24px;font-weight:700;letter-spacing:-.5px}
+header .count{font-size:14px;color:var(--muted)}
+header .back{margin-left:auto;font-size:13px;color:var(--muted);text-decoration:none}
+header .back:hover{color:var(--blue);text-decoration:underline}
+.lead{font-size:13.5px;color:var(--muted);margin-bottom:22px}
+.lead b{color:var(--blue-dark);font-weight:600}
+
+/* 적는 칸 */
+.write{
+  background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+  padding:14px;display:flex;gap:8px;flex-wrap:wrap;
+}
+.write select,.write input{
+  font-family:inherit;font-size:14px;color:var(--text);
+  border:1px solid var(--line);border-radius:6px;padding:9px 11px;background:#fff;
+}
+.write select{flex:0 0 150px}
+.write input{flex:1 1 240px}
+.write input:focus,.write select:focus{outline:none;border-color:#a9c2e6}
+.write button{
+  font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;
+  background:var(--blue);color:#fff;border:0;border-radius:6px;padding:9px 20px;
+}
+.write button:hover{background:var(--blue-dark)}
+
+/* 구역 제목 줄 */
+.bar{display:flex;align-items:center;gap:10px;margin:24px 0 10px}
+.bar h2{font-size:14px;font-weight:600;color:var(--muted)}
+.bar .rule{flex:1;height:1px;background:var(--line)}
+.bar button{
+  font-family:inherit;font-size:13px;color:var(--muted);cursor:pointer;
+  background:none;border:1px solid var(--line);border-radius:6px;padding:4px 11px;
+}
+.bar button:hover{background:var(--card);color:var(--text)}
+.bar button.go{color:var(--blue);border-color:#c2d5ef;font-weight:600}
+.bar button.go:hover{background:var(--blue-soft)}
+
+.list{display:flex;flex-direction:column;gap:7px}
+.item{
+  background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+  padding:12px 14px;display:flex;align-items:flex-start;gap:11px;
+}
+.item:hover{border-color:#c9d6e8}
+.item input[type=checkbox]{width:16px;height:16px;margin-top:4px;accent-color:var(--green);cursor:pointer;flex:0 0 auto}
+.item .txt{flex:1;min-width:0;word-break:break-word}
+.item .tool{
+  display:inline-block;font-size:11.5px;font-weight:600;
+  background:var(--blue-soft);color:var(--blue);border-radius:20px;
+  padding:2px 9px;margin-right:7px;
+}
+.item .when{font-size:12px;color:var(--muted);margin-top:3px}
+.item .del{
+  background:none;border:0;color:#c3ccd8;font-size:18px;line-height:1;
+  cursor:pointer;padding:0 2px;flex:0 0 auto;font-family:inherit;
+}
+.item .del:hover{color:var(--red)}
+.item.done{background:#f8faf9;border-color:#dfeae3}
+.item.done .txt{color:var(--muted)}
+.item.done .body-text{text-decoration:line-through}
+.item.done .tool{background:#e6f2ea;color:var(--green)}
+
+.empty{
+  background:var(--card);border:1px dashed var(--line);border-radius:var(--radius);
+  padding:30px;text-align:center;color:var(--muted);font-size:14px;
+}
+.hidden{display:none}
+#done-wrap.folded .list{display:none}
+.toast{
+  position:fixed;left:50%;bottom:28px;transform:translateX(-50%);
+  background:#1e2939;color:#fff;font-size:13.5px;padding:10px 18px;border-radius:8px;
+  opacity:0;pointer-events:none;transition:opacity .2s;
+}
+.toast.on{opacity:.94}
+</style>
+
+<!-- 발표용에만 들어가는 것. 실제 쓰는 쪽에는 없다. -->
+<script src="./발표용-띠.js"></script>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <h1>고칠거리</h1>
+    <span class="count" id="count"></span>
+    <a class="back" href="시작.html">모선마감으로</a>
+  </header>
+  <p class="lead">
+    일하다 이상한 게 보이면 <b>그 자리에서 고치지 말고 여기 한 줄만 적고 계속 하세요.</b>
+    나중에 <b>[전부 복사]</b> 를 눌러 클로드에게 붙여넣으면 한꺼번에 처리합니다.
+  </p>
+
+  <div class="write">
+    <select id="tool">
+      <option value="시작화면">시작화면</option>
+      <option value="스케줄확인">스케줄확인</option>
+      <option value="CBF확인">CBF확인</option>
+      <option value="미반입&amp;셔틀">미반입 &amp; 셔틀</option>
+      <option value="화물료">화물료</option>
+      <option value="위험물DG">위험물DG</option>
+      <option value="신고현황">신고현황</option>
+      <option value="적하목록정정">적하목록정정</option>
+      <option value="체크리스트">체크리스트</option>
+      <option value="업무캘린더">업무 캘린더</option>
+      <option value="기타">기타</option>
+    </select>
+    <input id="text" placeholder="무엇이 이상한지 한 줄로 적고 엔터" autocomplete="off">
+    <button id="add">담기</button>
+  </div>
+
+  <div class="bar">
+    <h2>고칠 것</h2>
+    <span class="rule"></span>
+    <button class="go" id="copy">전부 복사</button>
+  </div>
+  <div class="list" id="open-list"></div>
+  <div class="empty hidden" id="open-empty">아직 적은 게 없습니다. 위에 한 줄 적어보세요.</div>
+
+  <div id="done-wrap" class="folded">
+    <div class="bar">
+      <h2 id="done-title">끝난 것</h2>
+      <span class="rule"></span>
+      <button id="fold">펼치기</button>
+      <button id="clear">끝난 것 지우기</button>
+    </div>
+    <div class="list" id="done-list"></div>
+  </div>
+
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+var KEY = 'mosun_todo_v1';
+
+function load(){
+  try{ return JSON.parse(localStorage.getItem(KEY) || '[]'); }catch(e){ return []; }
+}
+function save(list){
+  try{ localStorage.setItem(KEY, JSON.stringify(list)); }catch(e){}
+}
+function stamp(){
+  var d = new Date();
+  return (d.getMonth()+1) + '/' + d.getDate();
+}
+function toast(msg){
+  var t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('on');
+  clearTimeout(toast._t);
+  toast._t = setTimeout(function(){ t.classList.remove('on'); }, 1800);
+}
+function esc(s){
+  return String(s).replace(/[&<>"]/g, function(c){
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];
+  });
+}
+
+function row(x, i){
+  return '<div class="item' + (x.done ? ' done' : '') + '">'
+    + '<input type="checkbox" data-i="' + i + '"' + (x.done ? ' checked' : '') + '>'
+    + '<div class="txt"><span class="tool">' + esc(x.tool) + '</span>'
+    + '<span class="body-text">' + esc(x.text) + '</span>'
+    + '<div class="when">' + esc(x.when || '')
+    + (x.done && x.doneWhen ? ' 적음 · ' + esc(x.doneWhen) + ' 끝' : (x.done ? ' · 끝' : ' 적음'))
+    + '</div></div>'
+    + '<button class="del" data-i="' + i + '" title="지우기">X</button>'
+    + '</div>';
+}
+
+function draw(){
+  var list = load();
+  var open = list.filter(function(x){ return !x.done; });
+  var done = list.filter(function(x){ return x.done; });
+
+  document.getElementById('count').textContent =
+    list.length === 0 ? '' : (open.length ? '남은 것 ' + open.length + '개' : '다 끝났습니다');
+
+  document.getElementById('open-list').innerHTML =
+    list.map(function(x, i){ return x.done ? '' : row(x, i); }).join('');
+  document.getElementById('open-empty').classList.toggle('hidden', open.length > 0);
+
+  document.getElementById('done-list').innerHTML =
+    list.map(function(x, i){ return x.done ? row(x, i) : ''; }).join('');
+  document.getElementById('done-title').textContent = '끝난 것 ' + done.length + '개';
+  document.getElementById('done-wrap').style.display = done.length ? '' : 'none';
+
+  document.querySelectorAll('.item input[type=checkbox]').forEach(function(cb){
+    cb.addEventListener('change', function(){
+      var l = load(), i = Number(cb.dataset.i);
+      l[i].done = cb.checked;
+      l[i].doneWhen = cb.checked ? stamp() : '';
+      save(l); draw();
+    });
+  });
+  document.querySelectorAll('.item .del').forEach(function(b){
+    b.addEventListener('click', function(){
+      var l = load(); l.splice(Number(b.dataset.i), 1); save(l); draw(); toast('지웠습니다');
+    });
+  });
+}
+
+function add(){
+  var t = document.getElementById('text');
+  var v = t.value.trim();
+  if(!v){ t.focus(); return; }
+  var l = load();
+  l.unshift({ tool: document.getElementById('tool').value, text: v,
+              when: stamp(), done: false, doneWhen: '' });
+  save(l); t.value = ''; t.focus(); draw();
+  toast('담았습니다');
+}
+
+document.getElementById('add').addEventListener('click', add);
+document.getElementById('text').addEventListener('keydown', function(e){
+  if(e.key === 'Enter') add();
+});
+
+document.getElementById('copy').addEventListener('click', function(){
+  var open = load().filter(function(x){ return !x.done; });
+  if(!open.length){ toast('고칠 것이 없습니다'); return; }
+  var txt = '고칠거리 ' + open.length + '개\n\n'
+          + open.map(function(x, i){
+              return (i+1) + '. [' + x.tool + '] ' + x.text + '  (' + x.when + ' 적음)';
+            }).join('\n');
+  var ta = document.createElement('textarea');
+  ta.value = txt;
+  document.body.appendChild(ta); ta.select();
+  var ok = false;
+  try{ ok = document.execCommand('copy'); }catch(e){ ok = false; }
+  document.body.removeChild(ta);
+  toast(ok ? '복사했습니다. 클로드에게 붙여넣으세요' : '복사가 안 됩니다. 직접 긁어서 복사해주세요');
+});
+
+document.getElementById('fold').addEventListener('click', function(){
+  var w = document.getElementById('done-wrap');
+  w.classList.toggle('folded');
+  this.textContent = w.classList.contains('folded') ? '펼치기' : '접기';
+});
+
+document.getElementById('clear').addEventListener('click', function(){
+  if(!confirm('끝난 것을 모두 지울까요? 되돌릴 수 없습니다.')) return;
+  save(load().filter(function(x){ return !x.done; }));
+  draw(); toast('지웠습니다');
+});
+
+draw();
+document.getElementById('text').focus();
+</script>
+<a id="mosun-home" href="시작.html" title="모선마감 시작화면으로">
+<span style="font-size:15px">&#127968;</span><span class="home-home">HOME</span>
+<span>모선마감</span><span style="opacity:.55">·</span><span>고칠거리</span></a>
+<style>
+#mosun-home{position:fixed;left:14px;bottom:14px;z-index:99999;display:flex;align-items:center;
+  gap:7px;padding:8px 14px;border-radius:99px;background:#0f2d5e;color:#fff;font-size:12.5px;
+  font-weight:600;text-decoration:none;box-shadow:0 3px 12px rgba(15,45,94,.35);
+  font-family:'Noto Sans KR','Malgun Gothic',sans-serif;opacity:.85;transition:opacity .12s}
+#mosun-home:hover{opacity:1}
+#mosun-home .home-home{font-weight:800;letter-spacing:.4px;margin-right:2px}
+@media print{#mosun-home{display:none}}
+</style>
+</body>
+</html>

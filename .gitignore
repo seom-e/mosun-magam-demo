@@ -1,0 +1,11 @@
+# 발표용 저장소 — 지어낸 예시만 들어간다.
+# 업무자료는 어떤 경우에도 올리지 않는다.
+*.xls
+*.xlsx
+*.msg
+*.eml
+*.zip
+*.docx
+*.pdf
+*.log
+.playwright-mcp/
